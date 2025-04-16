@@ -7,7 +7,7 @@ import theme from './theme.js'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme} noSsr defaultMode="light">
       <CssBaseline />
       <App />
     </ThemeProvider>

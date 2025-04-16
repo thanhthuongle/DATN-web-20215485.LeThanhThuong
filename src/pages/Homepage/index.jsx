@@ -5,10 +5,14 @@ import ThreeDRotation from '@mui/icons-material/ThreeDRotation'
 import HomeIcon from '@mui/icons-material/Home'
 import { pink } from '@mui/material/colors'
 import Typography from '@mui/material/Typography'
+import ModeSelect from '~/component/ModeSelect/ModeSelect'
 
 function Homepage() {
   return (
     <>
+      <ModeSelect />
+      <hr />
+      
       <div>Su gia hoa binh</div>
       <Stack spacing={2} direction="row">
         <Button variant="text">Text</Button>
