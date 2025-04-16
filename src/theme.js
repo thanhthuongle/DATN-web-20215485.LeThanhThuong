@@ -3,20 +3,20 @@ import { red } from '@mui/material/colors'
 
 // Create a theme instance.
 const theme = createTheme({
-  cssVariables: true,
-  palette: {
-    primary: {
-      main: '#556cd6'
+  colorSchemes: { light: true, dark: true },
+  colorSchemes: {
+    light: {
+      palette: {
+        // primary: {
+        // },
+        // secondary: {
+        // },
+        // text: {
+        // }
+        // ...other tokens
+      },
     },
-    secondary: {
-      main: '#19857b'
-    },
-    error: {
-      main: red.A400
-    },
-    text: {
-      secondary: red[500]
-    }
+    dark: true 
   }
 })
 
