@@ -12,7 +12,7 @@ import SvgIcon from '@mui/material/SvgIcon'
 import HistoryIcon from '@mui/icons-material/History'
 import InfoIcon from '@mui/icons-material/Info'
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -48,9 +48,15 @@ const SIDEBAR_ITEM_LISTS = {
   GROUP_INFO: 'Thông tin nhóm'
 }
 
+const isMember = true
+const isManager = true
+
 
 function SideBar() {
-  const location = useLocation()
+  const location = useLocation() // TODO: Chuyển sang activeGroup của redux
+  const { groupId } = useParams()
+
+  const base = `/groups/${groupId}`
 
   const isActive = (path) => {
     return location?.pathname === path
@@ -59,25 +65,25 @@ function SideBar() {
   return (
     <Grid size={{ xs: 12, sm: 2.5 }}>
       <Stack direction="column" spacing={1}>
-        <Link to='/overview' style={{ textDecoration: 'none', color: 'inherit' }}>
+        <Link to={`${base}/overview`} style={{ textDecoration: 'none', color: 'inherit' }}>
           <SidebarItem className={isActive('/overview') ? 'active' : ''}>
             <SpaceDashboardIcon fontSize="small" />
             Tổng quan
           </SidebarItem>
         </Link>
-        <Link to='/money-sources' style={{ textDecoration: 'none', color: 'inherit' }}>
+        <Link to={`${base}/money-sources`} style={{ textDecoration: 'none', color: 'inherit' }}>
           <SidebarItem className={isActive('/money-sources') ? 'active' : ''}>
             <AccountBalanceWalletIcon fontSize="small" />
             Nguồn tiền
           </SidebarItem>
         </Link>
-        <Link to='/budgets' style={{ textDecoration: 'none', color: 'inherit' }}>
+        <Link to={`${base}/budgets`} style={{ textDecoration: 'none', color: 'inherit' }}>
           <SidebarItem className={isActive('/budgets') ? 'active' : ''}>
             <FileCopyIcon fontSize="small" />
             Ngân sách
           </SidebarItem>
         </Link>
-        <Link to='/loans-debts' style={{ textDecoration: 'none', color: 'inherit' }}>
+        <Link to={`${base}/loans-debts`} style={{ textDecoration: 'none', color: 'inherit' }}>
           <SidebarItem className={isActive('/loans-debts') ? 'active' : ''}>
             <SvgIcon fontSize='small'>
               <svg
@@ -90,22 +96,61 @@ function SideBar() {
             Theo dõi vay nợ
           </SidebarItem>
         </Link>
-        <Link to='/transaction-history' style={{ textDecoration: 'none', color: 'inherit' }}>
+        {(isMember && !isManager) &&
+          <Link to={`${base}/spending-proposals`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <SidebarItem className={isActive('/spending-proposals') ? 'active' : ''}>
+              <SvgIcon fontSize='small'>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 32 32"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M29 20.52c0-4.62-3.78-5.14-6.82-5.56c-3.31-.46-5.18-.86-5.18-3.71c0-2.39 2.51-3.24 4.65-3.24c2.32 0 4.14.86 5.57 2.63l1.56-1.26C27.26 7.5 25.32 6.41 23 6.1V3h-2v3.02c-3.62.22-6 2.26-6 5.22c0 4.73 3.83 5.26 6.91 5.69c3.25.45 5.09.84 5.09 3.58c0 3.03-3.13 3.48-5 3.48c-3.43 0-4.88-.96-6.22-2.63l-1.56 1.26c1.77 2.19 3.73 3.17 6.78 3.34V29h2v-3.04c3.73-.3 6-2.33 6-5.44M3 11h8v2H3zm0 8h8v2H3zm2-4h8v2H5z"
+                  />
+                </svg>
+              </SvgIcon>
+              Đề xuất chi tiêu
+            </SidebarItem>
+          </Link>
+        }
+        {(isManager) &&
+          <Link to={`${base}/contribution-request`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <SidebarItem className={isActive('/contribution-request') ? 'active' : ''}>
+              <RequestQuoteIcon fontSize="small" />
+              Yêu cầu đóng góp
+            </SidebarItem>
+          </Link>
+        }
+        <Link to={`${base}/transaction-history`} style={{ textDecoration: 'none', color: 'inherit' }}>
           <SidebarItem className={isActive('/transaction-history') ? 'active' : ''}>
             <HistoryIcon fontSize="small" />
             Lịch sử giao dịch
           </SidebarItem>
         </Link>
       </Stack>
+      {isManager &&
       <>
         <Divider sx={{ my: 1 }} />
-        <Link to='/new-transaction' style={{ textDecoration: 'none', color: 'inherit' }}>
+        <Link to={`${base}/new-transaction`} style={{ textDecoration: 'none', color: 'inherit' }}>
           <SidebarItem className={isActive('/new-transaction') ? 'active' : ''}>
             <LibraryAddIcon fontSize="small" />
             Tạo giao dịch
           </SidebarItem>
         </Link>
       </>
+      }
+      {(isMember || isManager) &&
+      <>
+        <Divider sx={{ my: 1 }} />
+        <Link to={`${base}/group-info`} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <SidebarItem className={isActive('/group-info') ? 'active' : ''}>
+            <InfoIcon fontSize="small" />
+            Thông tin nhóm
+          </SidebarItem>
+        </Link>
+      </>
+      }
     </Grid>
   )
 }

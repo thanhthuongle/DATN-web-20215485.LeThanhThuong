@@ -1,14 +1,9 @@
 import * as React from 'react'
-import { styled, alpha } from '@mui/material/styles'
 import Button from '@mui/material/Button'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import EditIcon from '@mui/icons-material/Edit'
-import Divider from '@mui/material/Divider'
-import ArchiveIcon from '@mui/icons-material/Archive'
-import FileCopyIcon from '@mui/icons-material/FileCopy'
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 function Workspaces() {
   const [anchorEl, setAnchorEl] = React.useState(null)
@@ -16,10 +11,24 @@ function Workspaces() {
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
   }
-  const handleClose = () => {
+
+  const location = useLocation()
+  const navigate = useNavigate()
+  const workspaceOptions = [
+    { value: 'TCCN', label: 'Tài chính cá nhân', target: '/' },
+    { value: 'TCGD', label: 'Tài chính gia đình', target: '/groups' }
+  ]
+  const workspaceLable =
+  location.pathname.startsWith('/groups')
+    ? workspaceOptions[1].label
+    : workspaceOptions[0].label
+
+  const handleClose = (event) => {
+    // console.log('🚀 ~ handleClose ~ event:', event.currentTarget.getAttribute('value'))
+    const a = (event.currentTarget.getAttribute('value') === 'TCCN') ? 'Tài chính cá nhân' : 'Tài chính gia đình'
+    if (a != workspaceLable) navigate(event.currentTarget.getAttribute('target'))
     setAnchorEl(null)
   }
-
   return (
     <div>
       <Button
@@ -33,7 +42,7 @@ function Workspaces() {
         variant="outlined"
         endIcon={<KeyboardArrowDownIcon />}
       >
-        Options
+        {workspaceLable}
       </Button>
       <Menu
         id="grouped-menu"
@@ -44,8 +53,15 @@ function Workspaces() {
           'aria-labelledby': 'basic-button'
         }}
       >
-        <MenuItem onClick={handleClose}>Tài chính cá nhân</MenuItem>
-        <MenuItem onClick={handleClose}>Tài chính gia đình</MenuItem>
+        {workspaceOptions.map((option) => (
+          <MenuItem
+            key={option.value}
+            value={option.value}
+            target={option.target}
+            selected={workspaceLable === option.label}
+            onClick={handleClose}
+          >{option.label}</MenuItem>
+        ))}
       </Menu>
     </div>
   )
