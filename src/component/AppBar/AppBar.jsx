@@ -6,7 +6,7 @@ import Notifications from './Notifications/Notifications'
 import ModeSelect from '~/component/ModeSelect/ModeSelect'
 import Profile from './Menus/Profile'
 
-function AppBar() {
+function AppBar(props) {
   return (
     <Box
       px={2}
@@ -18,7 +18,11 @@ function AppBar() {
         justifyContent: 'space-between',
         gap: 2,
         overflowX: 'auto',
-        backgroundColor:(theme) => (theme.palette.mode === 'dark' ? '#114528' : '#2bae66'), // tài chính gia đình:light: #2bae66- dark: #114528, tài chính cá nhân: light: #1565c0 - dark: #08284C
+        backgroundColor:(theme) => (
+          (props?.workspace === 'TCGD')
+            ? theme.palette.mode === 'dark' ? '#114528' : '#2bae66'
+            : theme.palette.mode === 'dark' ? '#1565c0' : '#08284C'
+        ), // tài chính gia đình:light: #2bae66- dark: #114528, tài chính cá nhân: light: #1565c0 - dark: #08284C
         '&::-webkit-scrollbar-track': { m: 2 }
       }}
     >

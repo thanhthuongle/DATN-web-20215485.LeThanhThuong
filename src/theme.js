@@ -1,6 +1,4 @@
-
 import { createTheme } from '@mui/material/styles'
-import { red } from '@mui/material/colors'
 
 const APP_BAR_HEIGHT = '58px'
 const BOARD_BAR_HEIGHT = '60px'

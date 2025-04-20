@@ -1,9 +1,12 @@
-import Homepage from './pages/Homepage'
+import { lazy } from 'react'
+
+const DefaultLayout = lazy(() => import('~/layout/DefaultLayout'))
 
 function App() {
-
   return (
-    <Homepage />
+    <>
+      {/* <DefaultLayout /> */}
+    </>
   )
 }
 
