@@ -7,9 +7,9 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import Tooltip from '@mui/material/Tooltip'
 import Avatar from '@mui/material/Avatar'
 import IconButton from '@mui/material/IconButton'
-import PersonAdd from '@mui/icons-material/PersonAdd'
 import Settings from '@mui/icons-material/Settings'
 import Logout from '@mui/icons-material/Logout'
+import { Link } from 'react-router-dom'
 
 
 function Profile() {
@@ -49,19 +49,23 @@ function Profile() {
           'aria-labelledby': 'basic-button-starred'
         }}
       >
-        <MenuItem
-          onClick={handleClose}
-          sx={{ '&:hover': { color: 'success.light' } }}
-        >
-          <Avatar sx={{ width: 32, height: 32, ml: -0.5, mr: 1 }} /> Profile
-        </MenuItem>
+        <Link to='/settings/account' style={{ textDecoration: 'none', color: 'inherit' }}>
+          <MenuItem
+            onClick={handleClose}
+            sx={{ '&:hover': { color: 'success.light' } }}
+          >
+            <Avatar sx={{ width: 32, height: 32, ml: -0.5, mr: 1 }} /> Profile
+          </MenuItem>
+        </Link>
         <Divider />
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          Settings
-        </MenuItem>
+        <Link to='/settings/setting' style={{ textDecoration: 'none', color: 'inherit' }}>
+          <MenuItem onClick={handleClose}>
+            <ListItemIcon>
+              <Settings fontSize="small" />
+            </ListItemIcon>
+            Settings
+          </MenuItem>
+        </Link>
         <MenuItem onClick={handleClose} sx={{
           '&:hover': {
             color: 'warning.dark',

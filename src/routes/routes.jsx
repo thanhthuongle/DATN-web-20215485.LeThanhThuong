@@ -19,6 +19,7 @@ const TransactionHistory = lazy(() => import('~/pages/TransactionHistory/Transac
 const GroupLists = lazy(() => import('~/pages/GroupLists/GroupLists'))
 const Auth = lazy(() => import('~/pages/Auth/Auth'))
 const NotFound = lazy(() => import('~/pages/404/NotFound'))
+const Settings = lazy(() => import('~/pages/Settings/Settings'))
 
 const routes = createBrowserRouter([
   {
@@ -68,6 +69,16 @@ const routes = createBrowserRouter([
               { path: 'group-info', Component: GroupInfo }
             ]
           }
+        ]
+      },
+      {
+        path:'/settings',
+        element: <Settinglayout workspace={'TCCN'} />,
+        children: [
+          { index: true, element: <Navigate to='account' replace={true} /> },
+          { path: 'account', Component: Settings },
+          { path: 'security', Component: Settings },
+          { path: 'setting', Component: Settings }
         ]
       }
     ]

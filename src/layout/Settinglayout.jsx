@@ -8,11 +8,7 @@ function Settinglayout(props) {
   return (
     <Container disableGutters maxWidth={false}>
       <AppBar workspace={props.workspace}/>
-      <Box sx={{ paddingX: 2, my: 4 }}>
-        <Grid container spacing={2}>
-          <Outlet />
-        </Grid>
-      </Box>
+      <Outlet />
     </Container>
   )
 }
