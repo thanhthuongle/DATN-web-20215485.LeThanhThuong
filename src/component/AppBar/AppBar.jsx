@@ -21,7 +21,7 @@ function AppBar(props) {
         backgroundColor:(theme) => (
           (props?.workspace === 'TCGD')
             ? theme.palette.mode === 'dark' ? '#114528' : '#2bae66'
-            : theme.palette.mode === 'dark' ? '#1565c0' : '#08284C'
+            : theme.palette.mode === 'dark' ? '#08284C' : '#1565c0'
         ), // tài chính gia đình:light: #2bae66- dark: #114528, tài chính cá nhân: light: #1565c0 - dark: #08284C
         '&::-webkit-scrollbar-track': { m: 2 }
       }}
