@@ -12,6 +12,10 @@ import { ConfirmProvider } from 'material-ui-confirm'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
+// Cấu hình DateTimePicker
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ThemeProvider theme={theme} noSsr defaultMode="light">
@@ -24,10 +28,12 @@ createRoot(document.getElementById('root')).render(
           buttonOrder: ['confirm', 'cancel']
         }}
       >
-        <RouterProvider router={routes} />
-        <CssBaseline />
-        <App />
-        <ToastContainer position="bottom-left" theme="colored" />
+        <LocalizationProvider dateAdapter={AdapterMoment}>
+          <RouterProvider router={routes} />
+          <CssBaseline />
+          <App />
+          <ToastContainer position="bottom-left" theme="colored" />
+        </LocalizationProvider>
       </ConfirmProvider>
     </ThemeProvider>
   </StrictMode>

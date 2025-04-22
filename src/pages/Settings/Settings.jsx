@@ -10,7 +10,7 @@ import SettingsIcon from '@mui/icons-material/Settings'
 import { Link, useLocation } from 'react-router-dom'
 import AccountTab from './AccountTab'
 import SecurityTab from './SecurityTab'
-import SettingTab from './SettingTab'
+import SettingTab from './SettingTab/SettingTab'
 
 const TABS = {
   ACCOUNT: 'account',

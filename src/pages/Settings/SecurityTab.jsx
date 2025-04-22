@@ -69,9 +69,18 @@ function SecurityTab() {
           <Typography variant="h5">Security Dashboard</Typography>
         </Box>
         <form onSubmit={handleSubmit(submitChangePassword)}>
-          <Box sx={{ width: '400px', display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Box sx={{
+            width: '400px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            '@media (max-width: 600px)': {
+              width: '100%'
+            }
+          }}>
             <Box>
               <TextField
+                autoComplete="true"
                 fullWidth
                 label="Current Password"
                 type={showPasswords.old ? 'text' : 'password'}
@@ -107,6 +116,7 @@ function SecurityTab() {
 
             <Box>
               <TextField
+                autoComplete="true"
                 fullWidth
                 label="New Password"
                 type={showPasswords.new ? 'text' : 'password'}
@@ -142,6 +152,7 @@ function SecurityTab() {
 
             <Box>
               <TextField
+                autoComplete="true"
                 fullWidth
                 label="New Password Confirmation"
                 type={showPasswords.confirm ? 'text' : 'password'}

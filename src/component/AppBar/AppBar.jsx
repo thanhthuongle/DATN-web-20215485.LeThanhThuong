@@ -5,6 +5,7 @@ import Workspaces from './Menus/Workspaces'
 import Notifications from './Notifications/Notifications'
 import ModeSelect from '~/component/ModeSelect/ModeSelect'
 import Profile from './Menus/Profile'
+import { Link } from 'react-router-dom'
 
 function AppBar(props) {
   return (
@@ -26,16 +27,16 @@ function AppBar(props) {
         '&::-webkit-scrollbar-track': { m: 2 }
       }}
     >
-      <Box>
+      <Link to='/overview' style={{ textDecoration: 'none' }}>
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <MonetizationOnIcon sx={{ color: 'white' }}/>
             <Typography variant='span' sx={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'white' }} > QLTC </Typography>
           </Box>
         </Box>
-      </Box>
+      </Link>
 
-      <Workspaces />
+      {(props?.workspace != 'SETTING') && <Workspaces />}
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <Notifications />
