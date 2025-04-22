@@ -1,5 +1,5 @@
 import { lazy } from 'react'
-import { createBrowserRouter, Navigate, replace } from 'react-router-dom'
+import { createBrowserRouter, Navigate } from 'react-router-dom'
 import ProtectedRoute from './ProtectedRoute'
 import GroupProtectedRoute from './GroupProtectedRoute'
 
@@ -73,7 +73,7 @@ const routes = createBrowserRouter([
       },
       {
         path:'/settings',
-        element: <Settinglayout workspace={'TCCN'} />,
+        element: <Settinglayout workspace={'SETTING'} />,
         children: [
           { index: true, element: <Navigate to='account' replace={true} /> },
           { path: 'account', Component: Settings },
