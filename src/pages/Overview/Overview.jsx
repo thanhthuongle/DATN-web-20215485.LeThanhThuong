@@ -5,16 +5,16 @@ import TransactionSummary from './TransactionSummary'
 import SpendingAnalysis from './SpendingAnalysis'
 import DebtTracking from './DebtTracking'
 import RecentTransactions from './RecentTransactions'
-import { styled, Button } from '@mui/material'
+import { styled } from '@mui/material'
 
 export const StyledBox = styled(Box)(({ theme }) => ({
   borderWidth: '1px',
   borderRadius: '8px',
   borderStyle: 'solid',
-  paddingLeft: '8px', // default (xs)
-  paddingRight: '8px', // default (xs)
-  paddingTop: '4px', // default (xs)
-  paddingBottom: '4px', // default (xs)
+  padding: '8px', // default (xs)
+  // paddingRight: '8px', // default (xs)
+  // paddingTop: '8px', // default (xs)
+  // paddingBottom: '8px', // default (xs)
   [theme.breakpoints.up('sm')]: {
     padding: '16px'
   },
@@ -35,7 +35,7 @@ function Overview() {
       justifyContent: 'center'
     }}>
       <Box sx={{
-        maxWidth: '1200px',
+        maxWidth: '1400px',
         width: '100%',
         display: 'flex',
         flexDirection: 'column',

@@ -7,10 +7,16 @@ import { Outlet } from 'react-router-dom'
 function GroupLayout(props) {
   return (
     <Container disableGutters maxWidth={false}>
-      <AppBar workspace={props.workspace}/>
+      <Box sx={{ position: 'sticky', top: 0, zIndex: 1000 }}>
+        <AppBar workspace={props.workspace}/>
+      </Box>
       <Box sx={{ paddingX: 2, my: 4 }}>
         <Grid container spacing={2}>
-          <GroupSideBar />
+          <Grid size={{ xs: 12, sm: 2.5 }}>
+            <Box sx={{ position: 'sticky', top: 90 }} width='100%'>
+              <GroupSideBar />
+            </Box>
+          </Grid>
 
           <Grid size={{ xs: 12, sm: 9.5 }}>
             <Outlet />

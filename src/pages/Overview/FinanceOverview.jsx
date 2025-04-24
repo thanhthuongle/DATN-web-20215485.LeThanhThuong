@@ -10,17 +10,11 @@ import LibraryAddIcon from '@mui/icons-material/LibraryAdd'
 import Grid from '@mui/material/Grid'
 import { Link, useLocation } from 'react-router-dom'
 import { StyledBox } from './Overview'
+import { replaceLastSegment } from '~/utils/pathUtils'
 
 function FinanceOverview({ totalAmount, availableAmount }) {
   const [visibility, SetVisibility] = useState(true)
   const location = useLocation()
-
-  const replaceLastSegment = (newLastSegment) => {
-    const pathSegments = location.pathname.split('/')
-    pathSegments[pathSegments.length - 1] = newLastSegment
-    const newPath = pathSegments.join('/')
-    return newPath
-  }
 
   return (
     <Grid container spacing={2} width='100%' justifyContent="space-between">
@@ -94,7 +88,7 @@ function FinanceOverview({ totalAmount, availableAmount }) {
       <Box>
         <Button
           component={Link}
-          to={replaceLastSegment('new-transaction')}
+          to={replaceLastSegment(location?.pathname, 'new-transaction')}
           variant="outlined"
           startIcon={<LibraryAddIcon />}
           sx={{ paddingY: '12px' }}
