@@ -57,46 +57,44 @@ function SideBar() {
   }
 
   return (
-    <Grid size={{ xs: 12, sm: 2.5 }}>
-      <Stack direction="column" spacing={1}>
-        <Link to='/overview' style={{ textDecoration: 'none', color: 'inherit' }}>
-          <SidebarItem className={isActive('/overview') ? 'active' : ''}>
-            <SpaceDashboardIcon fontSize="small" />
-            Tổng quan
-          </SidebarItem>
-        </Link>
-        <Link to='/money-sources' style={{ textDecoration: 'none', color: 'inherit' }}>
-          <SidebarItem className={isActive('/money-sources') ? 'active' : ''}>
-            <AccountBalanceWalletIcon fontSize="small" />
-            Nguồn tiền
-          </SidebarItem>
-        </Link>
-        <Link to='/budgets' style={{ textDecoration: 'none', color: 'inherit' }}>
-          <SidebarItem className={isActive('/budgets') ? 'active' : ''}>
-            <FileCopyIcon fontSize="small" />
-            Ngân sách
-          </SidebarItem>
-        </Link>
-        <Link to='/loans-debts' style={{ textDecoration: 'none', color: 'inherit' }}>
-          <SidebarItem className={isActive('/loans-debts') ? 'active' : ''}>
-            <SvgIcon fontSize='small'>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24">
-                <path fill="currentColor" d="M8 11a4 4 0 1 0 0-8a4 4 0 0 0 0 8m9 0a3 3 0 1 0 0-6a3 3 0 0 0 0 6M4.25 13A2.25 2.25 0 0 0 2 15.25v.25S2 20 8 20c1.238 0 2.22-.192 3-.495V15.5c0-1.064.665-1.972 1.601-2.334A2.2 2.2 0 0 0 11.75 13zM12 15.5a1.5 1.5 0 0 1 1.5-1.5h8a1.5 1.5 0 0 1 1.5 1.5v4a1.5 1.5 0 0 1-1.5 1.5h-8a1.5 1.5 0 0 1-1.5-1.5zm1 .5v1a2 2 0 0 0 2-2h-1a1 1 0 0 1-1 1m9 1v-1a1 1 0 0 1-1-1h-1a2 2 0 0 0 2 2m-2 3h1a1 1 0 0 1 1-1v-1a2 2 0 0 0-2 2m-7-2v1a1 1 0 0 1 1 1h1a2 2 0 0 0-2-2m4.5 1.25a1.75 1.75 0 1 0 0-3.5a1.75 1.75 0 0 0 0 3.5"
-                />
-              </svg>
-            </SvgIcon>
-            Theo dõi vay nợ
-          </SidebarItem>
-        </Link>
-        <Link to='/transaction-history' style={{ textDecoration: 'none', color: 'inherit' }}>
-          <SidebarItem className={isActive('/transaction-history') ? 'active' : ''}>
-            <HistoryIcon fontSize="small" />
-            Lịch sử giao dịch
-          </SidebarItem>
-        </Link>
-      </Stack>
+    <Stack direction="column" spacing={1}>
+      <Link to='/overview' style={{ textDecoration: 'none', color: 'inherit' }}>
+        <SidebarItem className={isActive('/overview') ? 'active' : ''}>
+          <SpaceDashboardIcon fontSize="small" />
+          Tổng quan
+        </SidebarItem>
+      </Link>
+      <Link to='/money-sources' style={{ textDecoration: 'none', color: 'inherit' }}>
+        <SidebarItem className={isActive('/money-sources') ? 'active' : ''}>
+          <AccountBalanceWalletIcon fontSize="small" />
+          Nguồn tiền
+        </SidebarItem>
+      </Link>
+      <Link to='/budgets' style={{ textDecoration: 'none', color: 'inherit' }}>
+        <SidebarItem className={isActive('/budgets') ? 'active' : ''}>
+          <FileCopyIcon fontSize="small" />
+          Ngân sách
+        </SidebarItem>
+      </Link>
+      <Link to='/loans-debts' style={{ textDecoration: 'none', color: 'inherit' }}>
+        <SidebarItem className={isActive('/loans-debts') ? 'active' : ''}>
+          <SvgIcon fontSize='small'>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24">
+              <path fill="currentColor" d="M8 11a4 4 0 1 0 0-8a4 4 0 0 0 0 8m9 0a3 3 0 1 0 0-6a3 3 0 0 0 0 6M4.25 13A2.25 2.25 0 0 0 2 15.25v.25S2 20 8 20c1.238 0 2.22-.192 3-.495V15.5c0-1.064.665-1.972 1.601-2.334A2.2 2.2 0 0 0 11.75 13zM12 15.5a1.5 1.5 0 0 1 1.5-1.5h8a1.5 1.5 0 0 1 1.5 1.5v4a1.5 1.5 0 0 1-1.5 1.5h-8a1.5 1.5 0 0 1-1.5-1.5zm1 .5v1a2 2 0 0 0 2-2h-1a1 1 0 0 1-1 1m9 1v-1a1 1 0 0 1-1-1h-1a2 2 0 0 0 2 2m-2 3h1a1 1 0 0 1 1-1v-1a2 2 0 0 0-2 2m-7-2v1a1 1 0 0 1 1 1h1a2 2 0 0 0-2-2m4.5 1.25a1.75 1.75 0 1 0 0-3.5a1.75 1.75 0 0 0 0 3.5"
+              />
+            </svg>
+          </SvgIcon>
+          Theo dõi vay nợ
+        </SidebarItem>
+      </Link>
+      <Link to='/transaction-history' style={{ textDecoration: 'none', color: 'inherit' }}>
+        <SidebarItem className={isActive('/transaction-history') ? 'active' : ''}>
+          <HistoryIcon fontSize="small" />
+          Lịch sử giao dịch
+        </SidebarItem>
+      </Link>
       <>
         <Divider sx={{ my: 1 }} />
         <Link to='/new-transaction' style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -106,7 +104,7 @@ function SideBar() {
           </SidebarItem>
         </Link>
       </>
-    </Grid>
+    </Stack>
   )
 }
 

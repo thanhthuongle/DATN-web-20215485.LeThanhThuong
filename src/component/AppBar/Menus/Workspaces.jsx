@@ -33,7 +33,11 @@ function Workspaces() {
     <div>
       <Button
         color='white'
-        sx={{ borderRadius: '8px', color: 'white' }}
+        sx={{
+          borderRadius: '8px',
+          color: 'white',
+          minWidth: '195px'
+        }}
         id="basic-button"
         aria-controls={open ? 'grouped-menu' : undefined}
         aria-haspopup="true"

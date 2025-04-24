@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Stack, styled, Typography } from '@mui/material'
+import { Box, Grid, Stack, Typography } from '@mui/material'
 import React from 'react'
 import { StyledBox } from './Overview'
 import BarChart from '~/component/Chart/BarChart'
@@ -20,12 +20,6 @@ const colorLists = [
 ]
 
 function TransactionSummary() {
-  const [age, setAge] = React.useState('')
-
-  const handleChange = (event) => {
-    setAge(event.target.value)
-  }
-
   let income = 10
   let expense = 7
 
@@ -53,15 +47,14 @@ function TransactionSummary() {
             <Select
               labelId="demo-simple-select-standard-label"
               id="demo-simple-select-standard"
-              value={age}
-              onChange={handleChange}
               label="Age"
+              defaultValue='30'
             >
-              <MenuItem value={10}>Hôm nay</MenuItem>
-              <MenuItem value={20}>Tuần này</MenuItem>
-              <MenuItem value="">Tháng này</MenuItem>
-              <MenuItem value={30}>Quý này</MenuItem>
-              <MenuItem value={30}>Năm này</MenuItem>
+              <MenuItem value='10'>Hôm nay</MenuItem>
+              <MenuItem value='20'>Tuần này</MenuItem>
+              <MenuItem value='30'>Tháng này</MenuItem>
+              <MenuItem value='40'>Quý này</MenuItem>
+              <MenuItem value='50'>Năm này</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -127,7 +120,7 @@ function TransactionSummary() {
                   decimalSeparator=","
                   allowNegative={false}
                   suffix=" ₫"
-                  value={income+expense}
+                  value={income-expense}
                 />
               </Box>
             </Box>
