@@ -65,25 +65,25 @@ function SideBar() {
   return (
     <Stack direction="column" spacing={1}>
       <Link to={`${base}/overview`} style={{ textDecoration: 'none', color: 'inherit' }}>
-        <SidebarItem className={isActive('/overview') ? 'active' : ''}>
+        <SidebarItem className={isActive(`${base}/overview`) ? 'active' : ''}>
           <SpaceDashboardIcon fontSize="small" />
           Tổng quan
         </SidebarItem>
       </Link>
       <Link to={`${base}/money-sources`} style={{ textDecoration: 'none', color: 'inherit' }}>
-        <SidebarItem className={isActive('/money-sources') ? 'active' : ''}>
+        <SidebarItem className={isActive(`${base}/money-sources`) ? 'active' : ''}>
           <AccountBalanceWalletIcon fontSize="small" />
           Nguồn tiền
         </SidebarItem>
       </Link>
       <Link to={`${base}/budgets`} style={{ textDecoration: 'none', color: 'inherit' }}>
-        <SidebarItem className={isActive('/budgets') ? 'active' : ''}>
+        <SidebarItem className={isActive(`${base}/budgets`) ? 'active' : ''}>
           <FileCopyIcon fontSize="small" />
           Ngân sách
         </SidebarItem>
       </Link>
       <Link to={`${base}/loans-debts`} style={{ textDecoration: 'none', color: 'inherit' }}>
-        <SidebarItem className={isActive('/loans-debts') ? 'active' : ''}>
+        <SidebarItem className={isActive(`${base}/loans-debts`) ? 'active' : ''}>
           <SvgIcon fontSize='small'>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -97,7 +97,7 @@ function SideBar() {
       </Link>
       {(isMember && !isManager) &&
         <Link to={`${base}/spending-proposals`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          <SidebarItem className={isActive('/spending-proposals') ? 'active' : ''}>
+          <SidebarItem className={isActive(`${base}/spending-proposals`) ? 'active' : ''}>
             <SvgIcon fontSize='small'>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -115,14 +115,14 @@ function SideBar() {
       }
       {(isManager) &&
         <Link to={`${base}/contribution-request`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          <SidebarItem className={isActive('/contribution-request') ? 'active' : ''}>
+          <SidebarItem className={isActive(`${base}/contribution-request`) ? 'active' : ''}>
             <RequestQuoteIcon fontSize="small" />
             Yêu cầu đóng góp
           </SidebarItem>
         </Link>
       }
       <Link to={`${base}/transaction-history`} style={{ textDecoration: 'none', color: 'inherit' }}>
-        <SidebarItem className={isActive('/transaction-history') ? 'active' : ''}>
+        <SidebarItem className={isActive(`${base}/transaction-history`) ? 'active' : ''}>
           <HistoryIcon fontSize="small" />
           Lịch sử giao dịch
         </SidebarItem>
@@ -131,7 +131,7 @@ function SideBar() {
       <>
         <Divider sx={{ my: 1 }} />
         <Link to={`${base}/new-transaction`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          <SidebarItem className={isActive('/new-transaction') ? 'active' : ''}>
+          <SidebarItem className={isActive(`${base}/new-transaction`) ? 'active' : ''}>
             <LibraryAddIcon fontSize="small" />
             Tạo giao dịch
           </SidebarItem>
@@ -142,7 +142,7 @@ function SideBar() {
       <>
         <Divider sx={{ my: 1 }} />
         <Link to={`${base}/group-info`} style={{ textDecoration: 'none', color: 'inherit' }}>
-          <SidebarItem className={isActive('/group-info') ? 'active' : ''}>
+          <SidebarItem className={isActive(`${base}/group-info`) ? 'active' : ''}>
             <InfoIcon fontSize="small" />
             Thông tin nhóm
           </SidebarItem>
