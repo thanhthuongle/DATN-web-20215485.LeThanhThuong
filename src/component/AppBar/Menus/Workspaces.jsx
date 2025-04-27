@@ -4,6 +4,7 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { useLocation, useNavigate } from 'react-router-dom'
+import Box from '@mui/material/Box'
 
 function Workspaces() {
   const [anchorEl, setAnchorEl] = React.useState(null)
@@ -22,6 +23,7 @@ function Workspaces() {
   location.pathname.startsWith('/groups')
     ? workspaceOptions[1].label
     : workspaceOptions[0].label
+  //TODO: khi path bắt đầu với'/groups/:groupId' thì cần check familyName để hiển thị tên lên label
 
   const handleClose = (event) => {
     // console.log('🚀 ~ handleClose ~ event:', event.currentTarget.getAttribute('value'))
@@ -30,7 +32,7 @@ function Workspaces() {
     setAnchorEl(null)
   }
   return (
-    <div>
+    <Box>
       <Button
         color='white'
         sx={{
@@ -67,7 +69,7 @@ function Workspaces() {
           >{option.label}</MenuItem>
         ))}
       </Menu>
-    </div>
+    </Box>
   )
 }
 

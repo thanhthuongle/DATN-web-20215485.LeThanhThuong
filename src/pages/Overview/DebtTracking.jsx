@@ -77,7 +77,7 @@ function DebtTracking() {
                 thousandSeparator="."
                 decimalSeparator=","
                 allowNegative={false}
-                suffix=" ₫"
+                suffix="&nbsp;₫"
                 value={1234567}
                 style={{ width: '50%', display: 'flex', justifyContent: 'center' }}
               />
@@ -144,7 +144,7 @@ function DebtTracking() {
                 thousandSeparator="."
                 decimalSeparator=","
                 allowNegative={false}
-                suffix=" ₫"
+                suffix="&nbsp;₫"
                 value={1234567}
                 style={{ width: '50%', display: 'flex', justifyContent: 'center' }}
               />

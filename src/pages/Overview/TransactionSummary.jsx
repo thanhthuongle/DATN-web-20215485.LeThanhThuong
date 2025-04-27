@@ -86,7 +86,7 @@ function TransactionSummary() {
                 thousandSeparator="."
                 decimalSeparator=","
                 allowNegative={false}
-                suffix=" ₫"
+                suffix="&nbsp;₫"
                 value={income}
               />
             </Box>
@@ -107,7 +107,7 @@ function TransactionSummary() {
                 thousandSeparator="."
                 decimalSeparator=","
                 allowNegative={false}
-                suffix=" ₫"
+                suffix="&nbsp;₫"
                 value={expense}
               />
             </Box>
@@ -119,7 +119,7 @@ function TransactionSummary() {
                   thousandSeparator="."
                   decimalSeparator=","
                   allowNegative={false}
-                  suffix=" ₫"
+                  suffix="&nbsp;₫"
                   value={income-expense}
                 />
               </Box>
