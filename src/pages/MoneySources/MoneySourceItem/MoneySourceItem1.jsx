@@ -2,10 +2,11 @@ import React from 'react'
 import Box from '@mui/material/Box'
 import Avatar from '@mui/material/Avatar'
 import RestaurantIcon from '@mui/icons-material/Restaurant'
-import { Typography } from '@mui/material'
+import Typography from '@mui/material/Typography'
 import { NumericFormat } from 'react-number-format'
+import Chip from '@mui/material/Chip'
 
-function FinanceItem1({ title, description, logo, logoSize=40, amount, amountDesc, amountColor, sx }) {// TODO: Hoàn thiện logo khi hoàn thiện danh sách danh mục thu chi
+function MoneySourceItem1({ title, description, logo, logoSize='40px', amount, amountColor='text.primary', amountDesc, interestRate, sx, menuComponent }) {
   return (
     <Box
       display='flex'
@@ -19,11 +20,11 @@ function FinanceItem1({ title, description, logo, logoSize=40, amount, amountDes
         display='flex'
         alignItems='center'
         gap={1}
-        width='60%'
+        flex={1}
       >
         <Avatar
           alt="Logo"
-          src=""
+          src={logo}
           sx={{
             bgcolor: 'yellow',
             width: logoSize,
@@ -31,20 +32,16 @@ function FinanceItem1({ title, description, logo, logoSize=40, amount, amountDes
             flexShrink: 0
           }}
         >
-          <RestaurantIcon />
+          <RestaurantIcon /> {/* TODO: hoàn thiện logo mặc định */}
         </ Avatar>
 
-        <Box sx={{ minWidth: 0 }}>
+        <Box sx={{ minWidth: 0, flex: 1, marginRight: 2 }}>
           {title &&
           <Typography
-            noWrap
-            sx={{
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap'
-            }}
+            component={'div'}
           >
             {title}
+            {interestRate && <Chip variant="outlined" color="info" size="small" sx={{ height: 1, marginLeft: '4px' }} label={interestRate} />}
           </Typography>
           }
           {description && <Typography variant='body2' sx={{ opacity: 0.6 }}>{description}</Typography>}
@@ -55,7 +52,7 @@ function FinanceItem1({ title, description, logo, logoSize=40, amount, amountDes
         display='flex'
         flexDirection='column'
         alignItems='end'
-        width='40%'
+        maxWidth='40%'
       >
         {amount &&
         <NumericFormat
@@ -81,8 +78,10 @@ function FinanceItem1({ title, description, logo, logoSize=40, amount, amountDes
             }}
           >{amountDesc}</Typography>}
       </Box>
-    </Box>
+
+      {menuComponent}
+    </ Box>
   )
 }
 
-export default FinanceItem1
+export default MoneySourceItem1

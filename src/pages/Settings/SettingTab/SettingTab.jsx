@@ -206,7 +206,7 @@ function SettingTab() {
                   decimalSeparator=","
                   allowNegative={false}
                   // isNumericString
-                  suffix=" ₫"
+                  suffix="&nbsp;₫"
                   fullWidth
                   defaultValue={0}
                 />

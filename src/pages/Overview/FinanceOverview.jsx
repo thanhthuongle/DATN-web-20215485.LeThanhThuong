@@ -52,7 +52,7 @@ function FinanceOverview({ totalAmount, availableAmount }) {
                 decimalSeparator=","
                 allowNegative={false}
                 prefix=': '
-                suffix=" ₫"
+                suffix="&nbsp;₫"
                 value={totalAmount}
                 renderText={(value) => (visibility ? `${value}` : <Box display="flex" alignItems="center">: &#42;&#42;&#42;&#42;&#42;&#42;</Box>)}
               />
@@ -65,7 +65,7 @@ function FinanceOverview({ totalAmount, availableAmount }) {
                 decimalSeparator=","
                 allowNegative={false}
                 prefix=': '
-                suffix=" ₫"
+                suffix="&nbsp;₫"
                 value={availableAmount}
                 renderText={(value) => (visibility ? `${value}` : <Box display="flex" alignItems="center">: &#42;&#42;&#42;&#42;&#42;&#42;</Box>)}
               />
