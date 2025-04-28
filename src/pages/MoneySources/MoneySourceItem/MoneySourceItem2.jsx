@@ -91,7 +91,7 @@ function MoneySourceItem2({ title, logo, logoSize='40px', targetAmount, accumula
           />}
         </Box>
 
-        <Box color={'#27AE60'} marginBottom={0.25}>
+        <Box marginBottom={0.25}>
           <BorderLinearProgress variant="determinate" value={accumulatedAmount/targetAmount*100} />
         </Box>
 

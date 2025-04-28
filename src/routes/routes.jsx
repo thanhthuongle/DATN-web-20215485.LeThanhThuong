@@ -21,6 +21,25 @@ const Auth = lazy(() => import('~/pages/Auth/Auth'))
 const NotFound = lazy(() => import('~/pages/404/NotFound'))
 const Settings = lazy(() => import('~/pages/Settings/Settings'))
 
+// import DefaultLayout from '~/layout/DefaultLayout'
+// import GroupLayout from '~/layout/GroupLayout'
+// import Settinglayout from '~/layout/Settinglayout'
+
+// import Budgets from '~/pages/Budgets/Budgets'
+// import ContributionRequest from '~/pages/ContributionRequest/ContributionRequest'
+// import GroupInfo from '~/pages/GroupInfo/GroupInfo'
+// import LoansAndDebts from '~/pages/LoansAndDebts/LoansAndDebts'
+// import MoneySources from '~/pages/MoneySources/MoneySources'
+// import NewTransaction from '~/pages/NewTransaction/NewTransaction'
+// import Overview from '~/pages/Overview/Overview'
+// import SpendingProposals from '~/pages/SpendingProposals/SpendingProposals'
+// import TransactionHistory from '~/pages/TransactionHistory/TransactionHistory'
+// import GroupLists from '~/pages/GroupLists/GroupLists'
+// import Auth from '~/pages/Auth/Auth'
+// import NotFound from '~/pages/404/NotFound'
+// import Settings from '~/pages/Settings/Settings'
+
+
 const routes = createBrowserRouter([
   {
     path: '/',
