@@ -13,8 +13,13 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 // Cấu hình DateTimePicker
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
+
+// Cấu hình moment với mẫu của tiếng Việt
+import moment from 'moment'
+import 'moment/dist/locale/vi'
+moment.locale('vi')
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

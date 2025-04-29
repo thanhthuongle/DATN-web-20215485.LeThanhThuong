@@ -19,7 +19,7 @@ function FinanceItem1({ title, description, logo, logoSize=40, amount, amountDes
         display='flex'
         alignItems='center'
         gap={1}
-        width='60%'
+        flex={1}
       >
         <Avatar
           alt="Logo"
@@ -37,17 +37,31 @@ function FinanceItem1({ title, description, logo, logoSize=40, amount, amountDes
         <Box sx={{ minWidth: 0 }}>
           {title &&
           <Typography
-            noWrap
             sx={{
+              display: '-webkit-box',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap'
+              textOverflow: 'ellipsis'
             }}
           >
             {title}
           </Typography>
           }
-          {description && <Typography variant='body2' sx={{ opacity: 0.6 }}>{description}</Typography>}
+          {description &&
+            <Typography
+              variant='body2'
+              sx={{
+                opacity: 0.6,
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}
+            >{description}
+            </Typography>
+          }
         </Box>
       </Box>
 
@@ -55,7 +69,7 @@ function FinanceItem1({ title, description, logo, logoSize=40, amount, amountDes
         display='flex'
         flexDirection='column'
         alignItems='end'
-        width='40%'
+        maxWidth={'70%'}
       >
         {amount &&
         <NumericFormat
