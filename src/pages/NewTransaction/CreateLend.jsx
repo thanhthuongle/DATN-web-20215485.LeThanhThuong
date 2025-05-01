@@ -83,8 +83,7 @@ function CreateLend() {
       {/* Ngày thu nợ */}
       <Box display={'flex'} alignItems={'center'}>
         <Typography sx={{ width: '100px', flexShrink: 0 }}>Ngày thu nợ</Typography>
-        <DateTimePicker disabled ampm={false} timeSteps={{ hours: 1, minutes: 1 }} minDateTime={time} value={collectTime} onChange={(newCollectTime) => setCollectTime(newCollectTime)} sx={{ minWidth: 300 }} />
-        <Typography>(Phát triển sau)</Typography>
+        <DateTimePicker ampm={false} timeSteps={{ hours: 1, minutes: 1 }} minDateTime={time} value={collectTime} onChange={(newCollectTime) => setCollectTime(newCollectTime)} sx={{ minWidth: 300 }} />
       </Box>
 
       {/* Nguồn tiền */}
