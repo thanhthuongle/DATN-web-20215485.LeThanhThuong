@@ -1,5 +1,7 @@
-import { Box, Button, Typography } from '@mui/material'
 import React, { useState } from 'react'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
 import { NumericFormat } from 'react-number-format'
 import TextField from '@mui/material/TextField'
 import CategorySelector from './CategorySelector'
@@ -25,8 +27,6 @@ function CreateExpense() {
   const handleChange = (event) => {
     setWallet(event.target.value)
   }
-
-  console.log('🚀 ~ CreateExpense ~ time:', time)
 
   return (
     <Box display={'flex'} flexDirection={'column'} gap={2} marginTop={2}>
