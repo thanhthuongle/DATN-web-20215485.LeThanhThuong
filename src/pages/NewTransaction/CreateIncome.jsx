@@ -23,7 +23,7 @@ const wallets = Array.from({ length: 5 }, (_, i) => ({
 
 function CreateIncome() {
   const [time, setTime] = React.useState(moment())
-  const [wallet, setWallet] = useState(null)
+  const [wallet, setWallet] = useState(wallets?.[0]?.walletId ?? '')
   const handleChange = (event) => {
     setWallet(event.target.value)
   }
@@ -80,8 +80,8 @@ function CreateIncome() {
               id="wallet-select"
               value={wallet}
               onChange={handleChange}
-              renderValue={(selected) => {
-                const selectedWallet = wallets.find(w => w.walletName === selected)
+              renderValue={(wallet) => {
+                const selectedWallet = wallets.find(w => w.walletId === wallet)
                 return (
                   <Box display="flex" alignItems="center" gap={1}>
                     <Avatar
@@ -104,7 +104,7 @@ function CreateIncome() {
               }}
             >
               {wallets?.map((w, index) => (
-                <MenuItem value={w.walletName} key={index}>
+                <MenuItem value={w.walletId} key={index}>
                   <FinanceItem1
                     title={w.walletName}
                     amount={w.amount}
