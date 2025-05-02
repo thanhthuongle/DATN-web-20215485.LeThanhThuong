@@ -5,6 +5,7 @@ const GroupProtectedRoute = () => {
   console.log('🚀 ~ GroupProtectedRoute ~ groupId:', groupId)
   // const currentUser = useSelector(selectCurrentUser)
   const currentUser = {
+    userId: '123',
     name: 'sghb',
     groups: ['12356557', '12345678']
   }
