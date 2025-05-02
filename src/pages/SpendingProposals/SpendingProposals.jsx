@@ -81,7 +81,7 @@ function SpendingProposals() {
         maxWidth={1400}
         gap={2}
       >
-        {/* Chọn thời gian */}
+        {/* Chọn thời gian & button tạo mới */}
         <Grid container spacing={2} width='100%' justifyContent="space-between">
           <StyledBox minWidth={{ xs: '100%', lg: '40%' }} display={'flex'} flexDirection={'column'} gap={2}>
             <Box display={'flex'} gap={3} alignItems={'center'}>

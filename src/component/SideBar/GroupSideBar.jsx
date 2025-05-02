@@ -95,8 +95,7 @@ function SideBar() {
           Theo dõi vay nợ
         </SidebarItem>
       </Link>
-      {/* {(isMember && !isManager) && */}
-      {(isManager) &&
+      {(isMember && !isManager) &&
         <Link to={`${base}/spending-proposals`} style={{ textDecoration: 'none', color: 'inherit' }}>
           <SidebarItem className={isActive(`${base}/spending-proposals`) ? 'active' : ''}>
             <SvgIcon fontSize='small'>
