@@ -177,7 +177,7 @@ function LoanTab({ totalLoan, collected }) {
             {/* Danh sách các liên hệ đang theo dõi*/}
             {Array.from({ length: 5 }).map((_, index) =>
               <MoneySourceItem1
-                title={`Tên liên hệ số ${index}`}
+                title={`Anh hùng ${index}`}
                 amount={'12345678'}
                 amountColor='#e74c3c'
                 key={index}

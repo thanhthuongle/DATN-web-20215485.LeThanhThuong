@@ -31,7 +31,7 @@ function WalletCard() {
           justifyContent='center'
           alignItems='center'
           bgcolor='#22cfcf'
-        > VÍ TIỀN </Typography>
+        > TÀI KHOẢN </Typography>
       </Box>
 
       {/* Nội dung tổng quan ví tiền */}

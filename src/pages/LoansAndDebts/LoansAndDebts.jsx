@@ -31,8 +31,8 @@ function LoansAndDebts() {
         <TabContext value={activeTab}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <TabList onChange={handleChange} variant="fullWidth" sx={{ width: '100%' }} >
-              <Tab label="Loans" value={TABS.LOANS} />
-              <Tab label="Debts" value={TABS.DEBTS} />
+              <Tab label="Cho vay" value={TABS.LOANS} />
+              <Tab label="Đi vay" value={TABS.DEBTS} />
             </TabList>
           </Box>
           <TabPanel value={TABS.LOANS}><LoanTab collected={3123432} totalLoan={7638245} /></TabPanel>

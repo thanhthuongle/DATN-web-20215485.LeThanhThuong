@@ -569,3 +569,5 @@ export const categoryIncomeDefault = [
     parentId: null
   }
 ]
+
+export const apiRoot = import.meta.env.VITE_API_URL
