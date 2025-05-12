@@ -33,7 +33,7 @@ function SavingCard() {
           alignItems='center'
           bgcolor='#2e8b57'
           textAlign="center"
-        >SỔ<br/>TIẾT KIỆM</Typography>
+        >SỔ<br/>TIẾT KIỆM ONLINE</Typography>
       </Box>
 
       {/* Nội dung tổng quan sổ tiết kiệm */}
