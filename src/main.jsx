@@ -35,7 +35,7 @@ import { injectStore } from '~/utils/authorizeAxios.js'
 injectStore(store)
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  // <StrictMode>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <ThemeProvider theme={theme} noSsr defaultMode="light">
@@ -58,5 +58,5 @@ createRoot(document.getElementById('root')).render(
         </ThemeProvider>
       </PersistGate>
     </Provider>
-  </StrictMode>
+  // </StrictMode>
 )

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Navigate, useSearchParams } from 'react-router-dom'
-import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
+import { verifyUserAPI } from '~/apis'
+import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
 
 function AccountVerification() {
   // Lấy giá trị email và token từ URL
@@ -15,8 +16,7 @@ function AccountVerification() {
   // Gọi Api để verify tài khoản
   useEffect(() => {
     if (email && token) {
-      //TODO: Gọi API
-      setVerified(true) //TODO: tạm
+      verifyUserAPI({ email, token }).then(() => {setVerified(true)})
     }
   }, [email, token])
 
