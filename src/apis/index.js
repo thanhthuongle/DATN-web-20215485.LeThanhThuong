@@ -14,21 +14,6 @@ export const verifyUserAPI = async (data) => {
   toast.success ('Tài khoản đã xác thực thành công! Bây giờ bạn có thể đăng nhập và sủ dụng dịch vụ của website!', { theme: 'colored' })
   return response.data
 }
-export const loginUserAPI = async (data) => {
-  const response = await authorizedAxiosInstance.post(`${apiRoot}/users/login`, data)
-  return response.data
-}
-
-export const logoutUserAPI = async () => {
-  const response = await authorizedAxiosInstance.delete(`${apiRoot}/users/logout`)
-  toast.success ('Đăng xuất thành công!', { theme: 'colored' })
-  return response.data
-}
-
-export const updateUserAPI = async (data) => {
-  const response = await authorizedAxiosInstance.put(`${apiRoot}/users/update`, data)
-  return response.data
-}
 
 export const refreshTokenAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${apiRoot}/users/refresh_token`)
