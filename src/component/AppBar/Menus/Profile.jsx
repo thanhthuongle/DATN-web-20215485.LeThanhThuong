@@ -10,6 +10,9 @@ import IconButton from '@mui/material/IconButton'
 import Settings from '@mui/icons-material/Settings'
 import Logout from '@mui/icons-material/Logout'
 import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { logoutUserAPI, selectCurrentUser } from '~/redux/user/userSlice'
+import { useConfirm } from 'material-ui-confirm'
 
 
 function Profile() {
@@ -20,6 +23,20 @@ function Profile() {
   }
   const handleClose = () => {
     setAnchorEl(null)
+  }
+
+  const dispath = useDispatch()
+  const currentUser = useSelector(selectCurrentUser)
+
+  const confirmLogout = useConfirm()
+  const handleLogout = () => {
+    confirmLogout({
+      title: 'Log out of your account?',
+      confirmationText: 'Confirm',
+      cancellationText: 'Cancel'
+    }).then(() => {
+      dispath(logoutUserAPI())
+    }).catch(() => {})
   }
 
   return (
@@ -35,8 +52,8 @@ function Profile() {
         >
           <Avatar
             sx={{ width: 32, height: 32 }}
-            alt='Username'
-            src=''
+            alt={currentUser?.displayName}
+            src={currentUser?.avatar}
           />
         </IconButton>
       </Tooltip>
@@ -66,7 +83,7 @@ function Profile() {
             Settings
           </MenuItem>
         </Link>
-        <MenuItem onClick={handleClose} sx={{
+        <MenuItem onClick={handleLogout} sx={{
           '&:hover': {
             color: 'warning.dark',
             '& .logout-icon': { color: 'warning.dark' }

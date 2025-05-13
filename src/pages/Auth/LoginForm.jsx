@@ -20,8 +20,11 @@ import {
 import FieldErrorAlert from '~/component/Form/FieldErrorAlert'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { useDispatch } from 'react-redux'
+import { loginUserAPI } from '~/redux/user/userSlice'
 
 function LoginForm() {
+  const dispath = useDispatch()
   const navigate = useNavigate()
   const {
     register,
@@ -34,8 +37,13 @@ function LoginForm() {
 
   const submitLogIn = (data) => {
     const { email, password } = data
-    toast.success('Đăng nhập oke')
-    navigate('/')
+    toast.promise(
+      dispath(loginUserAPI({ email, password })),
+      { pending: 'Login in...' }
+    ).then(res => {
+      // Kiểm tra login thành công mới điều hướng đến '/'
+      if (!res.error) navigate('/')
+    })
   }
 
   return (
@@ -57,16 +65,16 @@ function LoginForm() {
           <Box sx={{ marginTop: '1em', display: 'flex', justifyContent: 'center', flexDirection: 'column', padding: '0 1em' }}>
             {verifiedEmail &&
               <Alert severity="success" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
-                Your email&nbsp;
+                Email&nbsp;
                 <Typography variant="span" sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>{verifiedEmail}</Typography>
-                &nbsp;has been verified.<br />Now you can login to enjoy our services! Have a good day!
+                &nbsp;của bạn đã được xác thực.<br />Bây giờ bạn có thể đăng nhập và sử dụng dịch vụ của website!
               </Alert>
             }
             {registeredEmail &&
               <Alert severity="info" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
-                An email has been sent to&nbsp;
+                Một email đã được gửi đến&nbsp;
                 <Typography variant="span" sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>{registeredEmail}</Typography>
-                <br />Please check and verify your account before logging in!
+                <br />Vui lòng kiểm tra và xác nhận tài khoản trước khi đăng nhập!
               </Alert>
             }
           </Box>

@@ -18,6 +18,7 @@ import {
 } from '~/utils/validators'
 import FieldErrorAlert from '~/component/Form/FieldErrorAlert'
 import { toast } from 'react-toastify'
+import { registerUserAPI } from '~/apis'
 
 function RegisterForm() {
   const {
@@ -30,15 +31,12 @@ function RegisterForm() {
 
   const submitRegister = (data) => {
     const { email, password } = data
-    // Gọi API thực hienj đky tk mới
-    // toast.promise(
-    //   // Call API
-    //   { pending: 'Registation is in progress...' }
-    // ).then(user => {
-    //   navigate(`/login?registeredEmail=${user.email}`)
-    // })
-    toast.success('Đăng ký tài khoản mới oke')
-    navigate(`/login?registeredEmail=${email}`)
+    toast.promise(
+      registerUserAPI({ email, password }),
+      { pending: 'Registation is in progress...' }
+    ).then(user => {
+      navigate(`/login?registeredEmail=${user.email}`)
+    })
   }
 
   return (

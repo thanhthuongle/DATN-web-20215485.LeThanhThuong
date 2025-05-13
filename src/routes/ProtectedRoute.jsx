@@ -1,11 +1,9 @@
-// Kiểm tra người dùng đã đăng nhập chưa
-
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { selectCurrentUser } from '~/redux/user/userSlice'
 
-// TODO: Có thể kiểm tra thêm quyền truy cập route
 const ProtectedRoute = () => {
-  // const currentUser = useSelector(selectCurrentUser)
-  const currentUser = { name: 'sghb' }
+  const currentUser = useSelector(selectCurrentUser)
   const location = useLocation()
 
   if (!currentUser || Object.keys(currentUser).length === 0) return <Navigate to='/login' replace={true} state={{ from: location }} />

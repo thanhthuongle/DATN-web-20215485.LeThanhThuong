@@ -13,11 +13,12 @@ const GroupInfo = lazy(() => import('~/pages/GroupInfo/GroupInfo'))
 const LoansAndDebts = lazy(() => import('~/pages/LoansAndDebts/LoansAndDebts'))
 const MoneySources = lazy(() => import('~/pages/MoneySources/MoneySources'))
 const NewTransaction = lazy(() => import('~/pages/NewTransaction/NewTransaction'))
-const Overview = lazy(() => import('~/pages/Overview/Overview'))
+// const Overview = lazy(() => import('~/pages/Overview/Overview'))
 const SpendingProposals = lazy(() => import('~/pages/SpendingProposals/SpendingProposals'))
 const TransactionHistory = lazy(() => import('~/pages/TransactionHistory/TransactionHistory'))
-const GroupLists = lazy(() => import('~/pages/GroupLists/GroupLists'))
+// const GroupLists = lazy(() => import('~/pages/GroupLists/GroupLists'))
 const Auth = lazy(() => import('~/pages/Auth/Auth'))
+const AccountVerification = lazy(() => import('~/pages/Auth/AccountVerification'))
 const NotFound = lazy(() => import('~/pages/404/NotFound'))
 const Settings = lazy(() => import('~/pages/Settings/Settings'))
 
@@ -31,10 +32,10 @@ const Settings = lazy(() => import('~/pages/Settings/Settings'))
 // import LoansAndDebts from '~/pages/LoansAndDebts/LoansAndDebts'
 // import MoneySources from '~/pages/MoneySources/MoneySources'
 // import NewTransaction from '~/pages/NewTransaction/NewTransaction'
-// import Overview from '~/pages/Overview/Overview'
+import Overview from '~/pages/Overview/Overview'
 // import SpendingProposals from '~/pages/SpendingProposals/SpendingProposals'
 // import TransactionHistory from '~/pages/TransactionHistory/TransactionHistory'
-// import GroupLists from '~/pages/GroupLists/GroupLists'
+import GroupLists from '~/pages/GroupLists/GroupLists'
 // import Auth from '~/pages/Auth/Auth'
 // import NotFound from '~/pages/404/NotFound'
 // import Settings from '~/pages/Settings/Settings'
@@ -69,25 +70,18 @@ const routes = createBrowserRouter([
       },
       {
         path: '/groups/:groupId',
-        element: <GroupProtectedRoute />,
+        element: <GroupLayout workspace={'TCGD'} />,
         children : [
-          {
-            path: '',
-            element: <GroupLayout workspace={'TCGD'} />,
-            // Component: GroupLayout, //TODO: check user có thuộc nhóm này hay ko?
-            children: [
-              { index: true, element: <Navigate to='overview' replace /> },
-              { path: 'overview', Component: Overview },
-              { path: 'money-sources', Component: MoneySources },
-              { path: 'budgets', Component: Budgets },
-              { path: 'loans-debts', Component: LoansAndDebts },
-              { path: 'spending-proposals', Component: SpendingProposals },
-              { path: 'contribution-request', Component: ContributionRequest },
-              { path: 'transaction-history', Component: TransactionHistory },
-              { path: 'new-transaction', Component: NewTransaction },
-              { path: 'group-info', Component: GroupInfo }
-            ]
-          }
+          { index: true, element: <Navigate to='overview' replace /> },
+          { path: 'overview', Component: Overview },
+          { path: 'money-sources', Component: MoneySources },
+          { path: 'budgets', Component: Budgets },
+          { path: 'loans-debts', Component: LoansAndDebts },
+          { path: 'spending-proposals', Component: SpendingProposals },
+          { path: 'contribution-request', Component: ContributionRequest },
+          { path: 'transaction-history', Component: TransactionHistory },
+          { path: 'new-transaction', Component: NewTransaction },
+          { path: 'group-info', Component: GroupInfo }
         ]
       },
       {
@@ -113,7 +107,7 @@ const routes = createBrowserRouter([
   },
   {
     path: '/account/verification',
-    Component: Auth
+    Component: AccountVerification
   },
   {
     path: '/404',
