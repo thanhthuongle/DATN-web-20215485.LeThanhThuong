@@ -1,35 +1,38 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
   Button, List, ListItemButton, Collapse, ListItemText, Radio
 } from '@mui/material'
 import { ExpandLess, ExpandMore } from '@mui/icons-material'
-import { categoryExpenseDefault } from '~/utils/constants'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
+import { getIndividualCategoryAPI } from '~/apis'
+import { createSearchParams } from 'react-router-dom'
 
 const buildTree = (categories) => {
   const map = {}
   const roots = []
 
-  categories.forEach(cat => map[cat.categoryId] = { ...cat, children: [] })
-  categories.forEach(cat => {
-    if (cat.parentId) {
-      map[cat.parentId]?.children.push(map[cat.categoryId])
+  categories?.forEach(cat => map[cat._id] = { ...cat, children: [] })
+  categories?.forEach(cat => {
+    if (cat.parentIds[0]) {
+      map[cat.parentIds[0]]?.children.push(map[cat._id])
     } else {
-      roots.push(map[cat.categoryId])
+      roots.push(map[cat._id])
     }
   })
 
   return roots
 }
 
-const CategorySelector = () => {
+const CategorySelector = ({ transactionType, onChange, value, error }) => {
+  const [categories, setCategories] = useState([])
+  const treeData = buildTree(categories)
+
+
   const [open, setOpen] = useState(false)
   const [expanded, setExpanded] = useState({})
   const [selected, setSelected] = useState(null)
   const [selectedName, setSelectedName] = useState(null)
-
-  const treeData = buildTree(categoryExpenseDefault)
 
   const toggleExpand = (id) => {
     setExpanded(prev => ({ ...prev, [id]: !prev[id] }))
@@ -42,29 +45,29 @@ const CategorySelector = () => {
   const renderCategory = (cat) => {
     const hasChildren = cat.children?.length > 0
     return (
-      <React.Fragment key={cat.categoryId}>
-        <ListItemButton onClick={() => handleSelect(cat.categoryId)}>
+      <React.Fragment key={cat._id}>
+        <ListItemButton onClick={() => handleSelect(cat._id)}>
           <Radio
-            checked={selected === cat.categoryId}
-            value={cat.categoryId}
-            onChange={() => handleSelect(cat.categoryId)}
+            checked={selected === cat._id}
+            value={cat._id}
+            onChange={() => handleSelect(cat._id)}
           />
-          <ListItemText primary={cat.categoryName} />
+          <ListItemText primary={cat.name} />
           {hasChildren ? (
             <Button
               size="small"
               onClick={(e) => {
                 e.stopPropagation()
-                toggleExpand(cat.categoryId)
+                toggleExpand(cat._id)
               }}
             >
-              {expanded[cat.categoryId] ? <ExpandLess /> : <ExpandMore />}
+              {expanded[cat._id] ? <ExpandLess /> : <ExpandMore />}
             </Button>
           ) : null}
         </ListItemButton>
 
         {hasChildren && (
-          <Collapse in={expanded[cat.categoryId]} timeout="auto" unmountOnExit>
+          <Collapse in={expanded[cat._id]} timeout="auto" unmountOnExit>
             <List component="div" disablePadding sx={{ pl: 4 }}>
               {cat.children.map(child => renderCategory(child))}
             </List>
@@ -75,21 +78,43 @@ const CategorySelector = () => {
   }
 
   const handleConfirm = () => {
-    const selectedCat = categoryExpenseDefault.find(c => c.categoryId === selected)
-    setSelectedName(selectedCat?.categoryName)
+    const selectedCat = categories?.find(c => c._id === selected)
+    setSelectedName(selectedCat?.name)
+    onChange(selectedCat)
     // console.log('Bạn đã chọn:', selectedCat)
     setOpen(false)
   }
+
+  const updateStateData = (res) => {
+    setCategories(res || [])
+  }
+
+  useEffect(() => {
+    const searchPath = `?${createSearchParams({ 'q[type]': transactionType })}`
+    getIndividualCategoryAPI(searchPath).then(updateStateData)
+    if (!value) {
+      setSelected(null)
+      setSelectedName(null)
+    } else {
+      setSelected(value._id)
+      setSelectedName(value.name)
+    }
+  }, [transactionType, value])
 
   return (
     <>
       <Button
         variant="outlined"
         endIcon={<KeyboardArrowRightIcon />}
-        sx={{ textTransform: 'none', minWidth: '300px', paddingY: 1 }}
+        sx={{ textTransform: 'none', minWidth: '300px', paddingY: 1, borderColor: error ? 'error.main' : undefined }}
         onClick={() => setOpen(true)}
       >{selectedName ?? 'Chọn hạng mục...'}</Button>
-      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
+      <Dialog
+        open={open}
+        fullWidth
+        maxWidth="sm"
+        onClose={() => setOpen(false)}
+      >
         <DialogTitle>Chọn hạng mục</DialogTitle>
         <DialogContent dividers>
           <List>
