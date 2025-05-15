@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
@@ -13,9 +13,13 @@ import { NumericFormat } from 'react-number-format'
 import DoughnutChart from '~/component/Chart/DoughnutChart'
 import moment from 'moment'
 import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
+import { TRANSACTION_TYPES } from '~/utils/constants'
+import { getIndividualTransactionAPI } from '~/apis'
+import { createSearchParams } from 'react-router-dom'
+import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
 
 const categoryLists = ['Hạng mục 1(10%)', 'Hạng mục 2(15%)', 'Hạng mục 3(35%)']
-const percentageLists = [10, 15, 75]
+const percentageLists = [15, 15, 30]
 const colorLists = [
   'rgb(255, 99, 132)',
   'rgb(54, 162, 235)',
@@ -28,56 +32,107 @@ const transactionHistoryType = {
   EXPENSE: 'Tiền ra'
 }
 
-const transactionType = {
-  EXPENSE: 'Chi tiền',
-  INCOME: 'Thu tiền',
-  LEND: 'Cho vay',
-  BORROWING: 'Đi vay',
-  TRANSFER: 'Chuyển khoản',
-  CONTRIBUTION: 'Đóng góp'
+const redTypes = [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.CONTRIBUTION]
+const greenTypes = [TRANSACTION_TYPES.INCOME, TRANSACTION_TYPES.BORROWING]
+const getColorForTransaction = (transactionTypeProp) => {
+  if (redTypes.includes(transactionTypeProp)) {
+    return '#e74c3c'
+  } else if (greenTypes.includes(transactionTypeProp)) {
+    return '#27ae60'
+  } else {
+    return 'text.primary'
+  }
 }
 
-const transactionDatas = [0, 1, 2].map((dayIndex) => ({
-  transactionTime: moment().subtract(dayIndex, 'days').toISOString(),
-  transactions: Array.from({ length: 15 }, (_, i) => ({
-    transactionId: `transactionId-${dayIndex}-${i}`,
-    type: (i%7 == 0) ? transactionType.TRANSFER : ((i%4 == 0) ? transactionType.INCOME : transactionType.EXPENSE),
-    transactionName: `Tên của giao dịch ${i}`,
-    description: `mô tả giao dịch ${i}`,
-    amount: 12345
+function processDataRaw(transactions) {
+  const result = {
+    byDate: {},
+    byCategory: {},
+    income: 0,
+    expense: 0
+  }
+
+  transactions.forEach((transaction) => {
+    const dateKey = moment(transaction.transactionTime).format('YYYY-MM-DD')
+    const categoryKey = transaction.categoryId
+
+    if (!result.byDate[dateKey]) { result.byDate[dateKey] = [] }
+    result.byDate[dateKey].push(transaction)
+
+    if (redTypes.includes(transaction.type)) {
+      if (!result.byCategory[categoryKey])
+        result.byCategory[categoryKey] = {
+          amount: 0,
+          categoryName: transaction.name
+        }
+
+      result.byCategory[categoryKey].amount += Number(transaction.amount) || 0
+    }
+
+    // Cộng income / expense
+    if (redTypes.includes(transaction.type)) { result.expense += Number(transaction.amount) || 0 }
+    else if (greenTypes.includes(transaction.type)) { result.income += Number(transaction.amount) || 0 }
+  })
+
+  const groupedByDate = Object.entries(result.byDate).map(([date, transactions]) => ({
+    transactionTime: moment(date).toISOString(),
+    transactions
   }))
-}))
+
+  const groupedByCategory = Object.entries(result.byCategory).map(([categoryId, info]) => ({
+    categoryId,
+    info
+  }))
+
+  return {
+    groupedByDate,
+    groupedByCategory,
+    income: result.income,
+    expense: result.expense
+  }
+}
 
 function TransactionHistory() {
-  const [startDate, setStartDate] = useState(null)
-  const [endDate, setEndDate] = useState(null)
+  const [transactionProcessedDatas, setTransactionProcessedDatas] = useState(null)
+  const [startDate, setStartDate] = useState(moment().subtract(1, 'month'))
+  const [endDate, setEndDate] = useState(moment())
   const [activeButton, setActiveButton] = useState(transactionHistoryType.ALL)
-
-  let income = 4374645
-  let expense = 7459676
-
-  const getColorForTransaction = (transactionTypeProp) => {
-    const redTypes = [transactionType.EXPENSE, transactionType.LEND, transactionType.CONTRIBUTION]
-    const greenTypes = [transactionType.INCOME, transactionType.BORROWING]
-    if (redTypes.includes(transactionTypeProp)) {
-      return '#e74c3c'
-    } else if (greenTypes.includes(transactionTypeProp)) {
-      return '#27ae60'
-    } else {
-      return 'text.primary'
-    }
-  }
 
   const handleOkClick = () => {
     if (!startDate && !endDate) toast.error('Cần chọn ít nhất một mốc thời gian')
-    console.log('Start Date:', startDate)
-    console.log('End Date:', endDate)
-    // Gọi data tương ứng
+    getTransactionData()
   }
   const handleSelectTransactionType = (transactionTypeSelected) => {
-    console.log('🚀 ~ handleSelectTransactionType ~ transactionTypeSelected:', transactionTypeSelected)
+    // console.log('🚀 ~ handleSelectTransactionType ~ transactionTypeSelected:', transactionTypeSelected)
     setActiveButton(transactionTypeSelected)
-    // TODO: Gọi data tương ứng
+  }
+
+  const updateStateData = (res) => {
+    // console.log('🚀 ~ updateStateData ~ res:', res)
+    const processedData = processDataRaw(res)
+    console.log('🚀 ~ updateStateData ~ processDataRaw(res):', processedData)
+    setTransactionProcessedDatas(processedData)
+  }
+
+  const getTransactionData = () => {
+    let transactionTypeFilter = ''
+    if (activeButton == transactionHistoryType.EXPENSE) transactionTypeFilter = redTypes
+    else if (activeButton == transactionHistoryType.INCOME) transactionTypeFilter = greenTypes
+    const params = {}
+    if (transactionTypeFilter) params['q[type]'] = transactionTypeFilter
+    if (startDate) params['q[fromDate]'] = startDate.toISOString()
+    if (endDate) params['q[toDate]'] = endDate.toISOString()
+    const searchPath = `?${createSearchParams(params)}`
+    getIndividualTransactionAPI(searchPath).then(updateStateData)
+  }
+
+  useEffect(() => {
+    getTransactionData()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeButton])
+
+  if (!transactionProcessedDatas) {
+    return <PageLoadingSpinner caption='Loading data...' />
   }
   return (
     <Box
@@ -91,8 +146,28 @@ function TransactionHistory() {
           <Typography variant='h6' fontWeight={'bold'} sx={{ marginBottom: 1 }}>Lịch sử giao dịch</Typography>
           <StyledBox display={'flex'} flexDirection={'column'} gap={2}>
             <Box display={'flex'} flexDirection={{ xs: 'column', md: 'row' }} gap={2}>
-              <DatePicker disableFuture={true} format="DD/MM/YYYY" label="Từ ngày" maxDate={endDate} value={startDate} onChange={(newValue) => setStartDate(newValue)} />
-              <DatePicker disableFuture={true} format="DD/MM/YYYY" label="Đến ngày" minDate={startDate} value={endDate} onChange={(newValue) => setEndDate(newValue)} />
+              <DatePicker
+                disableFuture={true}
+                format="DD/MM/YYYY"
+                label="Từ ngày"
+                maxDate={endDate}
+                value={startDate}
+                onChange={(newValue) => {
+                  const startDate = moment(newValue).startOf('day')
+                  setStartDate(startDate)
+                }}
+              />
+              <DatePicker
+                disableFuture={true}
+                format="DD/MM/YYYY"
+                label="Đến ngày"
+                minDate={startDate}
+                value={endDate}
+                onChange={(newValue) => {
+                  const endDate = moment.min(newValue.clone().endOf('day'), moment())
+                  setEndDate(endDate)
+                }}
+              />
             </Box>
             <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
               <Button variant='contained' onClick={handleOkClick} sx={{ textTransform: 'none' }}>Tìm kiếm</Button>
@@ -103,7 +178,7 @@ function TransactionHistory() {
         {/* Biểu đồ cột thu chi */}
         <StyledBox display='flex' sx={{ gap: 1 }}>
           <Box width='20%'>
-            <BarChart income={income} expense={expense} />
+            <BarChart income={transactionProcessedDatas?.income} expense={transactionProcessedDatas?.expense} />
           </Box>
           <Stack width='80%' spacing={2} sx={{ justifyContent: 'end', pb: 1 }}>
             <Box color='#27AE60' display='flex' justifyContent='space-between' alignItems='center'>
@@ -124,7 +199,7 @@ function TransactionHistory() {
                 decimalSeparator=","
                 allowNegative={false}
                 suffix="&nbsp;₫"
-                value={income}
+                value={transactionProcessedDatas?.income}
               />
             </Box>
             <Box color='#E74C3C' display='flex' justifyContent='space-between' alignItems='center'>
@@ -145,7 +220,7 @@ function TransactionHistory() {
                 decimalSeparator=","
                 allowNegative={false}
                 suffix="&nbsp;₫"
-                value={expense}
+                value={transactionProcessedDatas?.expense}
               />
             </Box>
             <Box>
@@ -157,7 +232,7 @@ function TransactionHistory() {
                   decimalSeparator=","
                   allowNegative={true}
                   suffix="&nbsp;₫"
-                  value={income-expense}
+                  value={transactionProcessedDatas?.income-transactionProcessedDatas?.expense}
                 />
               </Box>
             </Box>
@@ -166,11 +241,7 @@ function TransactionHistory() {
 
         {/* Biểu đồ tròn hạng mục chi */}
         <StyledBox display='flex' sx={{ paddingBottom: 1 }}>
-          <DoughnutChart
-            categoryLists={categoryLists}
-            percentageLists={percentageLists}
-            colorLists={colorLists}
-          />
+          <DoughnutChart dataProp={transactionProcessedDatas.groupedByCategory} />
         </StyledBox>
       </Box>
 
@@ -178,35 +249,43 @@ function TransactionHistory() {
 
       <Box flex={1} display={'flex'} flexDirection={'column'} gap={2}>
         {/* Nhóm nút bấm loại giao dịch */}
-        <Box display={'flex'} justifyContent={'center'} bgcolor={'#bfd8f0'} padding={1} borderRadius={'8px'}>
+        <Box display={'flex'} justifyContent={'center'} bgcolor={'#bddfff'} padding={1} borderRadius={'8px'}>
           <Stack direction={'row'} justifyContent={'space-between'} maxWidth={'500px'} width={'100%'}>
             <Button
               variant='contained'
               onClick={() => handleSelectTransactionType(transactionHistoryType.ALL)}
-              sx={{ textTransform: 'none', opacity: activeButton==transactionHistoryType.ALL ? 1 : 0.6 }}
+              sx={{ textTransform: 'none', opacity: activeButton==transactionHistoryType.ALL ? 1 : 0.4 }}
             >Toàn bộ</Button>
             <Button
               variant='contained'
               onClick={() => handleSelectTransactionType(transactionHistoryType.INCOME)}
-              sx={{ textTransform: 'none', opacity: activeButton==transactionHistoryType.INCOME ? 1 : 0.6 }}
+              sx={{ textTransform: 'none', opacity: activeButton==transactionHistoryType.INCOME ? 1 : 0.4 }}
             >Tiền vào</Button>
             <Button
               variant='contained'
               onClick={() => handleSelectTransactionType(transactionHistoryType.EXPENSE)}
-              sx={{ textTransform: 'none', opacity: activeButton==transactionHistoryType.EXPENSE ? 1 : 0.6 }}
+              sx={{ textTransform: 'none', opacity: activeButton==transactionHistoryType.EXPENSE ? 1 : 0.4 }}
             >Tiền ra</Button>
           </Stack>
         </Box>
 
         {/* Danh sách lịch sử giao dịch */}
         <Box display={'flex'} flexDirection={'column'} gap={1}>
-          {transactionDatas?.map((transactionData, index) => (
+          {(Array.isArray(transactionProcessedDatas?.groupedByDate) && transactionProcessedDatas?.groupedByDate.length === 0) && (
+            <Typography
+              component={Box}
+              display={'flex'}
+              justifyContent={'center'}
+              sx={{ width: '100%', marginTop: 2 }}
+            >Bạn chưa có giao nào!</Typography>
+          )}
+          {transactionProcessedDatas?.groupedByDate?.map((transactionData, index) => (
             <StyledBox key={index}>
-              <Typography fontWeight={'bold'}>{moment(transactionData?.transactionTime).format('LLLL')}</Typography>
+              <Typography fontWeight={'bold'}>{moment(transactionData?.transactionTime).format('dddd, LL')}</Typography>
               {transactionData?.transactions?.map((transaction) => (
                 <FinanceItem1
-                  key={transaction.transactionId}
-                  title={transaction?.transactionName}
+                  key={transaction._id}
+                  title={transaction?.name}
                   description={transaction?.description}
                   amount={transaction?.amount}
                   amountColor={getColorForTransaction(transaction?.type)}

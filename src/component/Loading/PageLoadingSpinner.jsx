@@ -9,7 +9,7 @@ function PageLoadingSpinner({ caption }) {
       alignItems: 'center',
       justifyContent: 'center',
       gap: 2,
-      width: '100vw',
+      width: '100%',
       height: '100vh'
     }}>
       <CircularProgress />
