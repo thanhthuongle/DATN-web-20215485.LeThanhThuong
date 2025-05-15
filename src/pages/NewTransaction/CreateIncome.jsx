@@ -243,7 +243,7 @@ function CreateIncome() {
                                   flexShrink: 0
                                 }}
                               >
-                                <RestaurantIcon />
+                                {' '}
                               </ Avatar>
                               <Typography noWrap>
                                 {selectedWallet?.accountName}&nbsp;({selectedWallet?.balance?.toLocaleString()}&nbsp;₫)

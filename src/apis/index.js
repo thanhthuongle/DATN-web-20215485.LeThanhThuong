@@ -43,3 +43,14 @@ export const getIndividualAccountAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${apiRoot}/accounts/individual`)
   return response.data
 }
+
+/** contact */
+export const getIndividualContactAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${apiRoot}/contacts/individual`)
+  return response.data
+}
+
+export const createIndividualContactAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${apiRoot}/contacts/individual`, data)
+  return response.data
+}
