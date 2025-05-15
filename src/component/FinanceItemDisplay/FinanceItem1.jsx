@@ -72,17 +72,17 @@ function FinanceItem1({ title, description, logo, logoSize=40, amount, amountDes
         alignItems='end'
         maxWidth={'70%'}
       >
-        {amount &&
-        <NumericFormat
-          displayType='text'
-          thousandSeparator="."
-          decimalSeparator=","
-          allowNegative={false}
-          suffix="&nbsp;₫"
-          value={amount}
-          style={{ fontWeight: '', color: amountColor, maxWidth: '100%' }}
-        />
-        }
+        {amount !== null && amount !== undefined && (
+          <NumericFormat
+            displayType="text"
+            thousandSeparator="."
+            decimalSeparator=","
+            allowNegative={false}
+            suffix=" ₫"
+            value={amount}
+            style={{ fontWeight: '', color: amountColor, maxWidth: '100%' }}
+          />
+        )}
         {amountDesc &&
           <Typography
             noWrap
