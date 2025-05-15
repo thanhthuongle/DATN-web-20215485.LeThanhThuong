@@ -1,11 +1,12 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Button, Dialog, DialogContent, IconButton, Box } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import { toast } from 'react-toastify'
+import { singleFileValidator } from '~/utils/validators'
 
-export default function ImageUploader() {
+export default function ImageUploader({ value = [], onChange }) {
   const fileInputRef = useRef(null)
-  const [images, setImages] = useState([])
+  const [images, setImages] = useState(value)
   const [preview, setPreview] = useState(null)
 
   const handleImageChange = (event) => {
@@ -15,6 +16,13 @@ export default function ImageUploader() {
     const newImages = []
     for (let file of files) {
       const fileKey = file.name + file.size + file.lastModified
+
+      const error = singleFileValidator(file)
+      if (error) {
+        toast.error(`Ảnh ${file.name}: ${error}`)
+        continue
+      }
+
       if (!existingKeys.has(fileKey)) {
         newImages.push({
           file,
@@ -24,7 +32,9 @@ export default function ImageUploader() {
     }
 
     const limitedImages = newImages.slice(0, 5 - images.length)
-    setImages(prev => [...prev, ...limitedImages])
+    const updatedImages = [...images, ...limitedImages]
+    setImages(updatedImages)
+    onChange?.(updatedImages)
     event.target.value = '' // reset input
   }
 
@@ -34,7 +44,13 @@ export default function ImageUploader() {
     const newImages = [...images]
     newImages.splice(index, 1)
     setImages(newImages)
+    onChange?.(newImages)
   }
+
+  useEffect(() => {
+    if (!value) setImages([])
+    else setImages(value)
+  }, [value])
 
   return (
     <Box>

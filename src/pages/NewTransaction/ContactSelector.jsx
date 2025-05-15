@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
   Button, TextField, List, ListItem, ListItemAvatar, Avatar,
@@ -7,16 +7,11 @@ import {
 } from '@mui/material'
 import { toast } from 'react-toastify'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
+import { createIndividualContactAPI, getIndividualContactAPI } from '~/apis'
 
-const initialContacts = [
-  { id: 1, name: 'Nguyễn Văn A' },
-  { id: 2, name: 'Trần Thị B' },
-  { id: 3, name: 'Lê Văn C' }
-]
-
-function ContactSelector() {
+function ContactSelector({ onChange, value }) {
   const [open, setOpen] = useState(false)
-  const [contacts, setContacts] = useState(initialContacts)
+  const [contacts, setContacts] = useState([])
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState(null)
 
@@ -25,7 +20,7 @@ function ContactSelector() {
     setSearch(contact.name)
   }
 
-  const handleOk = () => {
+  const handleOk = async() => {
     const trimmed = search.trim()
     if (!trimmed) {
       toast.warn('Vui lòng nhập hoặc chọn liên hệ')
@@ -36,23 +31,35 @@ function ContactSelector() {
 
     if (existing) {
       setSelected(existing)
+      onChange(existing)
       setOpen(false)
-      console.log('Liên hệ đã chọn:', existing.name)
+      // console.log('Liên hệ đã chọn:', existing)
     } else {
-      const newContact = {
-        id: Date.now(),
+      const newContactData = {
         name: trimmed
       }
+      const newContact = await createIndividualContactAPI(newContactData)
       setContacts(prev => [...prev, newContact])
       setSelected(newContact)
+      onChange(newContact)
       setOpen(false)
-      console.log('Liên hệ mới:', newContact.name)
+      // console.log('Liên hệ mới:', newContact)
     }
   }
 
   const filteredContacts = contacts.filter(c =>
     c.name.toLowerCase().includes(search.toLowerCase())
   )
+
+  const updateStateData = (res) => {
+    setContacts(res || [])
+  }
+
+  useEffect(() => {
+    getIndividualContactAPI().then(updateStateData)
+    if (!value) setSelected(null)
+    else setSelected(value)
+  }, [value])
 
   return (
     <>
@@ -83,8 +90,8 @@ function ContactSelector() {
           <List>
             {filteredContacts.map(contact => (
               <ListItem
-                key={contact.id}
-                selected={selected?.id === contact.id}
+                key={contact._id}
+                selected={selected?._id === contact._id}
                 onClick={() => handleSelect(contact)}
                 disablePadding
               >

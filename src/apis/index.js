@@ -19,3 +19,38 @@ export const refreshTokenAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${apiRoot}/users/refresh_token`)
   return response.data
 }
+
+/** Transaction */
+export const createIndividualTransactionAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${apiRoot}/transactions/individual`, data)
+  return response.data
+}
+
+/** category */
+export const getIndividualCategoryAPI = async (searchPath) => {
+  const response = await authorizedAxiosInstance.get(`${apiRoot}/categories/individual${searchPath}`)
+  return response.data
+}
+
+/** money_source */
+export const getIndividualMoneySourceAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${apiRoot}/moneySources/individual`)
+  return response.data
+}
+
+/** account */
+export const getIndividualAccountAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${apiRoot}/accounts/individual`)
+  return response.data
+}
+
+/** contact */
+export const getIndividualContactAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${apiRoot}/contacts/individual`)
+  return response.data
+}
+
+export const createIndividualContactAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${apiRoot}/contacts/individual`, data)
+  return response.data
+}

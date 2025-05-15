@@ -44,6 +44,22 @@ function LoginForm() {
       // Kiểm tra login thành công mới điều hướng đến '/'
       if (!res.error) navigate('/')
     })
+    // toast.promise(
+    //   dispath(loginUserAPI({ email, password })).then((loginResponse) => {
+    //     if (loginResponse.error) {
+    //       throw new Error('Login failed')
+    //     }
+
+    //     return dispath(getIndividualCategoryAPI())
+    //   }),
+    //   {
+    //     pending: 'Logging in...',
+    //     success: 'Login successful!',
+    //     error: 'Login failed'
+    //   }
+    // ).then(res => { if (!res.error) { navigate('/overview') }
+    // // eslint-disable-next-line no-console
+    // }).catch(error => { console.error(error) })
   }
 
   return (
@@ -117,6 +133,7 @@ function LoginForm() {
           </Box>
           <CardActions sx={{ padding: '0 1em 1em 1em' }}>
             <Button
+              className='interceptor-loading'
               type="submit"
               variant="contained"
               color="primary"

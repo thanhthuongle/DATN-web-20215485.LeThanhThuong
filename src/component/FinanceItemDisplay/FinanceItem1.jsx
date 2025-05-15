@@ -31,7 +31,8 @@ function FinanceItem1({ title, description, logo, logoSize=40, amount, amountDes
             flexShrink: 0
           }}
         >
-          <RestaurantIcon />
+          {' '}
+          {/* <RestaurantIcon /> */}
         </ Avatar>
 
         <Box sx={{ minWidth: 0 }}>
