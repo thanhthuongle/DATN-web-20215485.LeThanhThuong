@@ -27,3 +27,21 @@ export const MONEY_SOURCE_TYPE = {
   SAVINGS_ACCOUNT: 'savings_account',
   ACCUMULATION: 'accumulation'
 }
+
+export const ACCOUNT_TYPES = {
+  WALLET: 'wallet',
+  BANK: 'bank',
+  OTHER: 'orther'
+}
+
+export const INTEREST_PAID = {
+  MATURITY: 'maturity',
+  UP_FRONT: 'up_front',
+  MONTHLY: 'monthly'
+}
+
+export const TERM_ENDED = {
+  ROLL_OVER_PRINCIPAL_AND_INTEREST: 'roll_over_principal_and_interest',
+  ROLL_OVER_PRINCIPAL: 'roll_over_principal',
+  CLOSE_ACCOUNT: 'close_account'
+}

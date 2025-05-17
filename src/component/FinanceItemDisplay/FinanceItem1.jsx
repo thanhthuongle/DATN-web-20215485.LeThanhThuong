@@ -23,9 +23,9 @@ function FinanceItem1({ title, description, logo, logoSize=40, amount, amountDes
       >
         <Avatar
           alt="Logo"
-          src=""
+          src={logo}
           sx={{
-            bgcolor: 'yellow',
+            bgcolor: logo ? '' : 'yellow',
             width: logoSize,
             height: logoSize,
             flexShrink: 0

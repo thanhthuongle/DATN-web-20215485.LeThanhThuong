@@ -26,13 +26,13 @@ function MoneySourceItem1({ title, description, logo, logoSize='40px', amount, a
           alt="Logo"
           src={logo}
           sx={{
-            bgcolor: 'yellow',
+            bgcolor: logo ? '' : 'yellow',
             width: logoSize,
             height: logoSize,
             flexShrink: 0
           }}
         >
-          <RestaurantIcon /> {/* TODO: hoàn thiện logo mặc định */}
+          {' '}
         </ Avatar>
 
         <Box sx={{ minWidth: 0, flex: 1, marginRight: 2 }}>
@@ -54,12 +54,12 @@ function MoneySourceItem1({ title, description, logo, logoSize='40px', amount, a
         alignItems='end'
         maxWidth='40%'
       >
-        {amount &&
+        {amount !== null && amount !== undefined &&
         <NumericFormat
           displayType='text'
           thousandSeparator="."
           decimalSeparator=","
-          allowNegative={false}
+          allowNegative={true}
           suffix="&nbsp;₫"
           value={amount}
           style={{ fontWeight: '', color: amountColor, maxWidth: '100%' }}
