@@ -8,12 +8,21 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import { NumericFormat } from 'react-number-format'
-import MoneySourceItem1 from './MoneySourceItem/MoneySourceItem1'
-import SavingMenu from './MoneySourceItem/SavingMenu'
 import MoneySourceItem2 from './MoneySourceItem/MoneySourceItem2'
 import AccumulateMenu from './MoneySourceItem/Accumulatemenu'
 
-function AccumulateCard() {
+function AccumulateCard({ data }) {
+  // console.log('🚀 ~ AccumulateCard ~ data:', data)
+  const accumulateData = data
+
+  const activeAccumulateData = accumulateData.filter(item => !item.isFinished)
+  const finishedAccumulateData = accumulateData.filter(item => item.isFinished)
+
+  const totalAmount = accumulateData.reduce((sum, item) => sum + item.balance, 0)
+  const totalCount = accumulateData.length
+
+  const activeAmount = activeAccumulateData.reduce((sum, item) => sum + item.balance, 0)
+  const finishedAmount = finishedAccumulateData.reduce((sum, item) => sum + item.balance, 0)
   return (
     <StyledBox
       width='100%'
@@ -51,8 +60,18 @@ function AccumulateCard() {
       >
         <Box>
           <Box display='flex' justifyContent='space-around'>
-            <Typography>Tổng tiền: 123456 đ</Typography>
-            <Typography>Tổng số: n tích lũy</Typography>
+            <Typography>Tổng tiền:&nbsp;(&nbsp;
+              <NumericFormat
+                displayType='text'
+                thousandSeparator="."
+                decimalSeparator=","
+                allowNegative={true}
+                suffix="&nbsp;₫"
+                value={totalAmount}
+                style={{ fontWeight: 'bold', maxWidth: '100%', color: totalAmount < 0 ? 'red' : 'inherit' }}
+              />&nbsp;)
+            </Typography>
+            <Typography>Tổng số: {totalCount} tích lũy</Typography>
           </Box>
           <Divider width='80%' sx={{ mx: 'auto', marginTop: 1 }}/>
         </Box>
@@ -74,19 +93,22 @@ function AccumulateCard() {
                   allowNegative={false}
                   prefix=' ('
                   suffix="&nbsp;₫)"
-                  value={12345678}
+                  value={activeAmount}
                   style={{ fontWeight: 'bold', maxWidth: '100%' }}
                 />
               </Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ padding: 0 }}>
               {/* Danh sách các tích lũy đang theo dõi */}
-              {Array.from({ length: 3 }).map((_, index) =>
+              {activeAccumulateData?.length == 0 && (
+                <Typography display={'flex'} justifyContent={'center'} alignItems={'center'} marginY={2}>Không có khoản tích lũy nào đang the dõi!</Typography>
+              )}
+              {activeAccumulateData.map((accummulation) =>
                 <MoneySourceItem2
-                  key={index}
-                  title={`Tên khoản tích lũy ${index}`}
-                  targetAmount={index==1 ? 1234 : 123456}
-                  accumulatedAmount={index==1 ? 1234: 23456}
+                  key={accummulation._id}
+                  title={accummulation.accumulationName}
+                  targetAmount={accummulation.targetBalance}
+                  accumulatedAmount={accummulation.balance}
                   menuComponent={<AccumulateMenu isFinished={false} />}
                   sx={{
                     borderTop: 1,
@@ -113,19 +135,22 @@ function AccumulateCard() {
                   allowNegative={false}
                   prefix=' ('
                   suffix="&nbsp;₫)"
-                  value={12348}
+                  value={finishedAmount}
                   style={{ fontWeight: 'bold', maxWidth: '100%' }}
                 />
               </Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ padding: 0, width: '100%' }}>
               {/* Danh sách các tích lũy đã kết thúc */}
-              {Array.from({ length: 1 }).map((_, index) =>
+              {finishedAccumulateData?.length == 0 && (
+                <Typography display={'flex'} justifyContent={'center'} alignItems={'center'} marginY={2}>Chưa có khoản tích lũy nào kết thúc!</Typography>
+              )}
+              {finishedAccumulateData.map((accumulation) =>
                 <MoneySourceItem2
-                  key={index}
-                  title={`Tên khoản tích lũy đã kết thúc ${index}`}
-                  targetAmount={123456}
-                  accumulatedAmount={111}
+                  key={accumulation._id}
+                  title={accumulation.accummulationName}
+                  targetAmount={accumulation.targetBalance}
+                  accumulatedAmount={accumulation.balance}
                   menuComponent={<AccumulateMenu isFinished={true} />}
                   sx={{
                     borderTop: 1,

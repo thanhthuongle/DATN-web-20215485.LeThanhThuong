@@ -27,7 +27,7 @@ const theme = createTheme({
         // text: {
         // }
         // ...other tokens
-      },
+      }
     },
     dark: true
   }

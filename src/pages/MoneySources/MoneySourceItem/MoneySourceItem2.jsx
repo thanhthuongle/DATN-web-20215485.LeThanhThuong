@@ -49,7 +49,7 @@ function MoneySourceItem2({ title, logo, logoSize='40px', targetAmount, accumula
           flexShrink: 0
         }}
       >
-        <RestaurantIcon /> {/* TODO: hoàn thiện logo mặc định */}
+        {' '}
       </ Avatar>
 
       <Box
@@ -79,7 +79,7 @@ function MoneySourceItem2({ title, logo, logoSize='40px', targetAmount, accumula
             {title}
             {(Number(accumulatedAmount) >= Number(targetAmount)) && <Chip variant="outlined" color="info" size="small" label="Hoàn thành"/>}
           </Typography>
-          {targetAmount &&
+          {targetAmount !== null && targetAmount !== undefined &&
           <NumericFormat
             displayType='text'
             thousandSeparator="."
@@ -96,7 +96,7 @@ function MoneySourceItem2({ title, logo, logoSize='40px', targetAmount, accumula
         </Box>
 
         <Box>
-          {accumulatedAmount &&
+          {accumulatedAmount !== null && accumulatedAmount !== undefined &&
           <NumericFormat
             displayType='text'
             thousandSeparator="."

@@ -50,7 +50,7 @@ function Overview() {
         />
 
         {/* Tình hình thu chi */}
-        <TransactionSummary />
+        {/* <TransactionSummary /> */}
 
         {/* Phân tích chi tiêu */}
         <SpendingAnalysis />
