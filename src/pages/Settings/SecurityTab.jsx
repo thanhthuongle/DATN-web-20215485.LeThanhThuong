@@ -17,8 +17,12 @@ import { useForm } from 'react-hook-form'
 import { useConfirm } from 'material-ui-confirm'
 import { toast } from 'react-toastify'
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { logoutUserAPI, updateUserAPI } from '~/redux/user/userSlice'
 
 function SecurityTab() {
+  const dispatch = useDispatch()
+
   const [showPasswords, setShowPasswords] = useState({
     old: false,
     new: false,
@@ -40,12 +44,21 @@ function SecurityTab() {
       confirmationText: 'Confirm',
       cancellationText: 'Cancel'
     }).then(() => {
-      const { current_password, new_password, new_password_confirmation } = data
-      console.log('current_password: ', current_password)
-      console.log('new_password: ', new_password)
-      console.log('new_password_confirmation: ', new_password_confirmation)
+      const { current_password, new_password } = data
+      // console.log('current_password: ', current_password)
+      // console.log('new_password: ', new_password)
+      // console.log('new_password_confirmation: ', new_password_confirmation)
 
       // Gọi API...
+      toast.promise(
+        dispatch(updateUserAPI({ current_password, new_password })),
+        { pending: 'Đang cập nhật...' }
+      ).then(res => {
+        if (!res.error) {
+          toast.success('Thay đổi mật khẩu thành công, vui lòng đăng nhập lại!')
+          dispatch(logoutUserAPI(false))
+        }
+      })
     }).catch(() => {})
   }
 
