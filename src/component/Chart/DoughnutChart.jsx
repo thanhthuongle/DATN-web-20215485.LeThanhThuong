@@ -26,14 +26,14 @@ const options = {
   }
 }
 const processData = (data, topExpense = 7) => {
-  const totalAmount = data.reduce((sum, item) => sum + item.info.amount, 0)
+  const totalAmount = data.reduce((sum, item) => sum + item.amount, 0)
 
   // Sắp xếp theo amount giảm dần
-  const sorted = [...data].sort((a, b) => b.info.amount - a.info.amount)
+  const sorted = [...data].sort((a, b) => b.amount - a.amount)
 
   const topCategories = sorted.slice(0, topExpense)
 
-  const topTotal = topCategories.reduce((sum, item) => sum + item.info.amount, 0)
+  const topTotal = topCategories.reduce((sum, item) => sum + item.amount, 0)
   const othersTotal = totalAmount - topTotal
 
   const finalData = [...topCategories]
@@ -41,26 +41,25 @@ const processData = (data, topExpense = 7) => {
   if (othersTotal > 0) {
     finalData.push({
       categoryId: 'Khac',
-      info: {
-        categoryName: 'Khác',
-        amount: othersTotal
-      }
+      categoryName: 'Khác',
+      amount: othersTotal
     })
   }
 
   const categoryLists = finalData.map(item => {
-    const percent = ((item.info.amount / totalAmount) * 100).toFixed(1)
-    return `${item.info.categoryName} (${percent}%)`
+    const percent = ((item.amount / totalAmount) * 100).toFixed(1)
+    return `${item.categoryName} (${percent}%)`
   })
 
-  const percentageLists = finalData.map(item => Number(item.info.amount))
+  const percentageLists = finalData.map(item => Number(item.amount))
 
-  const colorLists = finalData.map(item => randomColor({ luminosity: 'bright', hue: 'random', seed: slugify(item.info.categoryName) }))
+  const colorLists = finalData.map(item => randomColor({ luminosity: 'bright', hue: 'random', seed: slugify(item.categoryName) }))
 
   return { categoryLists, percentageLists, colorLists }
 }
 
 function DoughnutChart({ dataProp }) {
+  // console.log('🚀 ~ DoughnutChart ~ dataProp:', dataProp)
   const processedData =processData(dataProp)
   const data = {
     labels: processedData.categoryLists,

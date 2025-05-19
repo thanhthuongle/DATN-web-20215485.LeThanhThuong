@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,6 +10,8 @@ import {
 } from 'chart.js'
 import { Bar } from 'react-chartjs-2'
 import { Box } from '@mui/material'
+import moment from 'moment'
+import PageLoadingSpinner from '../Loading/PageLoadingSpinner'
 
 ChartJS.register(
   CategoryScale,
@@ -44,27 +46,64 @@ const options = {
   }
 }
 
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'January', 'February', 'March', 'April', 'May', 'June', 'July']
+function generateMonthlySummary(startTime, endTime, transactions) {
+  const labelData = []
+  const totalAmountData = []
 
-const data = {
-  labels,
-  datasets: [
-    {
-      label: 'Chi',
-      data: [123421, 543644, 543657, 1234245, 254236, 576867, 1767600, 123421, 543644, 543657, 1234245, 254236, 576867, 1767600],
-      backgroundColor: '#00aff0',
-      barPercentage: 0.9
-    }
-  ]
+  const current = startTime.clone().startOf('month')
+  const end = endTime.clone().startOf('month')
+
+  while (current.isSameOrBefore(end)) {
+    const monthLabel = current.format('MM/YYYY')
+    labelData.push(monthLabel)
+
+    const total = transactions
+      .filter(item => {
+        if (!item.transactionTime) return false
+        const transTime = moment(item.transactionTime)
+        return transTime.isSame(current, 'month')
+      })
+      .reduce((sum, item) => sum + item.amount, 0)
+
+    totalAmountData.push(total)
+    current.add(1, 'month')
+  }
+
+  return { labelData, totalAmountData }
 }
 
 
-function VerticalBarChart({ months, spendingAmounts}) {
+function VerticalBarChart({ startTime, endTime, transactions }) {
+  const [processedData, setProcessedData] = useState(null)
+  const data = {
+    labels: processedData?.labelData || [],
+    datasets: [
+      {
+        label: 'Chi',
+        data: processedData?.totalAmountData || [],
+        backgroundColor: '#00aff0', // #00aff0
+        barPercentage: 0.9,
+        maxBarThickness: 40
+      }
+    ]
+  }
+
+  useEffect(() => {
+    if (startTime && endTime && transactions) {
+      const result = generateMonthlySummary(startTime, endTime, transactions)
+      setProcessedData(result)
+    }
+  }, [endTime, startTime, transactions])
+
+  if (!processedData) {
+    return <PageLoadingSpinner sx={{ height: '100%' }} />
+  }
+
   return (
     <Box width='100%'>
       <Bar options={options} data={data} />
     </Box>
-)
+  )
 }
 
 export default VerticalBarChart
