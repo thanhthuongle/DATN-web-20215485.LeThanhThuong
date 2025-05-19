@@ -7,43 +7,66 @@ import TextField from '@mui/material/TextField'
 import moment from 'moment'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
-import ImageUploader from './ImageUploader'
+import ImageUploader from '~/pages/NewTransaction/ImageUploader'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import Avatar from '@mui/material/Avatar'
-import RestaurantIcon from '@mui/icons-material/Restaurant'
-import ContactSelector from './ContactSelector'
+import ContactSelector from '~/pages/NewTransaction/ContactSelector'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { createIndividualTransactionAPI, getIndividualAccountAPI } from '~/apis'
+import { getIndividualAccountAPI, getIndividualContactAPI } from '~/apis'
 import { FIELD_REQUIRED_MESSAGE } from '~/utils/validators'
 import FieldErrorAlert from '~/component/Form/FieldErrorAlert'
-import CategorySelector from './CategorySelector'
+import CategorySelector from '~/pages/NewTransaction/CategorySelector'
 import { MONEY_SOURCE_TYPE, TRANSACTION_TYPES } from '~/utils/constants'
 import { toast } from 'react-toastify'
+import _ from 'lodash'
 
-function CreateBorrowing() {
+function BorrowingModal({ transaction, handleCancelModal }) {
   const [wallets, setWallets] = useState([])
 
-  const methods = useForm()
+  const initialValues = {
+    amount: transaction.amount,
+    description: transaction?.description,
+    category: transaction.category,
+    transactionTime: moment(transaction.transactionTime),
+    repaymentTime: transaction.detailInfo?.repaymentTime ? moment(transaction.detailInfo?.repaymentTime) : null,
+    moneyTargetId: transaction.detailInfo.moneyTargetId,
+    images: transaction.detailInfo?.images
+  }
+
+  const methods = useForm({
+    defaultValues: initialValues
+  })
   const { register, setValue, control, reset, watch, formState: { errors } } = methods
   const transactionTime = watch('transactionTime')
   const repaymentTime = watch('repaymentTime')
-  const resetForm = () => {
-    reset({
-      amount: '',
-      description: '',
-      category: null,
-      transactionTime: moment(),
-      repaymentTime: null,
-      moneyTargetId: wallets[0]?._id || '',
-      lender: null,
-      images: []
-    })
+
+  const handleCancel = () => {
+    reset()
+    handleCancelModal()
   }
 
   const onSubmit = (data) => {
-    // console.log('🚀 ~ onSubmit create income ~ data:', data)
+    // console.log('🚀 ~ onSubmit create income ~ data:', data)\
+    const normalizedData = {
+      ...data,
+      lenderId: data.lender._id,
+      transactionTime: moment(data.transactionTime).toISOString()
+    }
+    delete normalizedData.lender
+    const normalizedInitial = {
+      ...initialValues,
+      lenderId: transaction.detailInfo.lenderId,
+      transactionTime: moment(initialValues.transactionTime).toISOString()
+    }
+    const isChanged = !_.isEqual(normalizedData, normalizedInitial)
+
+    if (!isChanged) {
+      console.log('❌ Dữ liệu không thay đổi, không cần update')
+      return
+    }
+    console.log('✅ Dữ liệu đã thay đổi, thực hiện cập nhật', normalizedData)
 
     const hasFiles = Array.isArray(data.images) && data.images.some(img => img.file instanceof File)
     if (hasFiles) {
@@ -68,16 +91,15 @@ function CreateBorrowing() {
         formData.append('images', imgObj.file)
       })
 
-      toast.promise(
-        createIndividualTransactionAPI(formData),
-        { pending: 'Đang tạo giao dịch...' }
-      ).then(async res => {
-        if (!res.error) {
-          toast.success('Tạo giao dịch đi vay thành công!')
-          await refreshWallets()
-          resetForm()
-        }
-      })
+      // toast.promise(
+      //   // TODO: cập nhật giao dịch
+      //   { pending: 'Đang cập nhật giao dịch...' }
+      // ).then(async res => {
+      //   if (!res.error) {
+      //     toast.success('Cập nhật giao dịch đi vay thành công!')
+      //     reset()
+      //   }
+      // })
     } else {
       if (!data.description) data.description = `Vay tiền ${data.lender.name}`
       const payload = {
@@ -94,38 +116,30 @@ function CreateBorrowing() {
         }
       }
       if (data.repaymentTime) payload.detailInfo.repaymentTime = data.repaymentTime.toISOString()
-      toast.promise(
-        createIndividualTransactionAPI(payload),
-        { pending: 'Đang tạo giao dịch...' }
-      ).then(async res => {
-        if (!res.error) {
-          toast.success('Tạo giao dịch đi vay thành công!')
-          await refreshWallets()
-          resetForm()
-        }
-      })
-    }
-  }
-
-  const refreshWallets = async () => {
-    const res = await getIndividualAccountAPI()
-    setWallets(res)
-    if (res?.[0]?._id) {
-      setValue('moneyTargetId', res[0]._id)
+      // toast.promise(
+      //   // TODO: cập nhật giao dịch
+      //   { pending: 'Đang cập nhật giao dịch...' }
+      // ).then(async res => {
+      //   if (!res.error) {
+      //     toast.success('Cập nhật giao dịch đi vay thành công!')
+      //     reset()
+      //   }
+      // })
     }
   }
 
   useEffect(() => {
     getIndividualAccountAPI().then((res) => {
       setWallets(res)
-      if (res?.[0]?._id) {
-        setValue('moneyTargetId', res[0]._id)
-      }
     })
-  }, [setValue])
+    getIndividualContactAPI().then(res => {
+      setValue('lender', res.find(item => item._id == transaction.detailInfo.lenderId))
+    })
+}, [setValue])
 
   return (
     <FormProvider {...methods}>
+      <Box bgcolor={'#00aff0'} display={'flex'} alignItems={'center'} justifyContent={'center'} paddingY={2} sx={{ fontWeight: 'bold' }}>Giao dịch đi vay</Box>
       <form onSubmit={methods.handleSubmit(onSubmit)}>
         <Box display={'flex'} flexDirection={'column'} gap={2} marginTop={2}>
           {/* Số tiền */}
@@ -358,8 +372,9 @@ function CreateBorrowing() {
           </Box>
 
           {/* submit create new expense */}
-          <Box display={'flex'} justifyContent={'center'} marginTop={8}>
-            <Button variant='contained' type="submit" className='interceptor-loading'>Tạo giao dịch</Button>
+          <Box display={'flex'} justifyContent={'center'} marginTop={2} gap={2}>
+            <Button variant='outlined' onClick={handleCancel}>Hủy</Button>
+            <Button variant='contained' type="submit" className='interceptor-loading'>Cập nhật</Button>
           </Box>
         </Box>
       </form>
@@ -367,4 +382,4 @@ function CreateBorrowing() {
   )
 }
 
-export default CreateBorrowing
+export default BorrowingModal

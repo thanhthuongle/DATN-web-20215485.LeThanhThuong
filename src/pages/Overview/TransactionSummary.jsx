@@ -103,7 +103,7 @@ const processData = (data) => {
 
 function TransactionSummary() {
   const [data, setData] = useState(null)
-  // console.log('🚀 ~ TransactionSummary ~ data:', data)
+  console.log('🚀 ~ TransactionSummary ~ data:', data)
   const [time, setTime] = useState(timeOptions.THIS_MONTH)
 
   useEffect(() => {
@@ -149,89 +149,90 @@ function TransactionSummary() {
           </FormControl>
         </Box>
       </Box>
-      {data?.income == 0 && data?.expense == 0 && (
-        <Box
-          display='flex'
-          justifyContent='center'
-          paddingY='32px'
-        >
-          Bạn chưa có giao dịch thu chi nào trong {time}.
-        </Box>
-      )}
-      {data?.income !== 0 && data?.expense !== 0 && (
-        <Grid
-          width="100%"
-          container
-          spacing={{ xs: 2, sm: 0 }}
-        >
-          <Box width={{ xs: '100%', sm: '50%' }} display='flex' sx={{ gap: 1 }}>
-            <Box width='20%'>
-              <BarChart income={data.income} expense={data.expense} />
-            </Box>
-            <Stack width='80%' spacing={2} sx={{ justifyContent: 'end', pb: 1 }}>
-              <Box color='#27AE60' display='flex' justifyContent='space-between' alignItems='center'>
-                <Box display='flex' alignItems='center' gap={0.5}>
-                  <CircleIcon
-                    color='inherit'
-                    fontSize='small'
-                    sx={{
-                      width: '12px',
-                      height: '12px'
-                    }}
-                  />
-                  <Typography color='text.primary'>Thu</Typography>
-                </Box>
-                <NumericFormat
-                  displayType='text'
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  allowNegative={false}
-                  suffix="&nbsp;₫"
-                  value={data.income}
-                />
+      {(data?.income == 0 && data?.expense == 0)
+        ? (
+          <Box
+            display='flex'
+            justifyContent='center'
+            paddingY='32px'
+          >
+            Bạn chưa có giao dịch thu chi nào trong {time}.
+          </Box>
+        )
+        : (
+          <Grid
+            width="100%"
+            container
+            spacing={{ xs: 2, sm: 0 }}
+          >
+            <Box width={{ xs: '100%', sm: '50%' }} display='flex' sx={{ gap: 1 }}>
+              <Box width='20%'>
+                <BarChart income={data.income} expense={data.expense} />
               </Box>
-              <Box color='#E74C3C' display='flex' justifyContent='space-between' alignItems='center'>
-                <Box display='flex' alignItems='center' gap={0.5}>
-                  <CircleIcon
-                    color='inherit'
-                    fontSize='small'
-                    sx={{
-                      width: '12px',
-                      height: '12px'
-                    }}
-                  />
-                  <Typography color='text.primary'>Chi</Typography>
-                </Box>
-                <NumericFormat
-                  displayType='text'
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  allowNegative={false}
-                  suffix="&nbsp;₫"
-                  value={data.expense}
-                />
-              </Box>
-              <Box>
-                <Divider />
-                <Box display='flex' justifyContent='end' paddingTop='8px'>
+              <Stack width='80%' spacing={2} sx={{ justifyContent: 'end', pb: 1 }}>
+                <Box color='#27AE60' display='flex' justifyContent='space-between' alignItems='center'>
+                  <Box display='flex' alignItems='center' gap={0.5}>
+                    <CircleIcon
+                      color='inherit'
+                      fontSize='small'
+                      sx={{
+                        width: '12px',
+                        height: '12px'
+                      }}
+                    />
+                    <Typography color='text.primary'>Thu</Typography>
+                  </Box>
                   <NumericFormat
                     displayType='text'
                     thousandSeparator="."
                     decimalSeparator=","
-                    allowNegative={true}
+                    allowNegative={false}
                     suffix="&nbsp;₫"
-                    value={data.income-data.expense}
+                    value={data.income}
                   />
                 </Box>
-              </Box>
-            </Stack>
-          </Box>
+                <Box color='#E74C3C' display='flex' justifyContent='space-between' alignItems='center'>
+                  <Box display='flex' alignItems='center' gap={0.5}>
+                    <CircleIcon
+                      color='inherit'
+                      fontSize='small'
+                      sx={{
+                        width: '12px',
+                        height: '12px'
+                      }}
+                    />
+                    <Typography color='text.primary'>Chi</Typography>
+                  </Box>
+                  <NumericFormat
+                    displayType='text'
+                    thousandSeparator="."
+                    decimalSeparator=","
+                    allowNegative={false}
+                    suffix="&nbsp;₫"
+                    value={data.expense}
+                  />
+                </Box>
+                <Box>
+                  <Divider />
+                  <Box display='flex' justifyContent='end' paddingTop='8px'>
+                    <NumericFormat
+                      displayType='text'
+                      thousandSeparator="."
+                      decimalSeparator=","
+                      allowNegative={true}
+                      suffix="&nbsp;₫"
+                      value={data.income-data.expense}
+                    />
+                  </Box>
+                </Box>
+              </Stack>
+            </Box>
 
-          <Box width={{ xs: '100%', sm: '50%' }} display='flex' sx={{ paddingLeft: { xs: 0, sm: 8 }, paddingBottom: 1 }}>
-            <DoughnutChart dataProp={data.groupedByCategory} />
-          </Box>
-        </Grid>
-      )}
+            <Box width={{ xs: '100%', sm: '50%' }} display='flex' sx={{ paddingLeft: { xs: 0, sm: 8 }, paddingBottom: 1 }}>
+              <DoughnutChart dataProp={data.groupedByCategory} />
+            </Box>
+          </Grid>
+        )}
     </StyledBox>
   )
 }

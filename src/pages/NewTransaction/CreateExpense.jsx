@@ -235,6 +235,14 @@ function CreateExpense() {
                         onChange={onChange}
                         onBlur={onBlur}
                         error={!!errors['moneyFromId']}
+                        MenuProps={{
+                          PaperProps: {
+                            style: {
+                              maxHeight: 250,
+                              overflowY: 'auto'
+                            }
+                          }
+                        }}
                         renderValue={(wallet) => {
                           const selectedWallet = wallets.find(w => w._id === wallet)
                           return (

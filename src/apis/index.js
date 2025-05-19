@@ -41,6 +41,10 @@ export const getIndividualDetailTransactions = async (data) => {
   const response = await authorizedAxiosInstance.post(`${apiRoot}/transactions/individual/detailTransactions`, data)
   return response.data
 }
+export const getDetailIndividualTransaction = async (transactionId) => {
+  const response = await authorizedAxiosInstance.get(`${apiRoot}/transactions/individual/${transactionId}`)
+  return response.data
+}
 
 /** category */
 export const getIndividualCategoryAPI = async (searchPath) => {
