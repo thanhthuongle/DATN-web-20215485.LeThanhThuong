@@ -66,7 +66,6 @@ export const getIndividualAccountAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${apiRoot}/accounts/individual`)
   return response.data
 }
-
 export const createIndividualAccountAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${apiRoot}/accounts/individual`, data)
   return response.data
@@ -98,10 +97,19 @@ export const createIndividualAccumulationAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${apiRoot}/accumulations/individual`, data)
   return response.data
 }
+export const getIndividualAccumulationAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${apiRoot}/accumulations/individual`)
+  return response.data
+}
+
 
 /** Saving */
 export const createIndividualSavingAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${apiRoot}/savings/individual`, data)
+  return response.data
+}
+export const getIndividualSavingAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${apiRoot}/savings/individual`)
   return response.data
 }
 

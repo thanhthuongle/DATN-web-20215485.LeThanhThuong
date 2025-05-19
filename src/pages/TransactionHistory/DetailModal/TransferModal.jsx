@@ -14,23 +14,33 @@ import Select from '@mui/material/Select'
 import Avatar from '@mui/material/Avatar'
 import { toast } from 'react-toastify'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { getIndividualAccountAPI } from '~/apis'
+import { getIndividualAccountAPI, getIndividualAccumulationAPI, getIndividualSavingAPI } from '~/apis'
 import { FIELD_REQUIRED_MESSAGE } from '~/utils/validators'
 import FieldErrorAlert from '~/component/Form/FieldErrorAlert'
 import { MONEY_SOURCE_TYPE, TRANSACTION_TYPES } from '~/utils/constants'
 import CategorySelector from '~/pages/NewTransaction/CategorySelector'
 import _ from 'lodash'
 
+const moneyKey = {
+  [MONEY_SOURCE_TYPE.ACCOUNT]: 'accountName',
+  [MONEY_SOURCE_TYPE.ACCUMULATION]: 'accumulationName',
+  [MONEY_SOURCE_TYPE.SAVINGS_ACCOUNT]: 'savingsAccountName'
+}
+
 
 function TransferModal({ transaction, handleCancelModal }) {
+  console.log('🚀 ~ TransferModal ~ transaction:', transaction)
   const [wallets, setWallets] = useState([])
+  const [wallets1, setWallets1] = useState([])
 
   const initialValues = {
     amount: transaction.amount,
     description: transaction?.description,
     category: transaction.category,
     transactionTime: moment(transaction.transactionTime),
+    moneyFromType: transaction.detailInfo.moneyFromType,
     moneyFromId: transaction.detailInfo.moneyFromId,
+    moneyTargetType: transaction.detailInfo.moneyTargetType,
     moneyTargetId: transaction.detailInfo.moneyTargetId,
     images: transaction.detailInfo?.images
   }
@@ -122,9 +132,21 @@ function TransferModal({ transaction, handleCancelModal }) {
   }
 
   useEffect(() => {
-    getIndividualAccountAPI().then((res) => {
-      setWallets(res)
-    })
+    const moneyHandle = {
+      [MONEY_SOURCE_TYPE.ACCOUNT]: getIndividualAccountAPI,
+      [MONEY_SOURCE_TYPE.ACCUMULATION]: getIndividualAccumulationAPI,
+      [MONEY_SOURCE_TYPE.SAVINGS_ACCOUNT]: getIndividualSavingAPI
+    }
+    const fetchData = async () => {
+      moneyHandle[transaction.detailInfo.moneyFromType]().then(res => {
+        setWallets(res)
+      })
+      moneyHandle[transaction.detailInfo.moneyTargetType]().then(res => {
+        setWallets1(res)
+      })
+    }
+    
+    fetchData()
   }, [setValue])
 
   return (
@@ -288,7 +310,7 @@ function TransferModal({ transaction, handleCancelModal }) {
                         onBlur={onBlur}
                         error={!!errors['moneyTargetId']}
                         renderValue={(value) => {
-                          const selectedWallet = wallets.find(w => w._id === value)
+                          const selectedWallet = wallets1.find(w => w._id === value)
                           return (
                             <Box display="flex" alignItems="center" gap={1}>
                               <Avatar
@@ -304,16 +326,16 @@ function TransferModal({ transaction, handleCancelModal }) {
                                 {' '}
                               </ Avatar>
                               <Typography noWrap>
-                                {selectedWallet?.accountName}&nbsp;({selectedWallet?.balance?.toLocaleString()}&nbsp;₫)
+                                {selectedWallet?.[moneyKey[transaction.detailInfo.moneyTargetType]]}&nbsp;({selectedWallet?.balance?.toLocaleString()}&nbsp;₫)
                               </Typography>
                             </Box>
                           )
                         }}
                       >
-                        {wallets?.map((w, index) => (
+                        {wallets1?.map((w, index) => (
                           <MenuItem value={w._id} key={index}>
                             <FinanceItem1
-                              title={w.accountName}
+                              title={w._id}
                               amount={w.balance}
                             />
                           </MenuItem>
@@ -374,7 +396,13 @@ function TransferModal({ transaction, handleCancelModal }) {
           {/* submit create new expense */}
           <Box display={'flex'} justifyContent={'center'} marginTop={2} gap={2}>
             <Button variant='outlined' onClick={handleCancel}>Hủy</Button>
-            <Button variant='contained' type="submit" className='interceptor-loading'>Cập nhật</Button>
+            <Button
+              variant='contained'
+              type="submit"
+              className='interceptor-loading'
+              disabled={
+                ((transaction.detailInfo.moneyFromType == MONEY_SOURCE_TYPE.SAVINGS_ACCOUNT) || transaction.detailInfo.moneyTargetType == MONEY_SOURCE_TYPE.SAVINGS_ACCOUNT) ? true : false}
+            >Cập nhật</Button>
           </Box>
         </Box>
       </form>

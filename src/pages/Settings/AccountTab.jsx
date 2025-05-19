@@ -1,4 +1,3 @@
-import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Avatar from '@mui/material/Avatar'
@@ -16,13 +15,12 @@ import { FIELD_REQUIRED_MESSAGE, singleFileValidator } from '~/utils/validators'
 import FieldErrorAlert from '~/component/Form/FieldErrorAlert'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectCurrentUser, updateUserAPI } from '~/redux/user/userSlice'
 
 function AccountTab() {
-  const currentUser = { // Lấy data từ redux
-    email: 'Thuong.LT215485@sis.hust.edu.vn',
-    username: 'Thuong.LT215485',
-    displayName: 'Thuong.LT215485'
-  }
+  const dispatch = useDispatch()
+  const currentUser = useSelector(selectCurrentUser)
 
   // Những thông tin của user để init vào form
   const initialGeneralForm = {
@@ -35,15 +33,23 @@ function AccountTab() {
 
   const submitChangeGeneralInformation = (data) => {
     const { displayName } = data
-    console.log('displayName: ', displayName)
+    // console.log('displayName: ', displayName)
 
     if (displayName === currentUser?.displayName) return
 
     // Gọi API update thoog tin...
+    toast.promise(
+      dispatch(updateUserAPI({ displayName })),
+      { pending: 'Đang cập nhật...' }
+    ).then(res => {
+      if (!res.error) {
+        toast.success('Cập nhật thông tin người dùng thành công!')
+      }
+    })
   }
 
   const uploadAvatar = (e) => {
-    console.log('e.target?.files[0]: ', e.target?.files[0])
+    // console.log('e.target?.files[0]: ', e.target?.files[0])
     const error = singleFileValidator(e.target?.files[0])
     if (error) {
       toast.error(error)
@@ -53,12 +59,22 @@ function AccountTab() {
     let reqData = new FormData()
     reqData.append('avatar', e.target?.files[0])
     // Cách để log được dữ liệu thông qua FormData
-    console.log('reqData: ', reqData)
-    for (const value of reqData.values()) {
-      console.log('reqData Value: ', value)
-    }
+    // console.log('reqData: ', reqData)
+    // for (const value of reqData.values()) {
+    //   console.log('reqData Value: ', value)
+    // }
 
     // Gọi API update avatar...
+    toast.promise(
+      dispatch(updateUserAPI( reqData )),
+      { pending: 'Đang cập nhật...' }
+    ).then(res => {
+      if (!res.error) {
+        toast.success('User Updated successfully!')
+      }
+      // Lưu ý: Dù có lỗi hoặc thành công cũng phải clear giá trị của file input, nếu không thì sẽ không thể chọn cùng 1 file tiếp được
+      e.target.value = ''
+    })
   }
 
   return (

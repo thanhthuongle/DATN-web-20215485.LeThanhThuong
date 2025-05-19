@@ -64,6 +64,13 @@ function SideBar() {
           Tổng quan
         </SidebarItem>
       </Link>
+      <Link to='/new-transaction' style={{ textDecoration: 'none', color: 'inherit' }}>
+        <SidebarItem className={isActive('/new-transaction') ? 'active' : ''}>
+          <LibraryAddIcon fontSize="small" />
+          Tạo giao dịch
+        </SidebarItem>
+      </Link>
+      <Divider sx={{ my: 1 }} />
       <Link to='/money-sources' style={{ textDecoration: 'none', color: 'inherit' }}>
         <SidebarItem className={isActive('/money-sources') ? 'active' : ''}>
           <AccountBalanceWalletIcon fontSize="small" />
@@ -89,18 +96,12 @@ function SideBar() {
           Theo dõi vay nợ
         </SidebarItem>
       </Link>
-      <Link to='/transaction-history' style={{ textDecoration: 'none', color: 'inherit' }}>
-        <SidebarItem className={isActive('/transaction-history') ? 'active' : ''}>
-          <HistoryIcon fontSize="small" />
-          Lịch sử giao dịch
-        </SidebarItem>
-      </Link>
       <>
         <Divider sx={{ my: 1 }} />
-        <Link to='/new-transaction' style={{ textDecoration: 'none', color: 'inherit' }}>
-          <SidebarItem className={isActive('/new-transaction') ? 'active' : ''}>
-            <LibraryAddIcon fontSize="small" />
-            Tạo giao dịch
+        <Link to='/transaction-history' style={{ textDecoration: 'none', color: 'inherit' }}>
+          <SidebarItem className={isActive('/transaction-history') ? 'active' : ''}>
+            <HistoryIcon fontSize="small" />
+            Lịch sử giao dịch
           </SidebarItem>
         </Link>
       </>
