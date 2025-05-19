@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { StyledBox } from './Overview'
 import { Typography, Box, Button, Grid } from '@mui/material'
 import { NumericFormat } from 'react-number-format'
-import moment from 'moment'
 import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
 import Divider from '@mui/material/Divider'
 import { replaceLastSegment } from '~/utils/pathUtils'
@@ -11,19 +10,25 @@ import { getIndividualDetailTransactions, getIndividualTransactionAPI } from '~/
 import { TRANSACTION_TYPES } from '~/utils/constants'
 
 const groupTransaction = (data, key) => {
+  let totalAmount = {}
   const grouped = data.reduce((acc, transaction) => {
     const keyValue = transaction.detailInfo?.[key]
 
     if (!acc[keyValue]) {
       acc[keyValue] = []
     }
+    if (!totalAmount[keyValue]) totalAmount[keyValue] = 0
 
     acc[keyValue].push(transaction)
+
+    totalAmount[keyValue] += transaction.amount
+    // TODO: Tính thêm khoản đã trả hoăc đã thu
     return acc
   }, {})
 
-  const groupedArray = Object.entries(grouped).map(([keyValue, transactions])=> ({
+  const groupedArray = Object.entries(grouped).map(([keyValue, transactions]) => ({
     [key]: keyValue,
+    totalAmount: totalAmount[keyValue],
     transactions
   }))
 
@@ -155,7 +160,7 @@ function DebtTracking() {
                   <FinanceItem1
                     key={item.borrowerId}
                     title={item?.transactions[0].detailInfo.borrower.name}
-                    amount={item.transactions.reduce((sum, transaction) => { return sum + (Number(transaction.amount) || 0) }, 0)}
+                    amount={item.totalAmount}
                     amountColor={'#27ae60'} // #27ae60
                     sx={{
                       borderTop: 1,
@@ -221,7 +226,7 @@ function DebtTracking() {
                   <FinanceItem1
                     key={item.lenderId}
                     title={item?.transactions[0].detailInfo.lender.name}
-                    amount={item.transactions.reduce((sum, transaction) => { return sum + (Number(transaction.amount) || 0) }, 0)}
+                    amount={item.totalAmount}
                     amountColor={'#e74c3c'} // #e74c3c
                     sx={{
                       borderTop: 1,
