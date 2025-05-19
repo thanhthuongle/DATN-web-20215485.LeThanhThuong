@@ -26,13 +26,28 @@ export const createIndividualTransactionAPI = async (data) => {
   return response.data
 }
 export const getIndividualTransactionAPI = async (searchPath) => {
-  const response = await authorizedAxiosInstance.get(`${apiRoot}/transactions/individual${searchPath}`)
+  const url = searchPath
+    ? `${apiRoot}/transactions/individual${searchPath}`
+    : `${apiRoot}/transactions/individual`
+
+  const response = await authorizedAxiosInstance.get(url)
+  return response.data
+}
+export const getIndividualRecentTransactions = async () => {
+  const response = await authorizedAxiosInstance.get(`${apiRoot}/transactions/individual/recentTransactions`)
+  return response.data
+}
+export const getIndividualDetailTransactions = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${apiRoot}/transactions/individual/detailTransactions`, data)
   return response.data
 }
 
 /** category */
 export const getIndividualCategoryAPI = async (searchPath) => {
-  const response = await authorizedAxiosInstance.get(`${apiRoot}/categories/individual${searchPath}`)
+  const url = searchPath
+    ? `${apiRoot}/categories/individual${searchPath}`
+    : `${apiRoot}/categories/individual`
+  const response = await authorizedAxiosInstance.get(url)
   return response.data
 }
 

@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box'
 import React, { useEffect, useState } from 'react'
 import Grid from '@mui/material/Grid'
-import Button from '@mui/material/Button'
 import WalletCard from './WalletCard'
 import SavingCard from './SavingCard'
 import AccumulateCard from './AccumulateCard'
@@ -13,6 +12,7 @@ import CreateSaving from './Create/CreateSaving'
 
 function MoneySources() {
   const [MoneySourceData, setMoneySourceData] = useState(null)
+  console.log('🚀 ~ MoneySources ~ MoneySourceData:', MoneySourceData)
 
   const afterCreateNew = () => {
     getIndividualMoneySourceAPI().then( (res) => {

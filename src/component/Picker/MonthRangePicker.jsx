@@ -28,9 +28,9 @@
 // }
 
 // MonthRangePicker.jsx
-import React from 'react';
-import { Box, TextField, Typography } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import React from 'react'
+import { Box, TextField, Typography } from '@mui/material'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 
 const MonthRangePicker = ({ start, end, onChange, label }) => {
   return (
@@ -42,24 +42,24 @@ const MonthRangePicker = ({ start, end, onChange, label }) => {
           label="Từ tháng"
           value={start}
           onChange={(newValue) => {
-            onChange({ start: newValue, end });
+            onChange({ start: newValue, end })
           }}
-          renderInput={(params) => <TextField {...params} />}
+          // renderInput={(params) => <TextField {...params} />}
         />
         <DatePicker
           views={['year', 'month']}
           label="Đến tháng"
           value={end}
           onChange={(newValue) => {
-            onChange({ start, end: newValue });
+            onChange({ start, end: newValue })
           }}
-          renderInput={(params) => <TextField {...params} />}
+          // renderInput={(params) => <TextField {...params} />}
         />
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-export default MonthRangePicker;
+export default MonthRangePicker
 
 

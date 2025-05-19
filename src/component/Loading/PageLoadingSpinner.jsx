@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import { Typography } from '@mui/material'
 
-function PageLoadingSpinner({ caption }) {
+function PageLoadingSpinner({ caption, sx = {} }) {
   return (
     <Box sx={{
       display: 'flex',
@@ -10,7 +10,8 @@ function PageLoadingSpinner({ caption }) {
       justifyContent: 'center',
       gap: 2,
       width: '100%',
-      height: '100vh'
+      height: '100vh',
+      ...sx
     }}>
       <CircularProgress />
       <Typography>{caption}</Typography>

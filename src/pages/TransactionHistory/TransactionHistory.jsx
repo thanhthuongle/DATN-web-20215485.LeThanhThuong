@@ -18,14 +18,6 @@ import { getIndividualTransactionAPI } from '~/apis'
 import { createSearchParams } from 'react-router-dom'
 import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
 
-const categoryLists = ['Hạng mục 1(10%)', 'Hạng mục 2(15%)', 'Hạng mục 3(35%)']
-const percentageLists = [15, 15, 30]
-const colorLists = [
-  'rgb(255, 99, 132)',
-  'rgb(54, 162, 235)',
-  'rgb(255, 205, 86)'
-]
-
 const transactionHistoryType = {
   ALL: 'Toàn bộ',
   INCOME: 'Tiền vào',
@@ -81,7 +73,7 @@ function processDataRaw(transactions) {
 
   const groupedByCategory = Object.entries(result.byCategory).map(([categoryId, info]) => ({
     categoryId,
-    info
+    ...info
   }))
 
   return {

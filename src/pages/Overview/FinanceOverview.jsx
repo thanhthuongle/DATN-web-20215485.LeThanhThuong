@@ -45,19 +45,22 @@ function FinanceOverview({ totalAmount, availableAmount }) {
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box>
             <Box display="flex" alignItems="center">
-              <Box width={120}>Tổng số dư</Box>
+              <Box >Tổng số dư&nbsp;:&nbsp;&nbsp;</Box>
               <NumericFormat
                 displayType='text'
                 thousandSeparator="."
                 decimalSeparator=","
-                allowNegative={false}
-                prefix=': '
+                allowNegative={true}
                 suffix="&nbsp;₫"
                 value={totalAmount}
-                renderText={(value) => (visibility ? `${value}` : <Box display="flex" alignItems="center">: &#42;&#42;&#42;&#42;&#42;&#42;</Box>)}
+                renderText={(value) => (
+                  visibility
+                    ? <Typography sx={{ color: Number(totalAmount) < 0 ? '#e74c3c' : '' }}>{value}</Typography>
+                    : <Box display="flex" alignItems="center">&#42;&#42;&#42;&#42;&#42;&#42;</Box>
+                )}
               />
             </Box>
-            <Box display="flex" alignItems="center">
+            {/* <Box display="flex" alignItems="center">
               <Box width={120}>Số dư khả dụng</Box>
               <NumericFormat
                 displayType='text'
@@ -69,7 +72,7 @@ function FinanceOverview({ totalAmount, availableAmount }) {
                 value={availableAmount}
                 renderText={(value) => (visibility ? `${value}` : <Box display="flex" alignItems="center">: &#42;&#42;&#42;&#42;&#42;&#42;</Box>)}
               />
-            </Box>
+            </Box> */}
           </Box>
           <Box width="86px" display="flex" justifyContent="center">
             {visibility ? (

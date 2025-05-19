@@ -1,20 +1,32 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { StyledBox } from './Overview'
 import { Divider, Grid, Typography, Box, Button } from '@mui/material'
 import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
-import moment from 'moment'
 import { Link, useLocation } from 'react-router-dom'
 import { replaceLastSegment } from '~/utils/pathUtils'
+import { getIndividualRecentTransactions } from '~/apis'
+import { TRANSACTION_TYPES } from '~/utils/constants'
 
-const historyLists = Array.from({ length: 21 }, (_, i) => ({
-  category: `Hạng mục ${i}`,
-  date: moment(new Date()).format('DD/MM/YYYY'),
-  amount: 12345678,
-  amountColor: ((i+1)%4==0) ? '#27ae60': '#e74c3c'
-}))
+const redTypes = [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.CONTRIBUTION]
+const greenTypes = [TRANSACTION_TYPES.INCOME, TRANSACTION_TYPES.BORROWING]
 
 function RecentTransactions() {
   const location = useLocation()
+  const [recentTransactions, setRecentTransactions] = useState(null)
+  // console.log('🚀 ~ RecentTransactions ~ recentTransactions:', recentTransactions)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      getIndividualRecentTransactions().then((res) => {
+        setRecentTransactions(res)
+      })
+    }
+    fetchData()
+  }, [])
+
+  if (!recentTransactions) {
+    return <></>
+  }
   return (
     <StyledBox
       width='100%'
@@ -36,16 +48,16 @@ function RecentTransactions() {
           <Typography variant="body1">Xem tất cả</Typography>
         </Button>
       </Box>
-      {historyLists && historyLists?.length > 0 ? (
+      {recentTransactions && Array.isArray(recentTransactions) && recentTransactions.length > 0 ? (
         <Grid container spacing={{ xs: 0, sm: 2 }}>
-          <Grid size={{ xs: 12, sm: 5.9 }}>
-            {historyLists.slice(0, Math.ceil(historyLists.length / 2)).map((history, index) => (
+          <Grid size={{ xs: 12, sm: 5.8 }}>
+            {recentTransactions.slice(0, Math.ceil(recentTransactions.length / 2)).map((item) => (
               <FinanceItem1
-                key={index}
-                title={history.category}
-                description={history.date}
-                amount={history.amount}
-                amountColor={history.amountColor}
+                key={item._id}
+                title={item.name}
+                description={item?.description}
+                amount={item.amount}
+                amountColor={ redTypes.includes(item.type) ? '#e74c3c' : (greenTypes.includes(item.type) ? '#27ae60' : '')} // #e74c3c, #27ae60
                 sx={{
                   borderTop: 1,
                   borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
@@ -63,14 +75,14 @@ function RecentTransactions() {
             }}
           />
 
-          <Grid size={{ xs: 12, sm: 5.9 }}>
-            {historyLists.slice(Math.ceil(historyLists.length / 2)).map((history, index) => (
+          <Grid size={{ xs: 12, sm: 5.8 }}>
+            {recentTransactions.slice(Math.ceil(recentTransactions.length / 2)).map((item) => (
               <FinanceItem1
-                key={index}
-                title={history.category}
-                description={history.date}
-                amount={history.amount}
-                amountColor={history.amountColor}
+                key={item._id}
+                title={item.name}
+                description={item?.description}
+                amount={item.amount}
+                amountColor={ redTypes.includes(item.type) ? '#e74c3c' : (greenTypes.includes(item.type) ? '#27ae60' : '')} // #e74c3c, #27ae60
                 sx={{
                   borderTop: 1,
                   borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'

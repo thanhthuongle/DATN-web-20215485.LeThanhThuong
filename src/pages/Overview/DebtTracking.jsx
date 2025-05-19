@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { StyledBox } from './Overview'
 import { Typography, Box, Button, Grid } from '@mui/material'
 import { NumericFormat } from 'react-number-format'
@@ -6,22 +6,85 @@ import moment from 'moment'
 import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
 import Divider from '@mui/material/Divider'
 import { replaceLastSegment } from '~/utils/pathUtils'
-import { Link, useLocation } from 'react-router-dom'
+import { createSearchParams, Link, useLocation } from 'react-router-dom'
+import { getIndividualDetailTransactions, getIndividualTransactionAPI } from '~/apis'
+import { TRANSACTION_TYPES } from '~/utils/constants'
 
-const loanLists = Array.from({ length: 10 }, (_, i) => ({
-  contact: `Contact cho vay drfhgdfhfghjfghgdf ${i}`,
-  repaymentDate: `ngày trả: ${moment(new Date()).format('DD/MM/YYYY')}`,
-  amount: '123456754'
-}))
+const groupTransaction = (data, key) => {
+  const grouped = data.reduce((acc, transaction) => {
+    const keyValue = transaction.detailInfo?.[key]
 
-const debtLists = Array.from({ length: 10 }, (_, i) => ({
-  contact: `Contact vay ${i}`,
-  repaymentDate: `ngày trả: ${moment(new Date()).format('DD/MM/YYYY')}`,
-  amount: 1234567
-}))
+    if (!acc[keyValue]) {
+      acc[keyValue] = []
+    }
+
+    acc[keyValue].push(transaction)
+    return acc
+  }, {})
+
+  const groupedArray = Object.entries(grouped).map(([keyValue, transactions])=> ({
+    [key]: keyValue,
+    transactions
+  }))
+
+  return groupedArray
+}
 
 function DebtTracking() {
   const location = useLocation()
+  const [data, setData] = useState(null)
+  console.log('🚀 ~ DebtTracking ~ data:', data)
+
+  const updateStateData = async (res) => {
+    let totalLoan = 0
+    let totalBorrowing = 0
+    let loanTransactions = res.filter(item => item.type == TRANSACTION_TYPES.LOAN)
+    let borrowingTransactions = res.filter(item => item.type == TRANSACTION_TYPES.BORROWING)
+
+    const loanDetails = await getIndividualDetailTransactions({ type: TRANSACTION_TYPES.LOAN, transactionIds: loanTransactions.map(item => item._id) })
+    const borrowingDetails = await getIndividualDetailTransactions({ type: TRANSACTION_TYPES.BORROWING, transactionIds: borrowingTransactions.map(item => item._id) })
+
+    loanTransactions = loanTransactions.map(transaction => {
+      totalLoan += transaction.amount
+      const detail = loanDetails.find(d => d.transactionId.toString() === transaction._id.toString())
+      return {
+        ...transaction,
+        detailInfo: detail || null
+      }
+    })
+    borrowingTransactions = borrowingTransactions.map(transaction => {
+      totalBorrowing += transaction.amount
+      const detail = borrowingDetails.find(d => d.transactionId.toString() === transaction._id.toString())
+      return {
+        ...transaction,
+        detailInfo: detail || null
+      }
+    })
+
+    const loanGroupedTransactions = groupTransaction(loanTransactions, 'borrowerId')
+    const borrowingGroupedTransactions = groupTransaction(borrowingTransactions, 'lenderId')
+
+    setData({
+      totalLoan,
+      totalBorrowing,
+      loanGroupedTransactions,
+      borrowingGroupedTransactions
+    })
+  }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const searchPath = `?${createSearchParams({ 'q[type]': [TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.BORROWING] })}`
+      // TODO: Lấy thêm giao dịch thu nợ và trả nợ
+      getIndividualTransactionAPI(searchPath).then(updateStateData)
+    }
+
+    fetchData()
+  }, [])
+
+  if (!data) {
+    return <></>
+  }
   return (
     <StyledBox
       width='100%'
@@ -78,7 +141,7 @@ function DebtTracking() {
                 decimalSeparator=","
                 allowNegative={false}
                 suffix="&nbsp;₫"
-                value={1234567}
+                value={data.totalLoan}
                 style={{ width: '50%', display: 'flex', justifyContent: 'center' }}
               />
             </Box>
@@ -87,15 +150,13 @@ function DebtTracking() {
               maxHeight='800px'
               overflow='auto'
             >
-              {loanLists && loanLists?.length > 0 ? (
-                loanLists.map((loan, index) => (
+              {data.loanGroupedTransactions && Array.isArray(data.loanGroupedTransactions) && data.loanGroupedTransactions?.length > 0 ? (
+                data.loanGroupedTransactions.map((item) => (
                   <FinanceItem1
-                    key={index}
-                    title={loan?.contact}
-                    description={loan.repaymentDate}
-                    amount={loan.amount}
-                    amountColor={'#27ae60'}
-                    amountDesc={'dhsabydwaegifbniewuhbfuigewuifbiugidgfidg'}
+                    key={item.borrowerId}
+                    title={item?.transactions[0].detailInfo.borrower.name}
+                    amount={item.transactions.reduce((sum, transaction) => { return sum + (Number(transaction.amount) || 0) }, 0)}
+                    amountColor={'#27ae60'} // #27ae60
                     sx={{
                       borderTop: 1,
                       borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
@@ -145,7 +206,7 @@ function DebtTracking() {
                 decimalSeparator=","
                 allowNegative={false}
                 suffix="&nbsp;₫"
-                value={1234567}
+                value={data.totalBorrowing}
                 style={{ width: '50%', display: 'flex', justifyContent: 'center' }}
               />
             </Box>
@@ -155,14 +216,13 @@ function DebtTracking() {
               maxHeight='800px'
               overflow='auto'
             >
-              {debtLists && debtLists?.length > 0 ? (
-                debtLists.map((loan, index) => (
+              {data.borrowingGroupedTransactions && Array.isArray(data.borrowingGroupedTransactions) && data.borrowingGroupedTransactions?.length > 0 ? (
+                data.borrowingGroupedTransactions.map((item) => (
                   <FinanceItem1
-                    key={index}
-                    title={loan?.contact}
-                    description={loan.repaymentDate}
-                    amount={loan.amount}
-                    amountColor={'#e74c3c'}
+                    key={item.lenderId}
+                    title={item?.transactions[0].detailInfo.lender.name}
+                    amount={item.transactions.reduce((sum, transaction) => { return sum + (Number(transaction.amount) || 0) }, 0)}
+                    amountColor={'#e74c3c'} // #e74c3c
                     sx={{
                       borderTop: 1,
                       borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
