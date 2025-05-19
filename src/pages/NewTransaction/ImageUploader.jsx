@@ -11,7 +11,7 @@ export default function ImageUploader({ value = [], onChange }) {
 
   const handleImageChange = (event) => {
     const files = Array.from(event.target.files)
-    const existingKeys = new Set(images.map(img => img.file.name + img.file.size + img.file.lastModified))
+    const existingKeys = new Set(images.map(img => img?.file?.name + img?.file?.size + img?.file?.lastModified))
 
     const newImages = []
     for (let file of files) {

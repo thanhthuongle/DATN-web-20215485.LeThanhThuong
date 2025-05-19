@@ -7,39 +7,62 @@ import TextField from '@mui/material/TextField'
 import moment from 'moment'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
-import ImageUploader from './ImageUploader'
+import ImageUploader from '~/pages/NewTransaction/ImageUploader'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import Avatar from '@mui/material/Avatar'
 import { toast } from 'react-toastify'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { createIndividualTransactionAPI, getIndividualAccountAPI } from '~/apis'
+import { getIndividualAccountAPI } from '~/apis'
 import { FIELD_REQUIRED_MESSAGE } from '~/utils/validators'
 import FieldErrorAlert from '~/component/Form/FieldErrorAlert'
 import { MONEY_SOURCE_TYPE, TRANSACTION_TYPES } from '~/utils/constants'
-import CategorySelector from './CategorySelector'
+import CategorySelector from '~/pages/NewTransaction/CategorySelector'
+import _ from 'lodash'
 
-function CreateTransfer() {
+
+function TransferModal({ transaction, handleCancelModal }) {
   const [wallets, setWallets] = useState([])
 
-  const methods = useForm()
+  const initialValues = {
+    amount: transaction.amount,
+    description: transaction?.description,
+    category: transaction.category,
+    transactionTime: moment(transaction.transactionTime),
+    moneyFromId: transaction.detailInfo.moneyFromId,
+    moneyTargetId: transaction.detailInfo.moneyTargetId,
+    images: transaction.detailInfo?.images
+  }
+
+  const methods = useForm({
+    defaultValues: initialValues
+  })
   const { register, setValue, control, reset, watch, formState: { errors } } = methods
   const moneyFromId = watch('moneyFromId')
-  const resetForm = () => {
-    reset({
-      amount: '',
-      description: '',
-      category: null,
-      transactionTime: moment(),
-      moneyFromId: wallets[0]?._id || '',
-      moneyTargetId: null,
-      images: []
-    })
+
+  const handleCancel = () => {
+    reset()
+    handleCancelModal()
   }
 
   const onSubmit = (data) => {
     // console.log('🚀 ~ onSubmit ~ data:', data)
+    const normalizedData = {
+      ...data,
+      transactionTime: moment(data.transactionTime).toISOString()
+    }
+    const normalizedInitial = {
+      ...initialValues,
+      transactionTime: moment(initialValues.transactionTime).toISOString()
+    }
+    const isChanged = !_.isEqual(normalizedData, normalizedInitial)
+
+    if (!isChanged) {
+      console.log('❌ Dữ liệu không thay đổi, không cần update')
+      return
+    }
+    console.log('✅ Dữ liệu đã thay đổi, thực hiện cập nhật', normalizedData)
 
     const hasFiles = Array.isArray(data.images) && data.images.some(img => img.file instanceof File)
     if (hasFiles) {
@@ -62,16 +85,15 @@ function CreateTransfer() {
         formData.append('images', imgObj.file)
       })
 
-      toast.promise(
-        createIndividualTransactionAPI(formData),
-        { pending: 'Đang tạo giao dịch...' }
-      ).then(async res => {
-        if (!res.error) {
-          toast.success('Tạo giao dịch chuyển khoản thành công!')
-          await refreshWallets()
-          resetForm()
-        }
-      })
+      // toast.promise(
+      //    // TODO: cập nhật giao dịch
+      //   { pending: 'Đang cập nhật giao dịch...' }
+      // ).then(async res => {
+      //   if (!res.error) {
+      //     toast.success('Cập nhật giao dịch chuyển khoản thành công!')
+      //     reset()
+      //   }
+      // })
     } else {
       const payload = {
         type: TRANSACTION_TYPES.TRANSFER,
@@ -87,38 +109,27 @@ function CreateTransfer() {
         }
       }
       if (data.description) payload.description = data.description
-      toast.promise(
-        createIndividualTransactionAPI(payload),
-        { pending: 'Đang tạo giao dịch...' }
-      ).then(async res => {
-        if (!res.error) {
-          toast.success('Tạo giao dịch chuyển khoản thành công!')
-          await refreshWallets()
-          resetForm()
-        }
-      })
-    }
-  }
-
-  const refreshWallets = async () => {
-    const res = await getIndividualAccountAPI()
-    setWallets(res)
-    if (res?.[0]?._id) {
-      setValue('moneyFromId', res[0]._id)
+      // toast.promise(
+      //    // TODO: cập nhật giao dịch
+      //   { pending: 'Đang cập nhật giao dịch...' }
+      // ).then(async res => {
+      //   if (!res.error) {
+      //     toast.success('Cập nhật giao dịch chuyển khoản thành công!')
+      //     reset()
+      //   }
+      // })
     }
   }
 
   useEffect(() => {
     getIndividualAccountAPI().then((res) => {
       setWallets(res)
-      if (res?.[0]?._id) {
-        setValue('moneyFromId', res[0]._id)
-      }
     })
   }, [setValue])
 
   return (
     <FormProvider {...methods}>
+      <Box bgcolor={'#00aff0'} display={'flex'} alignItems={'center'} justifyContent={'center'} paddingY={2} sx={{ fontWeight: 'bold' }}>Giao dịch chuyển khoản</Box>
       <form onSubmit={methods.handleSubmit(onSubmit)}>
         <Box display={'flex'} flexDirection={'column'} gap={2} marginTop={2}>
           {/* Số tiền */}
@@ -361,8 +372,9 @@ function CreateTransfer() {
           </Box>
 
           {/* submit create new expense */}
-          <Box display={'flex'} justifyContent={'center'} marginTop={8}>
-            <Button variant='contained' type="submit" className='interceptor-loading'>Tạo giao dịch</Button>
+          <Box display={'flex'} justifyContent={'center'} marginTop={2} gap={2}>
+            <Button variant='outlined' onClick={handleCancel}>Hủy</Button>
+            <Button variant='contained' type="submit" className='interceptor-loading'>Cập nhật</Button>
           </Box>
         </Box>
       </form>
@@ -370,4 +382,4 @@ function CreateTransfer() {
   )
 }
 
-export default CreateTransfer
+export default TransferModal

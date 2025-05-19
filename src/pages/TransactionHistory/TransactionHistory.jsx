@@ -14,9 +14,15 @@ import DoughnutChart from '~/component/Chart/DoughnutChart'
 import moment from 'moment'
 import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
 import { TRANSACTION_TYPES } from '~/utils/constants'
-import { getIndividualTransactionAPI } from '~/apis'
+import { getDetailIndividualTransaction, getIndividualTransactionAPI } from '~/apis'
 import { createSearchParams } from 'react-router-dom'
 import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
+import { ButtonBase, IconButton, Modal } from '@mui/material'
+import ExpenseModal from './DetailModal/ExpenseModal'
+import IncomeModal from './DetailModal/IncomeModal'
+import LoanModal from './DetailModal/LoanModal'
+import BorrowingModal from './DetailModal/BorrowingModal'
+import TransferModal from './DetailModal/TransferModal'
 
 const transactionHistoryType = {
   ALL: 'Toàn bộ',
@@ -84,11 +90,37 @@ function processDataRaw(transactions) {
   }
 }
 
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 650,
+  maxHeight: '80vh',
+  overflowY: 'auto',
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4
+}
+
 function TransactionHistory() {
+  const [openModal, setOpenModal] = React.useState(false)
+  const [selectedTransaction, setSelectedTransaction] = useState(null)
+
   const [transactionProcessedDatas, setTransactionProcessedDatas] = useState(null)
   const [startDate, setStartDate] = useState(moment().subtract(1, 'month'))
   const [endDate, setEndDate] = useState(moment())
   const [activeButton, setActiveButton] = useState(transactionHistoryType.ALL)
+
+  const handleOpenModal = async (transaction) => {
+    const detailTransaction = await getDetailIndividualTransaction(transaction._id)
+    console.log('🚀 ~ handleOpenModal ~ detailTransaction:', detailTransaction)
+    detailTransaction.detailInfo.images = detailTransaction.detailInfo.images?.map(url => ({ url: url }))
+    setSelectedTransaction(detailTransaction)
+    setOpenModal(true)
+  }
+  const handleCloseModal = () => setOpenModal(false)
 
   const handleOkClick = () => {
     if (!startDate && !endDate) toast.error('Cần chọn ít nhất một mốc thời gian')
@@ -102,7 +134,7 @@ function TransactionHistory() {
   const updateStateData = (res) => {
     // console.log('🚀 ~ updateStateData ~ res:', res)
     const processedData = processDataRaw(res)
-    console.log('🚀 ~ updateStateData ~ processDataRaw(res):', processedData)
+    // console.log('🚀 ~ updateStateData ~ processDataRaw(res):', processedData)
     setTransactionProcessedDatas(processedData)
   }
 
@@ -275,22 +307,47 @@ function TransactionHistory() {
             <StyledBox key={index}>
               <Typography fontWeight={'bold'}>{moment(transactionData?.transactionTime).format('dddd, LL')}</Typography>
               {transactionData?.transactions?.map((transaction) => (
-                <FinanceItem1
+                <Box
                   key={transaction._id}
-                  title={transaction?.name}
-                  description={transaction?.description}
-                  amount={transaction?.amount}
-                  amountColor={getColorForTransaction(transaction?.type)}
-                  sx={{
-                    borderTop: 1,
-                    borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
-                  }}
-                />
+                  onClick={() => handleOpenModal(transaction)}
+                >
+                  <FinanceItem1
+                    // key={transaction._id}
+                    title={transaction?.name}
+                    description={transaction?.description}
+                    amount={transaction?.amount}
+                    amountColor={getColorForTransaction(transaction?.type)}
+                    sx={{
+                      cursor: 'pointer',
+                      '&:hover': {
+                        backgroundColor: 'action.hover'
+                      },
+                      transition: 'background-color 0.2s',
+                      borderTop: 1,
+                      borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
+                    }}
+                  />
+                </Box>
               ))}
             </StyledBox>
           ))}
         </Box>
       </Box>
+
+      <Modal
+        open={openModal}
+        onClose={handleCloseModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          {selectedTransaction?.type == TRANSACTION_TYPES.EXPENSE && <ExpenseModal transaction={selectedTransaction} handleCancelModal={handleCloseModal}/>}
+          {selectedTransaction?.type == TRANSACTION_TYPES.INCOME && <IncomeModal transaction={selectedTransaction} handleCancelModal={handleCloseModal}/>}
+          {selectedTransaction?.type == TRANSACTION_TYPES.LOAN && <LoanModal transaction={selectedTransaction} handleCancelModal={handleCloseModal}/>}
+          {selectedTransaction?.type == TRANSACTION_TYPES.BORROWING && <BorrowingModal transaction={selectedTransaction} handleCancelModal={handleCloseModal}/>}
+          {selectedTransaction?.type == TRANSACTION_TYPES.TRANSFER && <TransferModal transaction={selectedTransaction} handleCancelModal={handleCloseModal}/>}
+        </Box>
+      </Modal>
     </Box>
   )
 }
