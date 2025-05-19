@@ -100,3 +100,17 @@ export const createIndividualSavingAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${apiRoot}/savings/individual`, data)
   return response.data
 }
+
+/** budget */
+export const getIndividualBudgetAPI = async (searchPath) => {
+  const url = searchPath
+    ? `${apiRoot}/budgets/individual${searchPath}`
+    : `${apiRoot}/budgets/individual`
+  const response = await authorizedAxiosInstance.get(url)
+  return response.data
+}
+
+export const createIndividualBudgetAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(`${apiRoot}/budgets/individual`, data)
+  return response.data
+}

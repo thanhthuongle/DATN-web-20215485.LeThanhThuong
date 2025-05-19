@@ -12,7 +12,7 @@ const ContributionRequest = lazy(() => import('~/pages/ContributionRequest/Contr
 const GroupInfo = lazy(() => import('~/pages/GroupInfo/GroupInfo'))
 const LoansAndDebts = lazy(() => import('~/pages/LoansAndDebts/LoansAndDebts'))
 const MoneySources = lazy(() => import('~/pages/MoneySources/MoneySources'))
-const NewTransaction = lazy(() => import('~/pages/NewTransaction/NewTransaction'))
+// const NewTransaction = lazy(() => import('~/pages/NewTransaction/NewTransaction'))
 // const Overview = lazy(() => import('~/pages/Overview/Overview'))
 const SpendingProposals = lazy(() => import('~/pages/SpendingProposals/SpendingProposals'))
 const TransactionHistory = lazy(() => import('~/pages/TransactionHistory/TransactionHistory'))
@@ -31,7 +31,7 @@ const Settings = lazy(() => import('~/pages/Settings/Settings'))
 // import GroupInfo from '~/pages/GroupInfo/GroupInfo'
 // import LoansAndDebts from '~/pages/LoansAndDebts/LoansAndDebts'
 // import MoneySources from '~/pages/MoneySources/MoneySources'
-// import NewTransaction from '~/pages/NewTransaction/NewTransaction'
+import NewTransaction from '~/pages/NewTransaction/NewTransaction'
 import Overview from '~/pages/Overview/Overview'
 // import SpendingProposals from '~/pages/SpendingProposals/SpendingProposals'
 // import TransactionHistory from '~/pages/TransactionHistory/TransactionHistory'

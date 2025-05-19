@@ -28,6 +28,9 @@ function OverviewChart({ totalBudget, totalExpense, budgetTypeProp, sx }) {
   if (budgetTypeProp == budgetType.FINISHED) {
     labelText = 'Số tiền bạn đã chi'
     labelAmount = totalExpense
+  } else if (Number(totalBudget) < Number(totalExpense)) {
+    labelText = 'Bội chi'
+    labelAmount = Number(totalBudget) - Number(totalExpense)
   } else {
     labelText = 'Số tiền bạn có thể chi'
     labelAmount = Number(totalBudget) - Number(totalExpense)
@@ -37,10 +40,10 @@ function OverviewChart({ totalBudget, totalExpense, budgetTypeProp, sx }) {
     datasets: [
       {
         label: '',
-        data: [Number(totalExpense), Number(totalBudget) - Number(totalExpense)],
+        data: [Number(totalExpense), Math.max(Number(totalBudget) - Number(totalExpense), 0)],
         backgroundColor: [
-          '#27ae60',
-          '#d9d9d9'
+          (Number(totalBudget) - Number(totalExpense)) < 0 ? '#e74c3c' : '#27ae60', // #27ae60
+          '#d9d9d9' // #d9d9d9, #e74c3c
         ],
         borderWidth: 0
       }
@@ -71,7 +74,7 @@ function OverviewChart({ totalBudget, totalExpense, budgetTypeProp, sx }) {
           alignItems: 'center'
         }}
       >
-        <Typography>{labelText}</Typography>
+        <Typography sx={{ color: Number(labelAmount) < 0 ? '#e74c3c' : '' }}>{labelText}</Typography>
         <NumericFormat
           displayType='text'
           thousandSeparator="."
@@ -79,7 +82,7 @@ function OverviewChart({ totalBudget, totalExpense, budgetTypeProp, sx }) {
           allowNegative={false}
           suffix="&nbsp;₫"
           value={labelAmount}
-          style={{ fontWeight: 'bold', maxWidth: '100%' }}
+          style={{ fontWeight: 'bold', maxWidth: '100%', color: Number(labelAmount) < 0 ? '#e74c3c' : '' }} // #e74c3c
         />
       </Box>
     </Box>
