@@ -24,7 +24,7 @@ const buildTree = (categories) => {
   return roots
 }
 
-const CategorySelector = ({ transactionType, onChange, value, error }) => {
+const CategorySelector = ({ transactionType, onChange, value, error, sx = {} }) => {
   const [categories, setCategories] = useState([])
   const treeData = buildTree(categories)
 
@@ -106,7 +106,7 @@ const CategorySelector = ({ transactionType, onChange, value, error }) => {
       <Button
         variant="outlined"
         endIcon={<KeyboardArrowRightIcon />}
-        sx={{ textTransform: 'none', minWidth: '300px', paddingY: 1, borderColor: error ? 'error.main' : undefined }}
+        sx={{ textTransform: 'none', minWidth: '300px', paddingY: 1, borderColor: error ? 'error.main' : undefined, ...sx }}
         onClick={() => setOpen(true)}
       >{selectedName ?? 'Chọn hạng mục...'}</Button>
       <Dialog

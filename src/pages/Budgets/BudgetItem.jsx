@@ -29,7 +29,7 @@ const BorderLinearProgress = styled(LinearProgress, {
 
 function BudgetItem({ logo, logoSize='40px', title, totalBudget, totalExpense, sx }) {
   return (
-    <Box width={'100%'} display={'flex'} gap={1} sx={sx} paddingY={1}>
+    <Box width={'100%'} display={'flex'} gap={1} sx={sx} paddingY={2}>
       <Box width={'40px'} display={'flex'} flexDirection={'column'} alignItems={'end'}>
         <Avatar
           alt="Logo"
@@ -41,7 +41,7 @@ function BudgetItem({ logo, logoSize='40px', title, totalBudget, totalExpense, s
             flexShrink: 0
           }}
         >
-          <RestaurantIcon /> {/* TODO: hoàn thiện logo mặc định */}
+          {' '}
         </ Avatar>
       </Box>
 
@@ -77,7 +77,7 @@ function BudgetItem({ logo, logoSize='40px', title, totalBudget, totalExpense, s
             />}
         </Box>
 
-        {totalBudget && totalExpense &&
+        {totalBudget != null && totalExpense != null && totalBudget != undefined && totalExpense != undefined &&
         <>
           {Number(totalBudget) >= Number(totalExpense) &&
             <Box marginBottom={0.25}>
