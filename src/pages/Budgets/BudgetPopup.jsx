@@ -5,11 +5,11 @@ import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import EventIcon from '@mui/icons-material/Event'
-import moment from 'moment'
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 import { NumericFormat } from 'react-number-format'
-import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
+import moment from 'moment'
 import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
+import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
 import { TRANSACTION_TYPES } from '~/utils/constants'
 import { createSearchParams } from 'react-router-dom'
 import { getIndividualTransactionAPI } from '~/apis'
@@ -49,7 +49,9 @@ function processDataRaw(transactions) {
   }
 }
 
-const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
+const BorderLinearProgress = styled(LinearProgress, {
+  shouldForwardProp: (prop) => prop !== 'backgroundColorLight' && prop !== 'backgroundColorDark'
+})(({ theme, backgroundColorLight, backgroundColorDark }) => ({
   height: 10,
   borderRadius: 5,
   [`&.${linearProgressClasses.colorPrimary}`]: {
@@ -60,15 +62,15 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   },
   [`& .${linearProgressClasses.bar}`]: {
     borderRadius: 5,
-    backgroundColor: '#27ae60',
+    backgroundColor: backgroundColorLight,
     ...theme.applyStyles('dark', {
-      backgroundColor: '#219150'
+      backgroundColor: backgroundColorDark
     })
   }
 }))
 
-function AccumulationPopup({ accumulation, handleCancel}) {
-  console.log('🚀 ~ AccumulationPopup ~ accumulation:', accumulation)
+function BudgetPopup({ commonData, budget, handleCancel }) {
+  console.log('🚀 ~ BudgetPopup ~ budget:', budget)
   const [transactionProcessedDatas, setTransactionProcessedDatas] = useState(null)
 
   const updateStateData = (res) => {
@@ -79,12 +81,12 @@ function AccumulationPopup({ accumulation, handleCancel}) {
 
   const getTransactionData = async () => {
     // console.log('🚀 ~ getTransactionData ~ account?.transactionIds:', account?.transactionIds)
-    if (!accumulation?.transactionIds || (Array.isArray(accumulation?.transactionIds) && accumulation?.transactionIds.length == 0)) {
+    if (!budget?.transactionIds || (Array.isArray(budget?.transactionIds) && budget?.transactionIds.length == 0)) {
       updateStateData([])
       return
     }
     const params = {}
-    params['q[transactionIds]'] = accumulation?.transactionIds || []
+    params['q[transactionIds]'] = budget?.transactionIds || []
     const searchPath = `?${createSearchParams(params)}`
     getIndividualTransactionAPI(searchPath).then(updateStateData)
   }
@@ -96,21 +98,23 @@ function AccumulationPopup({ accumulation, handleCancel}) {
   return (
     <Box>
       <Box display={'flex'} flexDirection={'column'} gap={2}>
-        {/* Tên khoản tích lũy */}
+        {/* Tên hạng mục lập ngân sách*/}
         <Box bgcolor={'#00aff0'} paddingY={2} display={'flex'} justifyContent={'center'}>
-          <Typography fontWeight={'bold'}>{accumulation?.accumulationName}</Typography>
+          <Typography fontWeight={'bold'}>{budget?.categoryName}</Typography>
         </Box>
 
-        {/* THông tin cơ bản */}
+        {/* Thông tin cơ bản */}
         <StyledBox>
           <List disablePadding >
             <ListItem disablePadding>
               <ListItemIcon sx={{ minWidth: 48 }}>
-                <EventIcon />
+                <CalendarMonthIcon />
               </ListItemIcon>
               <ListItemText
-                primary={ <Typography variant="body2" color="text.secondary" sx={{ marginBottom: 0.2 }}> Thời gian </Typography> }
-                secondary={ <Typography variant="body1" color="text.primary"> {moment(accumulation.startDate).format('DD/MM/YYYY')}&nbsp;-&nbsp;{moment(accumulation.endDate).format('DD/MM/YYYY')} </Typography> }
+                primary={ <Typography variant="body1" color="text.primary"> {moment(commonData.startTime).format('DD/MM/YYYY')}&nbsp;-&nbsp;{moment(commonData.endTime).format('DD/MM/YYYY')} </Typography> }
+                secondary={ <Typography variant="body2" color="text.secondary" sx={{ marginBottom: 0.2 }}>
+                  {moment().isAfter(moment(commonData.endTime)) ? 'Đã kết thúc' : `Còn lại: ${moment(commonData.endTime).diff(moment(), 'days')} ngày`}
+                </Typography> }
               />
             </ListItem>
             <Divider sx={{ marginY: 1 }} />
@@ -125,12 +129,15 @@ function AccumulationPopup({ accumulation, handleCancel}) {
                         decimalSeparator=","
                         allowNegative={false}
                         suffix="&nbsp;₫"
-                        value={Number(accumulation.targetBalance)}
+                        value={Number(budget.amount)}
                         style={{ fontWeight: '', maxWidth: '100%' }}
                       />
                     </Box>
                     <Box >
-                      <BorderLinearProgress variant="determinate" value={Math.min(Number(accumulation.balance/accumulation.targetBalance*100), 100)} />
+                      {Number(budget.spent) > Number(budget.amount)
+                        ? ( <BorderLinearProgress variant="determinate" backgroundColorLight='#e74c3c' backgroundColorDark='#e74c3c' value={100} /> )
+                        : ( <BorderLinearProgress variant="determinate" backgroundColorLight='#27ae60' backgroundColorDark='#219150' value={Math.min(Number(budget.spent/budget.amount*100), 100)} /> )
+                      }
                     </Box>
                     <Box display={'flex'} justifyContent={'space-between'}>
                       <NumericFormat
@@ -138,26 +145,23 @@ function AccumulationPopup({ accumulation, handleCancel}) {
                         thousandSeparator="."
                         decimalSeparator=","
                         allowNegative={false}
+                        prefix='Đã chi:&nbsp;'
                         suffix="&nbsp;₫"
-                        value={Number(accumulation.balance)}
-                        style={{ fontWeight: '', maxWidth: '100%', color: '#27AE60' }}
+                        value={Number(budget.spent)}
+                        style={{ fontWeight: '', maxWidth: '100%' }}
                       />
-                      {accumulation.isFinish == true ? (<Typography>Đã kết thúc</Typography>) : (
+                      {budget.spent > budget.amount ? (<Typography sx={{ color: '#e74c3c' }}>Bội chi: {budget.spent-budget.amount}</Typography>) : (
                         <Box display={'flex'} sx={{ opacity: 0.7 }}>
-                          {Number(accumulation.balance) < Number(accumulation.targetBalance) && (
-                            <>
-                              <Typography>Cần thêm:&nbsp;</Typography>
-                              <NumericFormat
-                                displayType='text'
-                                thousandSeparator="."
-                                decimalSeparator=","
-                                allowNegative={false}
-                                suffix="&nbsp;₫"
-                                value={Number(accumulation.targetBalance - accumulation.balance)}
-                                style={{ fontWeight: '', maxWidth: '100%' }}
-                              />
-                            </>
-                          )}
+                          <Typography>Còn lại:&nbsp;</Typography>
+                          <NumericFormat
+                            displayType='text'
+                            thousandSeparator="."
+                            decimalSeparator=","
+                            allowNegative={false}
+                            suffix="&nbsp;₫"
+                            value={Number(budget.amount-budget.spent)}
+                            style={{ fontWeight: '', maxWidth: '100%' }}
+                          />
                         </Box>
                       )}
                     </Box>
@@ -168,13 +172,18 @@ function AccumulationPopup({ accumulation, handleCancel}) {
           </List>
         </StyledBox>
 
-        {/* Lịch sử giao dịch */}
+        {/* Danh sách giao dịch */}
         <Box>
-          <Typography variant='h6' sx={{ marginY: 1, fontWeight: 'bold' }}>Lịch sử giao dịch</Typography>
-          <Box>
+          <Typography variant='h6' sx={{ marginY: 1, fontWeight: 'bold' }}>Danh sách giao dịch</Typography>
+          <Box display={'flex'} flexDirection={'column'} gap={1}>
             {!transactionProcessedDatas ? ( <PageLoadingSpinner caption={'Đang tải...'} sx={{ height: 'fit-content', paddingY: 1 }} /> )
               : (
                 <>
+                  {Array.isArray(transactionProcessedDatas?.groupedByDate) && transactionProcessedDatas?.groupedByDate.length == 0 && (
+                    <Box display={'flex'} justifyContent={'center'} paddingY={1}>
+                      <Typography>Chưa có giao dịch nào!</Typography>
+                    </Box>
+                  )}
                   {transactionProcessedDatas?.groupedByDate?.map((transactionData, index) => (
                     <StyledBox key={index}>
                       <Typography fontWeight={'bold'}>{moment(transactionData?.transactionTime).format('dddd, LL')}</Typography>
@@ -217,4 +226,4 @@ function AccumulationPopup({ accumulation, handleCancel}) {
   )
 }
 
-export default AccumulationPopup
+export default BudgetPopup

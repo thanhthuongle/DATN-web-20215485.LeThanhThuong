@@ -8,7 +8,7 @@ import InputLabel from '@mui/material/InputLabel'
 import { StyledBox } from '../Overview/Overview'
 import Grid from '@mui/material/Grid'
 import Divider from '@mui/material/Divider'
-import { Typography } from '@mui/material'
+import { Modal, Typography } from '@mui/material'
 import { NumericFormat } from 'react-number-format'
 import BudgetItem from './BudgetItem'
 import { getIndividualBudgetAPI } from '~/apis'
@@ -17,6 +17,7 @@ import moment from 'moment'
 import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
 import { createSearchParams } from 'react-router-dom'
 import Create from './Create'
+import BudgetPopup from './BudgetPopup'
 
 function transformCategories(categories) {
   const categoryMap = new Map()
@@ -70,10 +71,31 @@ const budgetType = {
   FINISHED: 'Đã kết thúc'
 }
 
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: { xs: '100%', sm: 700 },
+  maxHeight: '80vh',
+  overflowY: 'auto',
+  bgcolor: 'background.paper',
+  // border: '2px solid #000',
+  boxShadow: 24,
+  p: 2
+}
+
 function Budgets() {
+  const [openModal, setOpenModal] = useState(false)
+  const [selectedCategoryBudget, setSelectedCategoryBudget] = useState(null)
   const [selectedBudgetType, setSelectedBudgetType] = useState(budgetType.APPLYING)
   const [selectedBudgetApplying, setSelectedBudgetApplying] = useState(null)
   const [data, setData] = useState(null)
+
+  const handleOpenModal = async (categoryBudget) => {
+    setSelectedCategoryBudget(categoryBudget)
+    setOpenModal(true)
+  }
 
   const handleSelectBudgetApplying = (event) => {
     const value = event.target.value
@@ -269,27 +291,44 @@ function Budgets() {
             <Typography fontWeight={'bold'}>{selectedBudgetApplying.budgetName}</Typography>
             {selectedBudgetApplying.categories?.map((category) => (
               <Box key={category.categoryId} display={'flex'} flexDirection={'column'} gap={2}>
-                <BudgetItem
-                  title={category.categoryName}
-                  totalBudget={category.amount}
-                  totalExpense={category.spent}
-                  sx={{
-                    borderTop: 1,
-                    borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
-                  }}
-                />
-                {category?.subCategories?.map((subCategory) => (
+                <Box
+                  onClick={() => handleOpenModal(category)}
+                >
                   <BudgetItem
-                    key={subCategory.categoryId}
-                    title={subCategory.categoryName}
-                    totalBudget={subCategory.amount}
-                    totalExpense={subCategory.spent}
-                    logoSize='32px'
+                    title={category.categoryName}
+                    totalBudget={category.amount}
+                    totalExpense={category.spent}
                     sx={{
-                      borderColor: (theme) => theme.palette.mode === 'light' ? '#eee' : '#555',
-                      borderTopStyle: 'dotted'
+                      cursor: 'pointer',
+                      '&:hover': {
+                        backgroundColor: 'action.hover'
+                      },
+                      borderTop: 1,
+                      borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
                     }}
                   />
+                </ Box>
+                {category?.subCategories?.map((subCategory) => (
+                  <Box
+                    key={subCategory.categoryId}
+                    onClick={() => handleOpenModal(category)}
+                  >
+                    <BudgetItem
+                      // key={subCategory.categoryId}
+                      title={subCategory.categoryName}
+                      totalBudget={subCategory.amount}
+                      totalExpense={subCategory.spent}
+                      logoSize='32px'
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundColor: 'action.hover'
+                        },
+                        borderColor: (theme) => theme.palette.mode === 'light' ? '#eee' : '#555',
+                        borderTopStyle: 'dotted'
+                      }}
+                    />
+                  </ Box>
                 )
                 )}
               </ Box>
@@ -297,6 +336,17 @@ function Budgets() {
           </StyledBox>
         </Box>
       }
+
+      <Modal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <BudgetPopup commonData={selectedBudgetApplying} budget={selectedCategoryBudget} handleCancel={() => setOpenModal(false)} />
+        </Box>
+      </Modal>
     </ Box>
   )
 }

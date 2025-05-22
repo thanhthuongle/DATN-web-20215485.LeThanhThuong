@@ -81,7 +81,7 @@ function BudgetItem({ logo, logoSize='40px', title, totalBudget, totalExpense, s
         <>
           {Number(totalBudget) >= Number(totalExpense) &&
             <Box marginBottom={0.25}>
-              <BorderLinearProgress variant="determinate" backgroundColorLight='#27ae60' backgroundColorDark='#219150' value={totalExpense/totalBudget*100} />
+              <BorderLinearProgress variant="determinate" backgroundColorLight='#27ae60' backgroundColorDark='#219150' value={Number(totalExpense/totalBudget*100)} />
             </Box>
           }
           {Number(totalBudget) < Number(totalExpense) &&
