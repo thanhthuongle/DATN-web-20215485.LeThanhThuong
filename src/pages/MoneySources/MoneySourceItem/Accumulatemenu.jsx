@@ -60,9 +60,11 @@ export default function AccumulateMenu({ isFinished }) { // isFinished = true or
   const open = Boolean(anchorEl)
   const options = isFinished==true ? accumulateFinishedgOptions : accumulateFollowingOptions
   const handleClick = (event) => {
+    event.stopPropagation()
     setAnchorEl(event.currentTarget)
   }
-  const handleClose = () => {
+  const handleClose = (event) => {
+    event.stopPropagation()
     setAnchorEl(null)
   }
 

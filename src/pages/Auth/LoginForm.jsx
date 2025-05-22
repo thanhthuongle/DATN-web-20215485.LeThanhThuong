@@ -42,7 +42,7 @@ function LoginForm() {
       { pending: 'Login in...' }
     ).then(res => {
       // Kiểm tra login thành công mới điều hướng đến '/'
-      if (!res.error) navigate('/')
+      if (!res.error) navigate('/overview')
     })
     // toast.promise(
     //   dispath(loginUserAPI({ email, password })).then((loginResponse) => {

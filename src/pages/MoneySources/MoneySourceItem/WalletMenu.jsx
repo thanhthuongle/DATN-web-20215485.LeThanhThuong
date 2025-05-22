@@ -48,9 +48,11 @@ export default function WalletMenu({ isActive }) { // isActive= true or false
   const open = Boolean(anchorEl)
   const options = isActive==true ? walletActiveOptions : walletInActiveOptions
   const handleClick = (event) => {
+    event.stopPropagation()
     setAnchorEl(event.currentTarget)
   }
-  const handleClose = () => {
+  const handleClose = (event) => {
+    event.stopPropagation()
     setAnchorEl(null)
   }
 
