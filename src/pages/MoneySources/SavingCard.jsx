@@ -13,15 +13,38 @@ import SavingMenu from './MoneySourceItem/SavingMenu'
 import { getBankInfo } from '~/apis'
 import { cloneDeep } from 'lodash'
 import moment from 'moment'
+import { Modal } from '@mui/material'
+import SavingPopup from './DetailPopup/SavingPopup'
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: { xs: '100%', sm: 700 },
+  maxHeight: '80vh',
+  overflowY: 'auto',
+  bgcolor: 'background.paper',
+  // border: '2px solid #000',
+  boxShadow: 24,
+  p: 2
+}
 
 function SavingCard({ data = [] }) {
-  // const [savingData, setSavingData] = useState(data)
+  const [openModal, setOpenModal] = useState(false)
+  const [selectedSaving, setSelectedSaving] = useState(null)
+  console.log('🚀 ~ SavingCard ~ selectedSaving:', selectedSaving)
   const savingData = cloneDeep(data)
   const [groupeActivedSavings, setGroupedActiveSavings] = useState([])
   const [blockedDataSavings, setBlockedDataSavings] = useState([])
 
   const blockedSavings = savingData.filter(s => s.isClosed)
   const activeSavings = savingData.filter(s => !s.isClosed)
+
+  const handleOpenModal = async (saving) => {
+    setSelectedSaving(saving)
+    setOpenModal(true)
+  }
 
   // Tổng hợp tiền và số lượng
   const totalAmount = savingData.reduce((sum, s) => sum + s.balance, 0)
@@ -158,19 +181,28 @@ function SavingCard({ data = [] }) {
                 <AccordionDetails sx={{ padding: 0 }}>
                   {/* Danh sách các ví đang sử dụng */}
                   {groupeActivedSaving.savings_accounts.map((saving) =>
-                    <MoneySourceItem1
-                      logo={groupeActivedSaving.bankInfo.logo ? groupeActivedSaving.bankInfo.logo : '' }
-                      title={saving.savingsAccountName}
-                      description={moment(saving.startDate).format('DD/MM/YYYY')}
-                      amount={saving.balance}
-                      interestRate={`${saving.rate}%`}
+                    <Box
                       key={saving._id}
-                      sx={{
-                        borderTop: 1,
-                        borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
-                      }}
-                      menuComponent={<SavingMenu isClosed={false} sx={{ marginLeft: 2 }}/>}
-                    />
+                      onClick={() => handleOpenModal(saving)}
+                    >
+                      <MoneySourceItem1
+                        logo={groupeActivedSaving.bankInfo.logo ? groupeActivedSaving.bankInfo.logo : '' }
+                        title={saving.savingsAccountName}
+                        description={moment(saving.startDate).format('DD/MM/YYYY')}
+                        amount={saving.balance}
+                        interestRate={`${saving.rate}%`}
+                        sx={{
+                          cursor: 'pointer',
+                          '&:hover': {
+                            backgroundColor: 'action.hover'
+                          },
+                          transition: 'background-color 0.2s',
+                          borderTop: 1,
+                          borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
+                        }}
+                        menuComponent={<SavingMenu isClosed={false} sx={{ marginLeft: 2 }}/>}
+                      />
+                    </Box>
                   )}
                 </AccordionDetails>
               </Accordion>
@@ -194,22 +226,44 @@ function SavingCard({ data = [] }) {
                 <Typography display={'flex'} justifyContent={'center'} alignItems={'center'} marginY={2}>Chưa có sổ tiết kiệm đã tất toán!</Typography>
               )}
               {blockedDataSavings.map((saving) =>
-                <MoneySourceItem1
-                  logo={saving.bankInfo.logo ? saving.bankInfo.logo : '' }
+                <Box
                   key={saving._id}
-                  title={saving.savingsAccountName}
-                  description={moment(saving.startDate).format('DD/MM/YYYY')}
-                  interestRate={`${saving.rate}%`}
-                  sx={{
-                    borderTop: 1,
-                    borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
-                  }}
-                  menuComponent={<SavingMenu isClosed={true} sx={{ marginLeft: 2 }}/>}
-                />)}
+                  onClick={() => handleOpenModal(saving)}
+                >
+                  <MoneySourceItem1
+                    logo={saving.bankInfo.logo ? saving.bankInfo.logo : '' }
+                    key={saving._id}
+                    title={saving.savingsAccountName}
+                    description={moment(saving.startDate).format('DD/MM/YYYY')}
+                    interestRate={`${saving.rate}%`}
+                    sx={{
+                      cursor: 'pointer',
+                      '&:hover': {
+                        backgroundColor: 'action.hover'
+                      },
+                      transition: 'background-color 0.2s',
+                      borderTop: 1,
+                      borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
+                    }}
+                    menuComponent={<SavingMenu isClosed={true} sx={{ marginLeft: 2 }}/>}
+                  />
+                </Box>
+              )}
             </AccordionDetails>
           </Accordion>
         </Box>
       </Box>
+
+      <Modal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <SavingPopup saving={selectedSaving} handleCancel={() => setOpenModal(false)} />
+        </Box>
+      </Modal>
     </StyledBox>
   )
 }

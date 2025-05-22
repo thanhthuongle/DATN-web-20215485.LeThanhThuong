@@ -12,7 +12,7 @@ import CreateSaving from './Create/CreateSaving'
 
 function MoneySources() {
   const [MoneySourceData, setMoneySourceData] = useState(null)
-  console.log('🚀 ~ MoneySources ~ MoneySourceData:', MoneySourceData)
+  // console.log('🚀 ~ MoneySources ~ MoneySourceData:', MoneySourceData)
 
   const afterCreateNew = () => {
     getIndividualMoneySourceAPI().then( (res) => {

@@ -237,6 +237,7 @@ function CreateBorrowing() {
                     onChange={onChange}
                     onBlur={onBlur}
                     error={!!errors['transactionTime']}
+                    disableFuture={true}
                   />
                 )}
               />

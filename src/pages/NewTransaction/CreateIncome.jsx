@@ -202,6 +202,7 @@ function CreateIncome() {
                     onChange={onChange}
                     onBlur={onBlur}
                     error={!!errors['transactionTime']}
+                    disableFuture={true}
                   />
                 )}
               />

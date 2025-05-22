@@ -141,7 +141,10 @@ function LoansAndDebts() {
     }
   }
   const handleOkClickOk = async () => {
-    if (!startDate && !endDate) toast.error('Cần chọn ít nhất một mốc thời gian')
+    if (!startDate && !endDate) {
+      toast.error('Cần chọn ít nhất một mốc thời gian')
+      return
+    }
     await getData({ startTime: startDate, endTime: endDate })
   }
 

@@ -1,12 +1,59 @@
+// export const interceptorLoadingElements = (calling) => {
+//   const elements = document.querySelectorAll('.interceptor-loading')
+//   for (let i = 0; i < elements.length; i++) {
+//     if (calling) {
+//       elements[i].style.opacity = '0.5'
+//       elements[i].style.pointerEvents = 'none'
+//     } else {
+//       elements[i].style.opacity = 'initial'
+//       elements[i].style.pointerEvents = 'initial'
+//     }
+//   }
+// }
+
 export const interceptorLoadingElements = (calling) => {
   const elements = document.querySelectorAll('.interceptor-loading')
+
   for (let i = 0; i < elements.length; i++) {
+    const el = elements[i]
+
     if (calling) {
-      elements[i].style.opacity = '0.5'
-      elements[i].style.pointerEvents = 'none'
+      // Ngăn người dùng tương tác
+      el.style.opacity = '0.5'
+      el.style.pointerEvents = 'none'
+
+      // Lưu nội dung gốc nếu chưa có
+      if (!el.dataset.originalContent) {
+        el.dataset.originalContent = el.innerHTML
+      }
+
+      // Gắn spinner loading
+      el.innerHTML = `
+        <div style="
+          width: 24px;
+          height: 24px;
+          border: 2px solid rgba(0,0,0,0.2);
+          border-top-color: rgba(0,0,0,0.6);
+          border-radius: 50%;
+          animation: spin 0.6s linear infinite;
+        "></div>
+        <style>
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+        </style>
+      `
+
     } else {
-      elements[i].style.opacity = 'initial'
-      elements[i].style.pointerEvents = 'initial'
+      // Khôi phục tương tác
+      el.style.opacity = 'initial'
+      el.style.pointerEvents = 'initial'
+
+      // Khôi phục nội dung gốc
+      if (el.dataset.originalContent) {
+        el.innerHTML = el.dataset.originalContent
+        delete el.dataset.originalContent
+      }
     }
   }
 }

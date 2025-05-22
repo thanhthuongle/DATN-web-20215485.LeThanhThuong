@@ -45,7 +45,7 @@ const processTransactionByCategory = (transactions) => {
 }
 
 function SpendingAnalysis() {
-  const [startDate, setStartDate] = useState(moment().startOf('month'))
+  const [startDate, setStartDate] = useState(moment().subtract(4, 'months').startOf('month'))
   const [endDate, setEndDate] = useState(moment().endOf('month'))
   const [tempStartDate, setTempStartDate] = useState(startDate)
   const [tempEndDate, setTempEndDate] = useState(endDate)

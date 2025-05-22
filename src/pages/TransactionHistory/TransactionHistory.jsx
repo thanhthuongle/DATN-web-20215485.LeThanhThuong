@@ -95,7 +95,7 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 650,
+  width: { xs: '100%', sm: 700 },
   maxHeight: '80vh',
   overflowY: 'auto',
   bgcolor: 'background.paper',
@@ -109,6 +109,7 @@ function TransactionHistory() {
   const [selectedTransaction, setSelectedTransaction] = useState(null)
 
   const [transactionProcessedDatas, setTransactionProcessedDatas] = useState(null)
+  // console.log('🚀 ~ TransactionHistory ~ transactionProcessedDatas:', transactionProcessedDatas)
   const [startDate, setStartDate] = useState(moment().subtract(1, 'month'))
   const [endDate, setEndDate] = useState(moment())
   const [activeButton, setActiveButton] = useState(transactionHistoryType.ALL)
@@ -123,7 +124,10 @@ function TransactionHistory() {
   const handleCloseModal = () => setOpenModal(false)
 
   const handleOkClick = () => {
-    if (!startDate && !endDate) toast.error('Cần chọn ít nhất một mốc thời gian')
+    if (!startDate && !endDate) {
+      toast.error('Cần chọn ít nhất một mốc thời gian')
+      return
+    }
     getTransactionData()
   }
   const handleSelectTransactionType = (transactionTypeSelected) => {

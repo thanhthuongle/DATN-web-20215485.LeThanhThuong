@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { StyledBox } from '../Overview/Overview'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -10,8 +10,26 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import { NumericFormat } from 'react-number-format'
 import MoneySourceItem2 from './MoneySourceItem/MoneySourceItem2'
 import AccumulateMenu from './MoneySourceItem/Accumulatemenu'
+import { Modal } from '@mui/material'
+import AccumulationPopup from './DetailPopup/AccumulationPopup'
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: { xs: '100%', sm: 700 },
+  maxHeight: '80vh',
+  overflowY: 'auto',
+  bgcolor: 'background.paper',
+  // border: '2px solid #000',
+  boxShadow: 24,
+  p: 2
+}
 
 function AccumulateCard({ data }) {
+  const [openModal, setOpenModal] = useState(false)
+  const [selectedAccumulation, setSelectedAccumulation] = useState(null)
   // console.log('🚀 ~ AccumulateCard ~ data:', data)
   const accumulateData = data
 
@@ -23,6 +41,11 @@ function AccumulateCard({ data }) {
 
   const activeAmount = activeAccumulateData.reduce((sum, item) => sum + item.balance, 0)
   const finishedAmount = finishedAccumulateData.reduce((sum, item) => sum + item.balance, 0)
+
+  const handleOpenModal = async (saving) => {
+    setSelectedAccumulation(saving)
+    setOpenModal(true)
+  }
   return (
     <StyledBox
       width='100%'
@@ -103,18 +126,28 @@ function AccumulateCard({ data }) {
               {activeAccumulateData?.length == 0 && (
                 <Typography display={'flex'} justifyContent={'center'} alignItems={'center'} marginY={2}>Không có khoản tích lũy nào đang the dõi!</Typography>
               )}
-              {activeAccumulateData.map((accummulation) =>
-                <MoneySourceItem2
-                  key={accummulation._id}
-                  title={accummulation.accumulationName}
-                  targetAmount={accummulation.targetBalance}
-                  accumulatedAmount={accummulation.balance}
-                  menuComponent={<AccumulateMenu isFinished={false} />}
-                  sx={{
-                    borderTop: 1,
-                    borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
-                  }}
-                />
+              {activeAccumulateData.map((accumulation) =>
+                <Box
+                  key={accumulation._id}
+                  onClick={() => handleOpenModal(accumulation)}
+                >
+                  <MoneySourceItem2
+                    key={accumulation._id}
+                    title={accumulation.accumulationName}
+                    targetAmount={accumulation.targetBalance}
+                    accumulatedAmount={accumulation.balance}
+                    menuComponent={<AccumulateMenu isFinished={false} />}
+                    sx={{
+                      cursor: 'pointer',
+                      '&:hover': {
+                        backgroundColor: 'action.hover'
+                      },
+                      transition: 'background-color 0.2s',
+                      borderTop: 1,
+                      borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
+                    }}
+                  />
+                </Box>
               )}
             </AccordionDetails>
           </Accordion>
@@ -146,22 +179,44 @@ function AccumulateCard({ data }) {
                 <Typography display={'flex'} justifyContent={'center'} alignItems={'center'} marginY={2}>Chưa có khoản tích lũy nào kết thúc!</Typography>
               )}
               {finishedAccumulateData.map((accumulation) =>
-                <MoneySourceItem2
+                <Box
                   key={accumulation._id}
-                  title={accumulation.accummulationName}
-                  targetAmount={accumulation.targetBalance}
-                  accumulatedAmount={accumulation.balance}
-                  menuComponent={<AccumulateMenu isFinished={true} />}
-                  sx={{
-                    borderTop: 1,
-                    borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666',
-                    opacity: '50%'
-                  }}
-                />)}
+                  onClick={() => handleOpenModal(accumulation)}
+                >
+                  <MoneySourceItem2
+                    key={accumulation._id}
+                    title={accumulation.accummulationName}
+                    targetAmount={accumulation.targetBalance}
+                    accumulatedAmount={accumulation.balance}
+                    menuComponent={<AccumulateMenu isFinished={true} />}
+                    sx={{
+                      cursor: 'pointer',
+                      '&:hover': {
+                        backgroundColor: 'action.hover'
+                      },
+                      transition: 'background-color 0.2s',
+                      borderTop: 1,
+                      borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666',
+                      opacity: '50%'
+                    }}
+                  />
+                </Box>
+              )}
             </AccordionDetails>
           </Accordion>
         </Box>
       </Box>
+
+      <Modal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <AccumulationPopup accumulation={selectedAccumulation} handleCancel={() => setOpenModal(false)} />
+        </Box>
+      </Modal>
     </StyledBox>
   )
 }

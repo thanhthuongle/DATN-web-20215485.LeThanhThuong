@@ -42,9 +42,11 @@ export default function SavingMenu({ isClosed }) { // isActive= true or false
   const open = Boolean(anchorEl)
   const options = isClosed==true ? savingClosedOptions : savingOpeningOptions
   const handleClick = (event) => {
+    event.stopPropagation()
     setAnchorEl(event.currentTarget)
   }
-  const handleClose = () => {
+  const handleClose = (event) => {
+    event.stopPropagation()
     setAnchorEl(null)
   }
 

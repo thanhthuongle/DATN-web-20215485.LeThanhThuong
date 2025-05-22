@@ -11,13 +11,33 @@ import { NumericFormat } from 'react-number-format'
 import MoneySourceItem1 from './MoneySourceItem/MoneySourceItem1'
 import WalletMenu from './MoneySourceItem/WalletMenu'
 import { getBankInfo } from '~/apis'
+import { Modal } from '@mui/material'
+import AccountPopup from './DetailPopup/AccountPopup'
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: { xs: '100%', sm: 700 },
+  maxHeight: '80vh',
+  overflowY: 'auto',
+  bgcolor: 'background.paper',
+  // border: '2px solid #000',
+  boxShadow: 24,
+  p: 2
+}
 
 function WalletCard({ data }) {
+  const [openModal, setOpenModal] = useState(false)
+  const [selectedAccount, setSelectedAccount] = useState(null)
+  console.log('🚀 ~ WalletCard ~ selectedAccount:', selectedAccount)
   // console.log('🚀 ~ WalletCard ~ data:', data)
   const [walletData, setWalletData] = useState(data)
 
   // Tách tài khoản bị khóa và chưa bị khóa
   const activeWallets = walletData.filter(w => !w.isBlock)
+  console.log('🚀 ~ WalletCard ~ activeWallets:', activeWallets)
   const blockedWallets = walletData.filter(w => w.isBlock)
 
   // Tổng hợp tiền và số lượng
@@ -26,6 +46,11 @@ function WalletCard({ data }) {
 
   const activeAmount = activeWallets.reduce((sum, w) => sum + w.balance, 0)
   const blockedAmount = blockedWallets.reduce((sum, w) => sum + w.balance, 0)
+
+  const handleOpenModal = async (account) => {
+    setSelectedAccount(account)
+    setOpenModal(true)
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -132,19 +157,28 @@ function WalletCard({ data }) {
               {activeWallets.length == 0 && (
                 <Typography display={'flex'} justifyContent={'center'} alignItems={'center'} marginY={2}>Không có ví nào đang sử dụng!</Typography>
               )}
-              {activeWallets.map((activeWallet, index) =>
-                <MoneySourceItem1
-                  title={activeWallet.accountName}
-                  amount={activeWallet.balance}
-                  amountColor= {activeWallet.balance < 0 ? 'red' : 'inherit'} // Xét nếu amount < 0 thì truyền #e74c3c
-                  logo={activeWallet.bankInfo ? activeWallet.bankInfo.logo : ''}
-                  key={index}
-                  sx={{
-                    borderTop: 1,
-                    borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
-                  }}
-                  menuComponent={<WalletMenu isActive={true} sx={{ marginLeft: 2 }} />}
-                />)}
+              {activeWallets.map((activeWallet) =>
+                <Box
+                  key={activeWallet._id}
+                  onClick={() => handleOpenModal(activeWallet)}
+                >
+                  <MoneySourceItem1
+                    title={activeWallet.accountName}
+                    amount={activeWallet.balance}
+                    amountColor= {activeWallet.balance < 0 ? 'red' : 'inherit'} // Xét nếu amount < 0 thì truyền #e74c3c
+                    logo={activeWallet.bankInfo ? activeWallet.bankInfo.logo : ''}
+                    sx={{
+                      cursor: 'pointer',
+                      '&:hover': {
+                        backgroundColor: 'action.hover'
+                      },
+                      transition: 'background-color 0.2s',
+                      borderTop: 1,
+                      borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
+                    }}
+                    menuComponent={<WalletMenu isActive={true} sx={{ marginLeft: 2 }} />}
+                  />
+                </Box>)}
             </AccordionDetails>
           </Accordion>
 
@@ -174,24 +208,45 @@ function WalletCard({ data }) {
               {blockedWallets.length == 0 && (
                 <Typography display={'flex'} justifyContent={'center'} alignItems={'center'} marginY={2}>Không có ví nào đã khóa!</Typography>
               )}
-              {blockedWallets.map((blockedWallet, index) =>
-                <MoneySourceItem1
-                  isActive={false}
-                  title={blockedWallet.accountName}
-                  amount= {blockedWallet.balance}
-                  amountColor= {blockedWallet.balance < 0 ? 'red' : 'inherit'} // Xét nếu amount < 0 thì truyền #e74c3c
-                  logo={blockedWallet.bankInfo ? blockedWallet.bankInfo.logo : ''}
-                  key={index}
-                  sx={{
-                    borderTop: 1,
-                    borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
-                  }}
-                  menuComponent={<WalletMenu isActive={false} sx={{ marginLeft: 2 }} />}
-                />)}
+              {blockedWallets.map((blockedWallet) =>
+                <Box
+                  key={blockedWallet._id}
+                  onClick={() => handleOpenModal(blockedWallet)}
+                >
+                  <MoneySourceItem1
+                    isActive={false}
+                    title={blockedWallet.accountName}
+                    amount= {blockedWallet.balance}
+                    amountColor= {blockedWallet.balance < 0 ? 'red' : 'inherit'} // Xét nếu amount < 0 thì truyền #e74c3c
+                    logo={blockedWallet.bankInfo ? blockedWallet.bankInfo.logo : ''}
+                    sx={{
+                      cursor: 'pointer',
+                      '&:hover': {
+                        backgroundColor: 'action.hover'
+                      },
+                      transition: 'background-color 0.2s',
+                      borderTop: 1,
+                      borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
+                    }}
+                    menuComponent={<WalletMenu isActive={false} sx={{ marginLeft: 2 }} />}
+                  />
+                </Box>
+              )}
             </AccordionDetails>
           </Accordion>
         </Box>
       </Box>
+
+      <Modal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <AccountPopup account={selectedAccount} handleCancel={() => setOpenModal(false)} />
+        </Box>
+      </Modal>
     </StyledBox>
   )
 }
