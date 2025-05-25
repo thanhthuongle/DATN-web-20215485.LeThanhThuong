@@ -230,6 +230,14 @@ function CreateIncome() {
                         onChange={onChange}
                         onBlur={onBlur}
                         error={!!errors['moneyTargetId']}
+                        MenuProps={{
+                          PaperProps: {
+                            style: {
+                              maxHeight: 250,
+                              overflowY: 'auto'
+                            }
+                          }
+                        }}
                         renderValue={(value) => {
                           const selectedWallet = wallets.find(w => w._id === value)
                           return (

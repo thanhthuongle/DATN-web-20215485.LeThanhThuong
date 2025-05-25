@@ -12,6 +12,7 @@ function MoneySourceItem1({ title, description, logo, logoSize='40px', amount, a
       display='flex'
       alignItems='center'
       width='100%'
+      maxWidth={'100%'}
       justifyContent='space-between'
       padding={{ xs: 1, sm: 2 }}
       sx={sx}
@@ -44,7 +45,18 @@ function MoneySourceItem1({ title, description, logo, logoSize='40px', amount, a
             {interestRate && <Chip variant="outlined" color="info" size="small" sx={{ height: 1, marginLeft: '4px' }} label={interestRate} />}
           </Typography>
           }
-          {description && <Typography variant='body2' sx={{ opacity: 0.6 }}>{description}</Typography>}
+          {description &&
+            <Typography
+              variant='body2'
+              sx={{
+                opacity: 0.6,
+                whiteSpace: 'normal',
+                wordBreak: 'break-word'
+              }}
+            >
+              {description}
+            </Typography>
+          }
         </Box>
       </Box>
 
@@ -52,7 +64,7 @@ function MoneySourceItem1({ title, description, logo, logoSize='40px', amount, a
         display='flex'
         flexDirection='column'
         alignItems='end'
-        maxWidth='40%'
+        maxWidth='30%'
       >
         {amount !== null && amount !== undefined &&
         <NumericFormat
@@ -71,15 +83,16 @@ function MoneySourceItem1({ title, description, logo, logoSize='40px', amount, a
             variant='body2'
             sx={{
               opacity: 0.6,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              maxWidth: '100%'
+              whiteSpace: 'pre-line',
+              wordBreak: 'break-word',
+              textAlign: 'right'
             }}
           >{amountDesc}</Typography>}
       </Box>
 
-      {menuComponent}
+      <Box>
+        {menuComponent}
+      </Box>
     </ Box>
   )
 }

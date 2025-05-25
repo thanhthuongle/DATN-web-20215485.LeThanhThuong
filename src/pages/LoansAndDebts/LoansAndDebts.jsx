@@ -122,7 +122,7 @@ function LoansAndDebts() {
   const [startDate, setStartDate] = React.useState(null)
   const [endDate, setEndDate] = React.useState(null)
   const [data, setData] = React.useState(null)
-  console.log('🚀 ~ LoansAndDebts ~ data:', data)
+  // console.log('🚀 ~ LoansAndDebts ~ data:', data)
 
   const handleChangeTab = (event, newValue) => {
     setActiveTab(newValue)
@@ -193,7 +193,7 @@ function LoansAndDebts() {
     if (endTime) params['q[toDate]'] = endTime.toISOString()
     const searchPath = `?${createSearchParams(params)}`
     const result = await getIndividualTransactionAPI(searchPath)
-    // TODO: Lấy thêm giao dịch thu nợ và trả nợ
+    // TODO: Lấy thêm giao dịch thu nợ và trả nợ => check khoản vay, khoản cho vay đã hoàn thành => thêm trường isFinish,collection or payment từ các giao dịch thu và trả nợ vào các khoản vay cho vay tương ứng, nhớ là ko xóa chúng đi vì cần dùng để render lịch sử giao dịch
     updateStateData(result)
   }
 

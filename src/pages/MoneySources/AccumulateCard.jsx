@@ -101,7 +101,7 @@ function AccumulateCard({ data }) {
 
         <Box>
           {/* Các tích lũy đang theo dõi */}
-          <Accordion >
+          <Accordion defaultExpanded={true}>
             <AccordionSummary
               expandIcon={<ArrowDropDownIcon />}
               aria-controls="activeWallet-content"

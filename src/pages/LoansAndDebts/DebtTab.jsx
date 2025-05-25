@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Box from '@mui/material/Box'
-import { Button, Typography } from '@mui/material'
+import { Button, Modal, Typography } from '@mui/material'
 import { StyledBox } from '../Overview/Overview'
 import { NumericFormat } from 'react-number-format'
 import { styled } from '@mui/material/styles'
@@ -11,6 +11,21 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import MoneySourceItem1 from '../MoneySources/MoneySourceItem/MoneySourceItem1'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
+import ContactDebtList from './DebtPopup/ContactDebtList'
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: { xs: '100%', sm: 800 },
+  maxHeight: '80vh',
+  overflowY: 'auto',
+  bgcolor: 'background.paper',
+  // border: '2px solid #000',
+  boxShadow: 24,
+  p: 2
+}
 
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
@@ -32,7 +47,14 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
 }))
 
 function DebtTab({ totalBorrwed, paid, transactiosGrouped }) {
-console.log('🚀 ~ DebtTab ~ transactiosGrouped:', transactiosGrouped)
+  // console.log('🚀 ~ DebtTab ~ transactiosGrouped:', transactiosGrouped)
+  const [openModal, setOpenModal] = useState(false)
+  const [selectedContact, setSelectedContact] = useState(null)
+
+  const handleOpenModal = async (saving) => {
+    setSelectedContact(saving)
+    setOpenModal(true)
+  }
   return (
     <Box
       width={'100%'}
@@ -95,7 +117,7 @@ console.log('🚀 ~ DebtTab ~ transactiosGrouped:', transactiosGrouped)
 
       <Box>
         {/* Đang theo dõi */}
-        <Accordion sx={{ mb: 1 }}>
+        <Accordion sx={{ mb: 1 }} defaultExpanded={true}>
           <AccordionSummary
             expandIcon={<ArrowDropDownIcon />}
             aria-controls="followingDebt-content"
@@ -109,17 +131,26 @@ console.log('🚀 ~ DebtTab ~ transactiosGrouped:', transactiosGrouped)
             {(transactiosGrouped.some(item => Number(item.totalAmount) > 0))
               ? (
                 transactiosGrouped.filter(item => Number(item.totalAmount) > 0).map((item) =>
-                  <MoneySourceItem1
+                  <Box
                     key={item.lenderId}
-                    title={item.transactions[0].detailInfo.lender.name}
-                    amount={item.totalAmount}
-                    amountColor='#e74c3c'
-                    sx={{
-                      borderTop: 1,
-                      borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
-                    }}
-                    menuComponent={<Button variant='contained' sx={{ marginLeft: 2 }}>Trả nợ</Button>}
-                  />
+                    onClick={() => handleOpenModal(item)}
+                  >
+                    <MoneySourceItem1
+                      // key={item.lenderId}
+                      title={item.transactions[0].detailInfo.lender.name}
+                      amount={item.totalAmount}
+                      amountColor='#e74c3c'
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundColor: 'action.hover'
+                        },
+                        borderTop: 1,
+                        borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
+                      }}
+                      menuComponent={<Button variant='contained' sx={{ marginLeft: 2 }}>Trả nợ</Button>}
+                    />
+                  </Box>
                 )
               )
               : (
@@ -146,15 +177,24 @@ console.log('🚀 ~ DebtTab ~ transactiosGrouped:', transactiosGrouped)
             {(transactiosGrouped.some(item => Number(item.totalAmount) == 0))
               ? (
                 transactiosGrouped.filter(item => Number(item.totalAmount) == 0).map((item) =>
-                  <MoneySourceItem1
+                  <Box
                     key={item.lenderId}
-                    title={item.transactions[0].detailInfo.lender.name}
-                    sx={{
-                      borderTop: 1,
-                      borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
-                    }}
-                    menuComponent={<KeyboardArrowRightIcon />}
-                  />
+                    onClick={() => handleOpenModal(item)}
+                  >
+                    <MoneySourceItem1
+                      // key={item.lenderId}
+                      title={item.transactions[0].detailInfo.lender.name}
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundColor: 'action.hover'
+                        },
+                        borderTop: 1,
+                        borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
+                      }}
+                      menuComponent={<KeyboardArrowRightIcon />}
+                    />
+                  </Box>
                 )
               )
               : (
@@ -167,6 +207,16 @@ console.log('🚀 ~ DebtTab ~ transactiosGrouped:', transactiosGrouped)
         </Accordion>
       </Box>
 
+      <Modal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <ContactDebtList contactDebtData={{ ...selectedContact, lender: selectedContact?.transactions?.[0]?.detailInfo?.lender }} handleCancel={() => setOpenModal(false)} />
+        </Box>
+      </Modal>
     </Box>
   )
 }

@@ -132,7 +132,7 @@ function WalletCard({ data }) {
 
         <Box>
           {/* Các ví đang sử dụng */}
-          <Accordion >
+          <Accordion defaultExpanded={true}>
             <AccordionSummary
               expandIcon={<ArrowDropDownIcon />}
               aria-controls="activeWallet-content"
@@ -152,7 +152,7 @@ function WalletCard({ data }) {
                 />
               </Typography>
             </AccordionSummary>
-            <AccordionDetails sx={{ padding: 0 }}>
+            <AccordionDetails sx={{ padding: 0 }} >
               {/* Danh sách các ví đang sử dụng */}
               {activeWallets.length == 0 && (
                 <Typography display={'flex'} justifyContent={'center'} alignItems={'center'} marginY={2}>Không có ví nào đang sử dụng!</Typography>
