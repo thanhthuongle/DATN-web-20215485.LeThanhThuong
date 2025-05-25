@@ -106,6 +106,14 @@ function CreateContribution() {
               id="target-family-select"
               value={targetFamily}
               onChange={handleChangeTargetFamily}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    maxHeight: 250,
+                    overflowY: 'auto'
+                  }
+                }
+              }}
               renderValue={(targetFamily) => {
                 const selectedFamily = falmilies.find(f => f.familyId === targetFamily)
                 return (
@@ -152,6 +160,14 @@ function CreateContribution() {
                 id="contribution-select"
                 value={targetFamilyContribution}
                 onChange={handleChangeTargetFamilyContribution}
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      maxHeight: 250,
+                      overflowY: 'auto'
+                    }
+                  }
+                }}
                 renderValue={(targetFamilyContribution) => {
                   const selectedFamily = falmilies.find(f => f.familyId === targetFamily)
                   const selectedContribution = selectedFamily?.contributions.find(c => c.contributionId === targetFamilyContribution)
@@ -200,6 +216,14 @@ function CreateContribution() {
               id="wallet-select"
               value={targetFamilyWallet}
               onChange={handleChangeTargetFamilyWallet}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    maxHeight: 250,
+                    overflowY: 'auto'
+                  }
+                }
+              }}
               renderValue={(targetFamilyWallet) => {
                 const selectedFamily = falmilies.find(f => f.familyId === targetFamily)
                 const selectedWallet = selectedFamily?.wallets.find(w => w.walletId === targetFamilyWallet)
@@ -254,6 +278,14 @@ function CreateContribution() {
               id="wallet-select"
               value={wallet}
               onChange={handleChange}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    maxHeight: 250,
+                    overflowY: 'auto'
+                  }
+                }
+              }}
               renderValue={(wallet) => {
                 const selectedWallet = wallets.find(w => w.walletId === wallet)
                 return (

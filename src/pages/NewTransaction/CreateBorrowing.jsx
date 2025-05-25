@@ -12,7 +12,6 @@ import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import Avatar from '@mui/material/Avatar'
-import RestaurantIcon from '@mui/icons-material/Restaurant'
 import ContactSelector from './ContactSelector'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { createIndividualTransactionAPI, getIndividualAccountAPI } from '~/apis'
@@ -59,7 +58,8 @@ function CreateBorrowing() {
       const detailInfo = {
         moneyTargetType: MONEY_SOURCE_TYPE.ACCOUNT,
         moneyTargetId: data.moneyTargetId,
-        lenderId: data.lender._id
+        lenderId: data.lender._id,
+        rate: Number(data.rate)
       }
       if (data.repaymentTime) detailInfo.repaymentTime = data.repaymentTime.toISOString()
       formData.append('detailInfo', JSON.stringify(detailInfo ))
@@ -90,7 +90,8 @@ function CreateBorrowing() {
         detailInfo: {
           moneyTargetType: MONEY_SOURCE_TYPE.ACCOUNT,
           moneyTargetId: data.moneyTargetId,
-          lenderId: data.lender._id
+          lenderId: data.lender._id,
+          rate: Number(data.rate)
         }
       }
       if (data.repaymentTime) payload.detailInfo.repaymentTime = data.repaymentTime.toISOString()
@@ -155,8 +156,44 @@ function CreateBorrowing() {
                 )}
               />
             </Box>
-            <Box marginLeft={'100px'}>
+            <Box marginLeft={'110px'}>
               <FieldErrorAlert errors={errors} fieldName={'amount'}/>
+            </Box>
+          </Box>
+
+          {/* Lãi suất */}
+          <Box>
+            <Box display={'flex'} alignItems={'center'}>
+              <Typography sx={{ width: '110px', flexShrink: 0 }}>Lãi suất</Typography>
+              <Controller
+                control={control}
+                name='rate'
+                rules={{
+                  required: FIELD_REQUIRED_MESSAGE,
+                  validate: (value) => {
+                    if (value <= 20 && value >= 0) return
+                    else return 'Lãi suất không được vượt quá 20% theo quy định nhà nước!'
+                  }
+                }}
+                render={({ field: { onChange, value } }) => (
+                  <NumericFormat
+                    fullWidth
+                    customInput={TextField}
+                    placeholder='Nhập lãi suất (/năm)'
+                    thousandSeparator="."
+                    decimalSeparator=","
+                    allowNegative={false}
+                    allowLeadingZeros={false}
+                    suffix="&nbsp;%/năm"
+                    onValueChange={(v) => { onChange(v.value) }}
+                    value={value}
+                    error={!!errors['rate']}
+                  />
+                )}
+              />
+            </Box>
+            <Box marginLeft={'110px'}>
+              <FieldErrorAlert errors={errors} fieldName={'rate'}/>
             </Box>
           </Box>
 
@@ -192,7 +229,7 @@ function CreateBorrowing() {
                 )}
               />
             </Box>
-            <Box marginLeft={'100px'}>
+            <Box marginLeft={'110px'}>
               <FieldErrorAlert errors={errors} fieldName={'category'}/>
             </Box>
           </Box>
@@ -214,7 +251,7 @@ function CreateBorrowing() {
                 )}
               />
             </Box>
-            <Box marginLeft={'100px'}>
+            <Box marginLeft={'110px'}>
               <FieldErrorAlert errors={errors} fieldName={'lender'}/>
             </Box>
           </Box>
@@ -242,7 +279,7 @@ function CreateBorrowing() {
                 )}
               />
             </Box>
-            <Box marginLeft={'100px'}>
+            <Box marginLeft={'110px'}>
               <FieldErrorAlert errors={errors} fieldName={'transactionTime'}/>
             </Box>
           </Box>
@@ -277,7 +314,7 @@ function CreateBorrowing() {
                 )}
               />
             </Box>
-            <Box marginLeft={'100px'}>
+            <Box marginLeft={'110px'}>
               <FieldErrorAlert errors={errors} fieldName={'repaymentTime'}/>
             </Box>
           </Box>
@@ -300,6 +337,14 @@ function CreateBorrowing() {
                         onChange={onChange}
                         onBlur={onBlur}
                         error={!!errors['moneyTargetId']}
+                        MenuProps={{
+                          PaperProps: {
+                            style: {
+                              maxHeight: 250,
+                              overflowY: 'auto'
+                            }
+                          }
+                        }}
                         renderValue={(value) => {
                           const selectedWallet = wallets.find(w => w._id === value)
                           return (
@@ -337,7 +382,7 @@ function CreateBorrowing() {
                 />
               </Box>
             </Box>
-            <Box marginLeft={'100px'}>
+            <Box marginLeft={'110px'}>
               <FieldErrorAlert errors={errors} fieldName={'moneyTargetId'}/>
             </Box>
           </Box>
