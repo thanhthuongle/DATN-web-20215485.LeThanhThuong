@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Box from '@mui/material/Box'
-import { Button, Typography } from '@mui/material'
+import { Button, Modal, Typography } from '@mui/material'
 import { StyledBox } from '../Overview/Overview'
 import { NumericFormat } from 'react-number-format'
 import { styled } from '@mui/material/styles'
@@ -11,6 +11,21 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import MoneySourceItem1 from '../MoneySources/MoneySourceItem/MoneySourceItem1'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
+import ContactLoanList from './LoanPopup/ContactLoanList'
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: { xs: '100%', sm: 800 },
+  maxHeight: '80vh',
+  overflowY: 'auto',
+  bgcolor: 'background.paper',
+  // border: '2px solid #000',
+  boxShadow: 24,
+  p: 2
+}
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 10,
@@ -31,6 +46,14 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
 }))
 
 function LoanTab({ totalLoan, collected, transactiosGrouped }) {
+  // console.log('🚀 ~ LoanTab ~ transactiosGrouped:', transactiosGrouped)
+  const [openModal, setOpenModal] = useState(false)
+  const [selectedContact, setSelectedContact] = useState(null)
+
+  const handleOpenModal = async (saving) => {
+    setSelectedContact(saving)
+    setOpenModal(true)
+  }
   return (
     <Box
       width={'100%'}
@@ -96,7 +119,7 @@ function LoanTab({ totalLoan, collected, transactiosGrouped }) {
 
       <Box>
         {/* Đang theo dõi */}
-        <Accordion sx={{ mb: 1 }}>
+        <Accordion sx={{ mb: 1 }} defaultExpanded={true}>
           <AccordionSummary
             expandIcon={<ArrowDropDownIcon />}
             aria-controls="followingLoan-content"
@@ -110,17 +133,26 @@ function LoanTab({ totalLoan, collected, transactiosGrouped }) {
             {(transactiosGrouped.some(item => Number(item.totalAmount) > 0))
               ? (
                 transactiosGrouped.filter(item => Number(item.totalAmount) > 0).map((item) =>
-                  <MoneySourceItem1
+                  <Box
                     key={item.borrowerId}
-                    title={item.transactions[0].detailInfo.borrower.name}
-                    amount={item.totalAmount}
-                    amountColor='#e74c3c'
-                    sx={{
-                      borderTop: 1,
-                      borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
-                    }}
-                    menuComponent={<Button variant='contained' sx={{ marginLeft: 2 }}>Thu nợ</Button>}
-                  />
+                    onClick={() => handleOpenModal(item)}
+                  >
+                    <MoneySourceItem1
+                      // key={item.borrowerId}
+                      title={item.transactions[0].detailInfo.borrower.name}
+                      amount={item.totalAmount}
+                      amountColor='#e74c3c'
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundColor: 'action.hover'
+                        },
+                        borderTop: 1,
+                        borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
+                      }}
+                      menuComponent={<Button variant='contained' sx={{ marginLeft: 2 }}>Thu nợ</Button>}
+                    />
+                  </Box>
                 )
               )
               : (
@@ -147,15 +179,24 @@ function LoanTab({ totalLoan, collected, transactiosGrouped }) {
             {(transactiosGrouped.some(item => Number(item.totalAmount) == 0))
               ? (
                 transactiosGrouped.filter(item => Number(item.totalAmount) == 0).map((item) =>
-                  <MoneySourceItem1
+                  <Box
                     key={item.borrowerId}
-                    title={item.transactions[0].detailInfo.borrower.name}
-                    sx={{
-                      borderTop: 1,
-                      borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
-                    }}
-                    menuComponent={<KeyboardArrowRightIcon />}
-                  />
+                    onClick={() => handleOpenModal(item)}
+                  >
+                    <MoneySourceItem1
+                      // key={item.borrowerId}
+                      title={item.transactions[0].detailInfo.borrower.name}
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundColor: 'action.hover'
+                        },
+                        borderTop: 1,
+                        borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
+                      }}
+                      menuComponent={<KeyboardArrowRightIcon />}
+                    />
+                  </Box>
                 )
               )
               : (
@@ -168,6 +209,16 @@ function LoanTab({ totalLoan, collected, transactiosGrouped }) {
         </Accordion>
       </Box>
 
+      <Modal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <ContactLoanList contactLoanData={{ ...selectedContact, borrower: selectedContact?.transactions?.[0]?.detailInfo?.borrower }} handleCancel={() => setOpenModal(false)} />
+        </Box>
+      </Modal>
     </Box>
   )
 }
