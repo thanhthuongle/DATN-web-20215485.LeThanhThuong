@@ -44,9 +44,8 @@ function processDataRaw(transactions) {
   }
 }
 
-function ContactLoanList({ contactLoanData, handleCancel }) {
-  const totalCollect = 100000 // TODO: get Real DAta
-  // console.log('🚀 ~ ContactLoanList ~ contactLoanData:', contactLoanData)
+function ContactLoanList({ contactLoanData, handleCancel, handleOnCollect }) {
+  console.log('🚀 ~ ContactLoanList ~ contactLoanData:', contactLoanData)
   const [transactionProcessedDatas, setTransactionProcessedDatas] = useState(null)
   const [openModal, setOpenModal] = useState(false)
   const [selectedTransaction, setSelectedTransaction] = useState(null)
@@ -91,7 +90,7 @@ function ContactLoanList({ contactLoanData, handleCancel }) {
               decimalSeparator=","
               allowNegative={false}
               suffix="&nbsp;₫"
-              value={totalCollect}
+              value={contactLoanData?.totalReturn}
               style={{ color: '#27ae60', fontWeight: 'bold' }} // #27ae60
             />
           </Box>
@@ -106,7 +105,7 @@ function ContactLoanList({ contactLoanData, handleCancel }) {
                 <Typography fontWeight={'bold'}>{moment(transactionData?.transactionTime).format('dddd, LL')}</Typography>
                 {transactionData?.transactions?.map((transaction) => {
                   const amountDescription1 = (transaction.detailInfo.collectTime) ? `Ngày thu dự kiến: ${moment(transaction.detailInfo.collectTime).format('DD/MM/YYYY')}\n` : ''
-                  const amountDescription2 = transaction.isFinish ? `Ngày thu thực tế: ${moment().format('DD/MM/YYYY')}` : '' // TODO: lấy ngày thu thực tế
+                  const amountDescription2 = transaction?.isFinish == true ? `Ngày thu thực tế: ${moment(transaction?.collectionTransaction?.transactionTime).format('DD/MM/YYYY')}` : ''
                   return (
                     <Box
                       key={transaction._id}
@@ -119,8 +118,8 @@ function ContactLoanList({ contactLoanData, handleCancel }) {
                         amount={transaction?.amount}
                         amountColor={(transaction?.type == TRANSACTION_TYPES.LOAN) ? '#e74c3c' : '#27ae60'} // #27ae60, #e74c3c
                         amountDesc={`${amountDescription1}${amountDescription2}`}
-                        menuComponent={
-                          transaction.isFinish
+                        menuComponent={transaction.type == TRANSACTION_TYPES.LOAN &&(
+                          transaction?.isFinish == true
                             ? (
                               <Box textAlign={'center'} sx={{ marginLeft: 2, border: 'solid 1px', borderRadius: 1, borderColor: '#359ff4', paddingY: 0.5, paddingX: 2 }}>
                                 <Typography>Đã thu</Typography>
@@ -130,13 +129,13 @@ function ContactLoanList({ contactLoanData, handleCancel }) {
                                   decimalSeparator=","
                                   allowNegative={false}
                                   suffix="&nbsp;₫"
-                                  value={contactLoanData?.totalAmount} // // TODO: lấy số liệu thực tế
+                                  value={transaction?.collectionTransaction?.amount}
                                   style={{ color: '#27ae60', fontWeight: 'bold' }} // '#27ae60'
                                 />
                               </Box>
                             )
                             : <Button variant='contained' sx={{ marginLeft: 2 }} onClick={() => handleOpenModal(transaction)}>Thu nợ</Button>
-                        }
+                        )}
                         sx={{
                           borderTop: 1,
                           borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
@@ -161,7 +160,7 @@ function ContactLoanList({ contactLoanData, handleCancel }) {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <CollectionPopup LoanTransaction={selectedTransaction} handleCancel={() => setOpenModal(false)} />
+          <CollectionPopup LoanTransaction={selectedTransaction} handleCancel={() => setOpenModal(false)} handleOnCollect={handleOnCollect}/>
         </Box>
       </Modal>
     </Box>

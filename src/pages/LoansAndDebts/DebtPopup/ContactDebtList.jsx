@@ -44,8 +44,7 @@ function processDataRaw(transactions) {
   }
 }
 
-function ContactDebtList({ contactDebtData, handleCancel }) {
-  const totalCollect = 100000 // TODO: get Real DAta
+function ContactDebtList({ contactDebtData, handleCancel, handleOnCollectOrRepay }) {
   // console.log('🚀 ~ ContactDebtList ~ contactDebtData:', contactDebtData)
   const [transactionProcessedDatas, setTransactionProcessedDatas] = useState(null)
   // console.log('🚀 ~ ContactDebtList ~ transactionProcessedDatas:', transactionProcessedDatas)
@@ -92,7 +91,7 @@ function ContactDebtList({ contactDebtData, handleCancel }) {
               decimalSeparator=","
               allowNegative={false}
               suffix="&nbsp;₫"
-              value={totalCollect}
+              value={contactDebtData?.totalReturn}
               style={{ color: '#e74c3c', fontWeight: 'bold' }} // #e74c3c
             />
           </Box>
@@ -107,7 +106,7 @@ function ContactDebtList({ contactDebtData, handleCancel }) {
                 <Typography fontWeight={'bold'}>{moment(transactionData?.transactionTime).format('dddd, LL')}</Typography>
                 {transactionData?.transactions?.map((transaction) => {
                   const amountDescription1 = (transaction.detailInfo.repaymentTime) ? `Ngày trả dự kiến: ${moment(transaction.detailInfo.repaymentTime).format('DD/MM/YYYY')}\n` : ''
-                  const amountDescription2 = transaction.isFinish ? `Ngày trả thực tế: ${moment().format('DD/MM/YYYY')}` : '' // TODO: lấy ngày thu thực tế
+                  const amountDescription2 = transaction?.isFinish == true ? `Ngày trả thực tế: ${moment(transaction?.borrowingTransaction?.transactionTime).format('DD/MM/YYYY')}` : ''
                   return (
                     <Box
                       key={transaction._id}
@@ -120,8 +119,8 @@ function ContactDebtList({ contactDebtData, handleCancel }) {
                         amount={transaction?.amount}
                         amountColor={(transaction?.type == TRANSACTION_TYPES.BORROWING) ? '#27ae60' : '#e74c3c'} // #27ae60, #e74c3c
                         amountDesc={`${amountDescription1}${amountDescription2}`}
-                        menuComponent={
-                          transaction.isFinish
+                        menuComponent={transaction.type == TRANSACTION_TYPES.BORROWING && (
+                          transaction.isFinish == true
                             ? (
                               <Box textAlign={'center'} sx={{ marginLeft: 2, border: 'solid 1px', borderRadius: 1, borderColor: '#359ff4', paddingY: 0.5, paddingX: 2 }}>
                                 <Typography>Đã trả</Typography>
@@ -131,13 +130,13 @@ function ContactDebtList({ contactDebtData, handleCancel }) {
                                   decimalSeparator=","
                                   allowNegative={false}
                                   suffix="&nbsp;₫"
-                                  value={contactDebtData?.totalAmount} // // TODO: lấy số liệu thực tế
+                                  value={transaction?.borrowingTransaction?.amount}
                                   style={{ color: '#e74c3c', fontWeight: 'bold' }} // #e74c3c
                                 />
                               </Box>
                             )
                             : <Button variant='contained' sx={{ marginLeft: 2 }} onClick={() => handleOpenModal(transaction)}>Trả nợ</Button>
-                        }
+                        )}
                         sx={{
                           borderTop: 1,
                           borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
@@ -162,7 +161,11 @@ function ContactDebtList({ contactDebtData, handleCancel }) {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <PaymentPopup DebtTransaction={selectedTransaction} handleCancel={() => setOpenModal(false)} />
+          <PaymentPopup
+            DebtTransaction={selectedTransaction}
+            handleCancel={() => setOpenModal(false)}
+            handleOnCollectOrRepay={handleOnCollectOrRepay}
+          />
         </Box>
       </Modal>
     </Box>

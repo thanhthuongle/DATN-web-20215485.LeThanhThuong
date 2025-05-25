@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import { Button, Modal, Typography } from '@mui/material'
 import { StyledBox } from '../Overview/Overview'
@@ -46,7 +46,7 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   }
 }))
 
-function DebtTab({ totalBorrwed, paid, transactiosGrouped }) {
+function DebtTab({ totalBorrwed, paid, transactiosGrouped, handleOnCollectOrRepay }) {
   // console.log('🚀 ~ DebtTab ~ transactiosGrouped:', transactiosGrouped)
   const [openModal, setOpenModal] = useState(false)
   const [selectedContact, setSelectedContact] = useState(null)
@@ -55,6 +55,17 @@ function DebtTab({ totalBorrwed, paid, transactiosGrouped }) {
     setSelectedContact(saving)
     setOpenModal(true)
   }
+
+  useEffect(() => {
+    if (selectedContact) {
+      const updated = transactiosGrouped.find(
+        item => item.lenderId === selectedContact.lenderId
+      )
+      if (updated) {
+        setSelectedContact(updated)
+      }
+    }
+  }, [transactiosGrouped])
   return (
     <Box
       width={'100%'}
@@ -66,7 +77,7 @@ function DebtTab({ totalBorrwed, paid, transactiosGrouped }) {
 
       {/* Tổng quan */}
       <StyledBox display={'flex'} flexDirection={'column'} gap={1}>
-        <Typography
+        {/* <Typography
           component={'div'}
         > Cần trả:
           <NumericFormat
@@ -79,7 +90,7 @@ function DebtTab({ totalBorrwed, paid, transactiosGrouped }) {
             value={Math.max(Number(totalBorrwed) - Number(paid), 0)}
             style={{ color: '#e74c3c' }}
           />
-        </Typography>
+        </Typography> */}
         <Box width={'100%'} display={'flex'} justifyContent={'space-between'}>
           <Typography
             component={'div'}
@@ -128,9 +139,9 @@ function DebtTab({ totalBorrwed, paid, transactiosGrouped }) {
           </AccordionSummary>
           <AccordionDetails sx={{ padding: 0 }}>
             {/* Danh sách các liên hệ đang theo dõi*/}
-            {(transactiosGrouped.some(item => Number(item.totalAmount) > 0))
+            {(transactiosGrouped.some(item => Number(item.totalAmountWithReturn) > 0))
               ? (
-                transactiosGrouped.filter(item => Number(item.totalAmount) > 0).map((item) =>
+                transactiosGrouped.filter(item => Number(item.totalAmountWithReturn) > 0).map((item) =>
                   <Box
                     key={item.lenderId}
                     onClick={() => handleOpenModal(item)}
@@ -138,7 +149,7 @@ function DebtTab({ totalBorrwed, paid, transactiosGrouped }) {
                     <MoneySourceItem1
                       // key={item.lenderId}
                       title={item.transactions[0].detailInfo.lender.name}
-                      amount={item.totalAmount}
+                      amount={item.totalAmountWithReturn}
                       amountColor='#e74c3c'
                       sx={{
                         cursor: 'pointer',
@@ -174,9 +185,9 @@ function DebtTab({ totalBorrwed, paid, transactiosGrouped }) {
           </AccordionSummary>
           <AccordionDetails sx={{ padding: 0 }}>
             {/* Danh sách các liên hệ đã hoàn thành */}
-            {(transactiosGrouped.some(item => Number(item.totalAmount) == 0))
+            {(transactiosGrouped.some(item => Number(item.totalAmountWithReturn) == 0))
               ? (
-                transactiosGrouped.filter(item => Number(item.totalAmount) == 0).map((item) =>
+                transactiosGrouped.filter(item => Number(item.totalAmountWithReturn) == 0).map((item) =>
                   <Box
                     key={item.lenderId}
                     onClick={() => handleOpenModal(item)}
@@ -214,7 +225,11 @@ function DebtTab({ totalBorrwed, paid, transactiosGrouped }) {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <ContactDebtList contactDebtData={{ ...selectedContact, lender: selectedContact?.transactions?.[0]?.detailInfo?.lender }} handleCancel={() => setOpenModal(false)} />
+          <ContactDebtList
+            contactDebtData={{ ...selectedContact, lender: selectedContact?.transactions?.[0]?.detailInfo?.lender }}
+            handleCancel={() => setOpenModal(false)}
+            handleOnCollectOrRepay={handleOnCollectOrRepay}
+          />
         </Box>
       </Modal>
     </Box>

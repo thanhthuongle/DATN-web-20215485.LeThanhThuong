@@ -4,10 +4,13 @@ import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { NumericFormat } from 'react-number-format'
-import { getIndividualAccountAPI } from '~/apis'
+import { createSearchParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { createIndividualTransactionAPI, getIndividualAccountAPI, getIndividualCategoryAPI } from '~/apis'
 import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
 import FieldErrorAlert from '~/component/Form/FieldErrorAlert'
 import { StyledBox } from '~/pages/Overview/Overview'
+import { MONEY_SOURCE_TYPE, TRANSACTION_TYPES } from '~/utils/constants'
 import { FIELD_REQUIRED_MESSAGE } from '~/utils/validators'
 
 function CalcCollection (loanAmount, loanTime, collectTime, rate = 10) {
@@ -16,23 +19,48 @@ function CalcCollection (loanAmount, loanTime, collectTime, rate = 10) {
   return collectAmount
 }
 
-function PaymentPopup({ DebtTransaction, handleCancel }) {
-  console.log('🚀 ~ PaymentPopup ~ DebtTransaction:', DebtTransaction)
+function PaymentPopup({ DebtTransaction, handleCancel, handleOnCollectOrRepay }) {
+  // console.log('🚀 ~ PaymentPopup ~ DebtTransaction:', DebtTransaction)
   const [wallets, setWallets] = useState([])
+  const [repaymentCategory, setRepaymentCategory] = useState(null)
 
   const methods = useForm()
   const { setValue, control, reset, watch, formState: { errors } } = methods
   const realRepaymentTime = watch('realRepaymentTime')
 
   const onSubmit = (data) => {
-    data.borrowingTransactionId = DebtTransaction._id
-    console.log('🚀 ~ onSubmit ~ data:', data)
+    // console.log('🚀 ~ onSubmit ~ data:', data)
+    const payload = {
+      type: TRANSACTION_TYPES.REPAYMENT,
+      categoryId: repaymentCategory._id,
+      name: repaymentCategory.name,
+      transactionTime: moment(data.realRepaymentTime).toISOString(),
+      description: `trả nợ ${DebtTransaction?.detailInfo?.lender?.name}`,
+      amount: Number(CalcCollection(DebtTransaction?.amount, DebtTransaction?.transactionTime, realRepaymentTime, DebtTransaction?.detailInfo?.rate)),
 
-    // TODO: Call API
-    reset()
-    handleCancel()
+      detailInfo: {
+        borrowingTransactionId: DebtTransaction._id,
+        lenderId: DebtTransaction?.detailInfo?.lender?._id,
+        moneyFromType: MONEY_SOURCE_TYPE.ACCOUNT,
+        moneyFromId: data.moneyFromId,
+        realRepaymentTime: moment(data.realRepaymentTime).toISOString()
+      }
+    }
+    // console.log('🚀 ~ onSubmit ~ payload:', payload)
+
+    // Call API
+    toast.promise(
+      createIndividualTransactionAPI(payload),
+      { pending: 'Đang tạo giao dịch...' }
+    ).then(async res => {
+      if (!res.error) {
+        toast.success('Tạo giao dịch trả nợ thành công!')
+        reset()
+        handleCancel()
+        handleOnCollectOrRepay()
+      }
+    })
   }
-
 
   useEffect(() => {
     getIndividualAccountAPI().then((res) => {
@@ -40,6 +68,10 @@ function PaymentPopup({ DebtTransaction, handleCancel }) {
       if (res?.[0]?._id) {
         setValue('moneyFromId', res[0]._id)
       }
+    })
+
+    getIndividualCategoryAPI(`?${createSearchParams({ 'q[type]': TRANSACTION_TYPES.REPAYMENT })}`).then(res => {
+      if (res?.[0]) setRepaymentCategory(res[0])
     })
   }, [setValue])
   return (

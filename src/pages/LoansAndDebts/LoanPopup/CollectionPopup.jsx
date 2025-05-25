@@ -5,11 +5,13 @@ import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { NumericFormat } from 'react-number-format'
+import { createSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { getIndividualAccountAPI } from '~/apis'
+import { createIndividualTransactionAPI, getIndividualAccountAPI, getIndividualCategoryAPI } from '~/apis'
 import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
 import FieldErrorAlert from '~/component/Form/FieldErrorAlert'
 import { StyledBox } from '~/pages/Overview/Overview'
+import { MONEY_SOURCE_TYPE, TRANSACTION_TYPES } from '~/utils/constants'
 import { FIELD_REQUIRED_MESSAGE } from '~/utils/validators'
 
 function CalcCollection (loanAmount, loanTime, collectTime, rate = 10) {
@@ -18,21 +20,48 @@ function CalcCollection (loanAmount, loanTime, collectTime, rate = 10) {
   return collectAmount
 }
 
-function CollectionPopup({ LoanTransaction, handleCancel }) {
+function CollectionPopup({ LoanTransaction, handleCancel, handleOnCollect }) {
   // console.log('🚀 ~ CollectionPopup ~ LoanTransaction:', LoanTransaction)
   const [wallets, setWallets] = useState([])
+  const [collectCategory, setCollectCategory] = useState(null)
 
   const methods = useForm()
   const { setValue, control, reset, watch, formState: { errors } } = methods
   const realCollectTime = watch('realCollectTime')
 
   const onSubmit = (data) => {
-    data.loanTransactionId = LoanTransaction._id
-    console.log('🚀 ~ onSubmit ~ data:', data)
+    // data.loanTransactionId = LoanTransaction._id
+    // console.log('🚀 ~ onSubmit ~ data:', data)
+    const payload = {
+      type: TRANSACTION_TYPES.COLLECT,
+      categoryId: collectCategory._id,
+      name: collectCategory.name,
+      transactionTime: moment(realCollectTime).toISOString(),
+      description: `${LoanTransaction?.detailInfo?.borrower?.name} trả`,
+      amount: Number(CalcCollection(LoanTransaction?.amount, LoanTransaction?.transactionTime, realCollectTime, LoanTransaction?.detailInfo?.rate)),
 
-    // TODO: Call API
-    reset()
-    handleCancel()
+      detailInfo: {
+        loanTransactionId: LoanTransaction._id,
+        borrowerId: LoanTransaction?.detailInfo?.borrower?._id,
+        moneyTargetType: MONEY_SOURCE_TYPE.ACCOUNT,
+        moneyTargetId: data.moneyTargetId,
+        realCollectTime: moment(data.realCollectTime).toISOString()
+      }
+    }
+    console.log('🚀 ~ onSubmit ~ payload:', payload)
+
+    // Call API
+    toast.promise(
+      createIndividualTransactionAPI(payload),
+      { pending: 'Đang tạo giao dịch...' }
+    ).then(async res => {
+      if (!res.error) {
+        toast.success('Tạo giao dịch thu nợ thành công!')
+        reset()
+        handleCancel()
+        handleOnCollect()
+      }
+    })
   }
 
   useEffect(() => {
@@ -41,6 +70,10 @@ function CollectionPopup({ LoanTransaction, handleCancel }) {
       if (res?.[0]?._id) {
         setValue('moneyTargetId', res[0]._id)
       }
+    })
+
+    getIndividualCategoryAPI(`?${createSearchParams({ 'q[type]': TRANSACTION_TYPES.COLLECT })}`).then(res => {
+      if (res?.[0]) setCollectCategory(res[0])
     })
   }, [setValue])
   return (
@@ -66,7 +99,7 @@ function CollectionPopup({ LoanTransaction, handleCancel }) {
                 style={{ color: '#e74c3c', fontWeight: 'bold' }} // #e74c3c
               />
             </Typography>
-            <Typography>Lãi suất: %/năm</Typography>
+            <Typography>Lãi suất: {LoanTransaction?.detailInfo?.rate} %/năm</Typography>
             <Typography>Thời gian vay: {moment(LoanTransaction?.transactionTime).format('DD/MM/YYYY, LT')}</Typography>
             {LoanTransaction?.detailInfo?.collectTime &&<Typography>Thời gian thu dự kiến: {moment(LoanTransaction?.detailInfo?.collectTime).format('DD/MM/YYYY, LT')}</Typography>}
           </StyledBox>
@@ -125,7 +158,7 @@ function CollectionPopup({ LoanTransaction, handleCancel }) {
                     decimalSeparator=","
                     allowNegative={false}
                     suffix="&nbsp;₫"
-                    value={CalcCollection(LoanTransaction?.amount, LoanTransaction?.transactionTime, realCollectTime)}
+                    value={CalcCollection(LoanTransaction?.amount, LoanTransaction?.transactionTime, realCollectTime, LoanTransaction?.detailInfo?.rate)}
                     style={{ color: '#27ae60', fontWeight: 'bold' }} // #27ae60
                   />
                 </Typography>
