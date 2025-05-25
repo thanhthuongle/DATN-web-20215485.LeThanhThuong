@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import { Button, Modal, Typography } from '@mui/material'
 import { StyledBox } from '../Overview/Overview'
@@ -45,15 +45,27 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   }
 }))
 
-function LoanTab({ totalLoan, collected, transactiosGrouped }) {
+function LoanTab({ totalLoan, collected, transactiosGrouped, handleOnCollectOrRepay }) {
   // console.log('🚀 ~ LoanTab ~ transactiosGrouped:', transactiosGrouped)
   const [openModal, setOpenModal] = useState(false)
   const [selectedContact, setSelectedContact] = useState(null)
 
-  const handleOpenModal = async (saving) => {
-    setSelectedContact(saving)
+  const handleOpenModal = async (contactData) => {
+    setSelectedContact(contactData)
     setOpenModal(true)
   }
+  useEffect(() => {
+    if (selectedContact) {
+      const updated = transactiosGrouped.find(
+        item => item.borrowerId === selectedContact.borrowerId
+      )
+      if (updated) {
+        setSelectedContact(updated)
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transactiosGrouped])
+
   return (
     <Box
       width={'100%'}
@@ -65,7 +77,7 @@ function LoanTab({ totalLoan, collected, transactiosGrouped }) {
 
       {/* Tổng quan */}
       <StyledBox display={'flex'} flexDirection={'column'} gap={1}>
-        <Typography
+        {/* <Typography
           component={'div'}
         > Cần thu:
           <NumericFormat
@@ -79,7 +91,7 @@ function LoanTab({ totalLoan, collected, transactiosGrouped }) {
             // value={123456}
             style={{ color: '#e74c3c' }}
           />
-        </Typography>
+        </Typography> */}
         <Box width={'100%'} display={'flex'} justifyContent={'space-between'}>
           <Typography
             component={'div'}
@@ -130,9 +142,9 @@ function LoanTab({ totalLoan, collected, transactiosGrouped }) {
           </AccordionSummary>
           <AccordionDetails sx={{ padding: 0 }}>
             {/* Danh sách các liên hệ đang theo dõi*/}
-            {(transactiosGrouped.some(item => Number(item.totalAmount) > 0))
+            {(transactiosGrouped.some(item => Number(item.totalAmountWithReturn) > 0))
               ? (
-                transactiosGrouped.filter(item => Number(item.totalAmount) > 0).map((item) =>
+                transactiosGrouped.filter(item => Number(item.totalAmountWithReturn) > 0).map((item) =>
                   <Box
                     key={item.borrowerId}
                     onClick={() => handleOpenModal(item)}
@@ -140,7 +152,7 @@ function LoanTab({ totalLoan, collected, transactiosGrouped }) {
                     <MoneySourceItem1
                       // key={item.borrowerId}
                       title={item.transactions[0].detailInfo.borrower.name}
-                      amount={item.totalAmount}
+                      amount={item.totalAmountWithReturn}
                       amountColor='#e74c3c'
                       sx={{
                         cursor: 'pointer',
@@ -176,9 +188,9 @@ function LoanTab({ totalLoan, collected, transactiosGrouped }) {
           </AccordionSummary>
           <AccordionDetails sx={{ padding: 0 }}>
             {/* Danh sách các liên hệ đã hoàn thành */}
-            {(transactiosGrouped.some(item => Number(item.totalAmount) == 0))
+            {(transactiosGrouped.some(item => Number(item.totalAmountWithReturn) == 0))
               ? (
-                transactiosGrouped.filter(item => Number(item.totalAmount) == 0).map((item) =>
+                transactiosGrouped.filter(item => Number(item.totalAmountWithReturn) == 0).map((item) =>
                   <Box
                     key={item.borrowerId}
                     onClick={() => handleOpenModal(item)}
@@ -216,7 +228,12 @@ function LoanTab({ totalLoan, collected, transactiosGrouped }) {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <ContactLoanList contactLoanData={{ ...selectedContact, borrower: selectedContact?.transactions?.[0]?.detailInfo?.borrower }} handleCancel={() => setOpenModal(false)} />
+          <ContactLoanList
+            key={selectedContact?.borrowerId}
+            contactLoanData={{ ...selectedContact, borrower: selectedContact?.transactions?.[0]?.detailInfo?.borrower }}
+            handleCancel={() => setOpenModal(false)}
+            handleOnCollect={handleOnCollectOrRepay}
+          />
         </Box>
       </Modal>
     </Box>

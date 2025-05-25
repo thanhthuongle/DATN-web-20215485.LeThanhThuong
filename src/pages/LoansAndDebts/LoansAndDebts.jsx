@@ -91,25 +91,93 @@ const getTimeRange = (option) => {
 
 
 const groupTransaction = (data, key) => {
+  let addStatusData = []
+  if (key == 'borrowerId') {
+    const finishedCollectMap = new Map()
+    // Tạo map loanTransactionId → collect transaction
+    data.forEach(item => {
+      if (item.type === TRANSACTION_TYPES.COLLECT && item.detailInfo?.loanTransactionId) {
+        finishedCollectMap.set(item.detailInfo.loanTransactionId, item)
+      }
+    })
+
+    // Gắn isFinish và finishedTransaction nếu có
+    addStatusData = data.map(item => {
+      if (item.type === TRANSACTION_TYPES.LOAN) {
+        const relatedCollect = finishedCollectMap.get(item._id)
+        if (relatedCollect) {
+          return {
+            ...item,
+            isFinish: true,
+            collectionTransaction: relatedCollect
+          }
+        } else {
+          return {
+            ...item,
+            isFinish: false
+          }
+        }
+      }
+      return { ...item }
+    })
+  } else if (key == 'lenderId') {
+    const finishedBorrowingIds = new Map()
+    // Tạo map
+    data.forEach(item => {
+      if (item.type === TRANSACTION_TYPES.REPAYMENT && item.detailInfo?.borrowingTransactionId) {
+        finishedBorrowingIds.set(item.detailInfo.borrowingTransactionId, item)
+      }
+    })
+
+    // Gắn isFinish và finishedTransaction nếu có
+    addStatusData = data.map(item => {
+      if (item.type === TRANSACTION_TYPES.BORROWING) {
+        const relatedBorrowing = finishedBorrowingIds.get(item._id)
+        if (relatedBorrowing) {
+          return {
+            ...item,
+            isFinish: true,
+            borrowingTransaction: relatedBorrowing
+          }
+        } else {
+          return {
+            ...item,
+            isFinish: false
+          }
+        }
+      }
+      return { ...item }
+    })
+  }
+
   let totalAmount = {}
-  const grouped = data.reduce((acc, transaction) => {
+  let totalAmountWithReturn = {}
+  let totalReturn = {}
+  const grouped = addStatusData.reduce((acc, transaction) => {
     const keyValue = transaction.detailInfo?.[key]
 
     if (!acc[keyValue]) {
       acc[keyValue] = []
     }
     if (!totalAmount[keyValue]) totalAmount[keyValue] = 0
+    if (!totalAmountWithReturn[keyValue]) totalAmountWithReturn[keyValue] = 0
+    if (!totalReturn[keyValue]) totalReturn[keyValue] = 0
 
     acc[keyValue].push(transaction)
 
-    totalAmount[keyValue] += transaction.amount
-    // TODO: Tính thêm khoản đã trả hoăc đã thu
+    if (transaction.type == TRANSACTION_TYPES.LOAN || transaction.type == TRANSACTION_TYPES.BORROWING) {
+      totalAmount[keyValue] += transaction.amount
+      if (transaction?.isFinish == false) totalAmountWithReturn[keyValue] += transaction.amount
+    }
+    else totalReturn[keyValue] += transaction.amount
     return acc
   }, {})
 
   const groupedArray = Object.entries(grouped).map(([keyValue, transactions]) => ({
     [key]: keyValue,
     totalAmount: totalAmount[keyValue],
+    totalAmountWithReturn: totalAmountWithReturn[keyValue],
+    totalReturn: totalReturn[keyValue],
     transactions
   }))
 
@@ -148,15 +216,25 @@ function LoansAndDebts() {
     await getData({ startTime: startDate, endTime: endDate })
   }
 
+  const handleOnCollectOrRepay = async () => {
+    await getData({ startTime: startDate, endTime: endDate })
+  }
+
   const updateStateData = async (res) => {
+    // console.log('🚀 ~ updateStateData ~ res:', res)
     let totalLoan = 0
     let totalBorrowing = 0
-    // TODO: lấy avf tính toán thêm collected và paid
+    let totalCollected = 0
+    let totalPaid = 0
     let loanTransactions = res.filter(item => item.type == TRANSACTION_TYPES.LOAN)
     let borrowingTransactions = res.filter(item => item.type == TRANSACTION_TYPES.BORROWING)
+    let collectionTransactions = res.filter(item => item.type == TRANSACTION_TYPES.COLLECT)
+    let repaymentTransactions = res.filter(item => item.type == TRANSACTION_TYPES.REPAYMENT)
 
     const loanDetails = await getIndividualDetailTransactions({ type: TRANSACTION_TYPES.LOAN, transactionIds: loanTransactions.map(item => item._id) })
     const borrowingDetails = await getIndividualDetailTransactions({ type: TRANSACTION_TYPES.BORROWING, transactionIds: borrowingTransactions.map(item => item._id) })
+    const collectionDetails = await getIndividualDetailTransactions({ type: TRANSACTION_TYPES.COLLECT, transactionIds: collectionTransactions.map(item => item._id) })
+    const repaymentDetails = await getIndividualDetailTransactions({ type: TRANSACTION_TYPES.REPAYMENT, transactionIds: repaymentTransactions.map(item => item._id) })
 
     loanTransactions = loanTransactions.map(transaction => {
       totalLoan += transaction.amount
@@ -174,13 +252,31 @@ function LoansAndDebts() {
         detailInfo: detail || null
       }
     })
+    collectionTransactions = collectionTransactions.map(transaction => {
+      totalCollected += transaction.amount
+      const detail = collectionDetails.find(d => d.transactionId.toString() === transaction._id.toString())
+      return {
+        ...transaction,
+        detailInfo: detail || null
+      }
+    })
+    repaymentTransactions = repaymentTransactions.map(transaction => {
+      totalPaid += transaction.amount
+      const detail = repaymentDetails.find(d => d.transactionId.toString() === transaction._id.toString())
+      return {
+        ...transaction,
+        detailInfo: detail || null
+      }
+    })
 
-    const loanGroupedTransactions = groupTransaction(loanTransactions, 'borrowerId')
-    const borrowingGroupedTransactions = groupTransaction(borrowingTransactions, 'lenderId')
+    const loanGroupedTransactions = groupTransaction([...loanTransactions, ...collectionTransactions], 'borrowerId')
+    const borrowingGroupedTransactions = groupTransaction([...borrowingTransactions, ...repaymentTransactions], 'lenderId')
 
     setData({
       totalLoan,
       totalBorrowing,
+      totalCollected,
+      totalPaid,
       loanGroupedTransactions,
       borrowingGroupedTransactions
     })
@@ -188,19 +284,17 @@ function LoansAndDebts() {
 
   const getData = async ({ startTime = null, endTime = null }) => {
     const params = {}
-    params['q[type'] = [TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.BORROWING]
+    params['q[type'] = [TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.BORROWING, TRANSACTION_TYPES.COLLECT, TRANSACTION_TYPES.REPAYMENT]
     if (startTime) params['q[fromDate]'] = startTime.toISOString()
     if (endTime) params['q[toDate]'] = endTime.toISOString()
     const searchPath = `?${createSearchParams(params)}`
     const result = await getIndividualTransactionAPI(searchPath)
-    // TODO: Lấy thêm giao dịch thu nợ và trả nợ => check khoản vay, khoản cho vay đã hoàn thành => thêm trường isFinish,collection or payment từ các giao dịch thu và trả nợ vào các khoản vay cho vay tương ứng, nhớ là ko xóa chúng đi vì cần dùng để render lịch sử giao dịch
     updateStateData(result)
   }
 
   React.useEffect(() => {
     const fetchData = async () => {
-      const searchPath = `?${createSearchParams({ 'q[type]': [TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.BORROWING] })}`
-      // TODO: Lấy thêm giao dịch thu nợ và trả nợ
+      const searchPath = `?${createSearchParams({ 'q[type]': [TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.BORROWING, TRANSACTION_TYPES.COLLECT, TRANSACTION_TYPES.REPAYMENT] })}`
       getIndividualTransactionAPI(searchPath).then(updateStateData)
     }
 
@@ -254,8 +348,22 @@ function LoansAndDebts() {
             </Box>
             }
           </Box>
-          <TabPanel value={TABS.LOANS}><LoanTab collected={0} totalLoan={data.totalLoan} transactiosGrouped={data.loanGroupedTransactions} /></TabPanel>
-          <TabPanel value={TABS.DEBTS}><DebtTab paid={0} totalBorrwed={data.totalBorrowing} transactiosGrouped={data.borrowingGroupedTransactions} /></TabPanel>
+          <TabPanel value={TABS.LOANS}>
+            <LoanTab
+              collected={data.totalCollected}
+              totalLoan={data.totalLoan}
+              transactiosGrouped={data.loanGroupedTransactions}
+              handleOnCollectOrRepay={handleOnCollectOrRepay}
+            />
+          </TabPanel>
+          <TabPanel value={TABS.DEBTS}>
+            <DebtTab
+              paid={data.totalPaid}
+              totalBorrwed={data.totalBorrowing}
+              transactiosGrouped={data.borrowingGroupedTransactions}
+              handleOnCollectOrRepay={handleOnCollectOrRepay}
+            />
+          </TabPanel>
         </TabContext>
       </Box>
     </Box>
