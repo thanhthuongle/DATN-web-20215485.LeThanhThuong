@@ -3,6 +3,7 @@ import { combineReducers } from 'redux'
 import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import { userReducer } from './user/userSlice'
+import { notificationsReducer } from './notifications/notificationsSlice'
 
 // Cấu hình persist
 const rootPersistConfig = {
@@ -12,7 +13,8 @@ const rootPersistConfig = {
 }
 
 const reducers = combineReducers({
-  user: userReducer
+  user: userReducer,
+  notifications: notificationsReducer
 })
 
 const persistedReducer = persistReducer(rootPersistConfig, reducers)
