@@ -45,13 +45,13 @@ function MoneySources() {
       </Grid>
 
       {/* Ví tiền */}
-      <WalletCard data={MoneySourceData.accounts} />
+      <WalletCard data={MoneySourceData.accounts} afterCreateNew={afterCreateNew}/>
 
       {/* Sổ tiết kiệm */}
-      <SavingCard data={MoneySourceData.savings_accounts} />
+      <SavingCard data={MoneySourceData.savings_accounts} afterCreateNew={afterCreateNew}/>
 
       {/* Tích lũy */}
-      <AccumulateCard data={MoneySourceData.accumulations} />
+      <AccumulateCard data={MoneySourceData.accumulations} afterCreateNew={afterCreateNew}/>
     </Box>
   )
 }

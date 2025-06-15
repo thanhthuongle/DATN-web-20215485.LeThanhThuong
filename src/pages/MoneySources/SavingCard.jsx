@@ -30,10 +30,10 @@ const style = {
   p: 2
 }
 
-function SavingCard({ data = [] }) {
+function SavingCard({ data = [], afterCreateNew }) {
   const [openModal, setOpenModal] = useState(false)
   const [selectedSaving, setSelectedSaving] = useState(null)
-  console.log('🚀 ~ SavingCard ~ selectedSaving:', selectedSaving)
+  // console.log('🚀 ~ SavingCard ~ selectedSaving:', selectedSaving)
   const savingData = cloneDeep(data)
   const [groupeActivedSavings, setGroupedActiveSavings] = useState([])
   const [blockedDataSavings, setBlockedDataSavings] = useState([])
@@ -104,7 +104,7 @@ function SavingCard({ data = [] }) {
   return (
     <StyledBox
       width='100%'
-      minHeight='45vh'
+      // minHeight='45vh'
       maxHeight='90vh'
       display={{ lg: 'flex' }}
       style={{ padding: 0 }}
@@ -200,7 +200,7 @@ function SavingCard({ data = [] }) {
                           borderTop: 1,
                           borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
                         }}
-                        menuComponent={<SavingMenu isClosed={false} sx={{ marginLeft: 2 }}/>}
+                        menuComponent={<SavingMenu isClosed={false} saving={saving} afterCreateNew={afterCreateNew} sx={{ marginLeft: 2 }}/>}
                       />
                     </Box>
                   )}
@@ -245,7 +245,7 @@ function SavingCard({ data = [] }) {
                       borderTop: 1,
                       borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
                     }}
-                    menuComponent={<SavingMenu isClosed={true} sx={{ marginLeft: 2 }}/>}
+                    menuComponent={<SavingMenu isClosed={true} saving={saving} afterCreateNew={afterCreateNew} sx={{ marginLeft: 2 }}/>}
                   />
                 </Box>
               )}

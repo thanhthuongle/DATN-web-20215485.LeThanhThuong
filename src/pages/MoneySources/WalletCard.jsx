@@ -28,7 +28,7 @@ const style = {
   p: 2
 }
 
-function WalletCard({ data }) {
+function WalletCard({ data, afterCreateNew }) {
   const [openModal, setOpenModal] = useState(false)
   const [selectedAccount, setSelectedAccount] = useState(null)
   console.log('🚀 ~ WalletCard ~ selectedAccount:', selectedAccount)
@@ -82,7 +82,7 @@ function WalletCard({ data }) {
   return (
     <StyledBox
       width='100%'
-      minHeight='45vh'
+      // minHeight='45vh'
       maxHeight={{ sm: '90vh' }}
       display={{ lg: 'flex' }}
       style={{ padding: 0 }}
@@ -176,7 +176,7 @@ function WalletCard({ data }) {
                       borderTop: 1,
                       borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
                     }}
-                    menuComponent={<WalletMenu isActive={true} sx={{ marginLeft: 2 }} />}
+                    menuComponent={<WalletMenu isActive={true} account={activeWallet} afterCreateNew={afterCreateNew} sx={{ marginLeft: 2 }} />}
                   />
                 </Box>)}
             </AccordionDetails>
@@ -228,7 +228,7 @@ function WalletCard({ data }) {
                       borderTop: 1,
                       borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
                     }}
-                    menuComponent={<WalletMenu isActive={false} sx={{ marginLeft: 2 }} />}
+                    menuComponent={<WalletMenu isActive={false} account={blockedWallet} afterCreateNew={afterCreateNew} sx={{ marginLeft: 2 }} />}
                   />
                 </Box>
               )}

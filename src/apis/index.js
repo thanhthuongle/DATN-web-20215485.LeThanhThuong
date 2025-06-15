@@ -70,6 +70,14 @@ export const createIndividualAccountAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${apiRoot}/accounts/individual`, data)
   return response.data
 }
+export const blockIndividualAccountAPI = async (accountId) => {
+  const response = await authorizedAxiosInstance.patch(`${apiRoot}/accounts/individual/${accountId}/block`)
+  return response.data
+}
+export const unblockIndividualAccountAPI = async (accountId) => {
+  const response = await authorizedAxiosInstance.patch(`${apiRoot}/accounts/individual/${accountId}/unblock`)
+  return response.data
+}
 
 /** contact */
 export const getIndividualContactAPI = async () => {
@@ -101,6 +109,10 @@ export const getIndividualAccumulationAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${apiRoot}/accumulations/individual`)
   return response.data
 }
+export const finishIndividualAccumulationAPI = async (accumulationId, data) => {
+  const response = await authorizedAxiosInstance.patch(`${apiRoot}/accumulations/individual/${accumulationId}`, data)
+  return response.data
+}
 
 
 /** Saving */
@@ -110,6 +122,10 @@ export const createIndividualSavingAPI = async (data) => {
 }
 export const getIndividualSavingAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${apiRoot}/savings/individual`)
+  return response.data
+}
+export const closeSavingsAccountAPI = async (savingId, data) => {
+  const response = await authorizedAxiosInstance.post(`${apiRoot}/savings/individual/${savingId}/close`, data)
   return response.data
 }
 

@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React, { useState } from 'react'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
@@ -11,6 +11,9 @@ import TextSnippetIcon from '@mui/icons-material/TextSnippet'
 import AssignmentReturnedIcon from '@mui/icons-material/AssignmentReturned'
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn'
 import AssignmentReturnIcon from '@mui/icons-material/AssignmentReturn'
+import DepositAccumulationPopup from '../MenuOptionPopup/DepositAccumulationPopup'
+import UseAccumulationPopup from '../MenuOptionPopup/UseAccumulationPopup'
+import FinishAccumulationPopup from '../MenuOptionPopup/FinishAccumulationPopup'
 
 const accumulateFollowingOptions = [
   {
@@ -23,16 +26,16 @@ const accumulateFollowingOptions = [
     lable: 'Sử dụng',
     startIcon: <AssignmentReturnIcon fontSize='small'/>
   },
-  {
-    value: 'edit',
-    lable: 'Chỉnh sửa',
-    startIcon: <EditIcon fontSize='small'/>
-  },
-  {
-    value: 'delete',
-    lable: 'Xóa',
-    startIcon: <DeleteIcon fontSize='small'/>
-  },
+  // {
+  //   value: 'edit',
+  //   lable: 'Chỉnh sửa',
+  //   startIcon: <EditIcon fontSize='small'/>
+  // },
+  // {
+  //   value: 'delete',
+  //   lable: 'Xóa',
+  //   startIcon: <DeleteIcon fontSize='small'/>
+  // },
   {
     value: 'finish',
     lable: 'Kết thúc',
@@ -41,23 +44,28 @@ const accumulateFollowingOptions = [
 ]
 
 const accumulateFinishedgOptions = [
-  {
-    value: 'watch',
-    lable: 'Xem',
-    startIcon: <TextSnippetIcon fontSize='small'/>
-  },
-  {
-    value: 'use', // khi kết thúc nhưng vẫn còn số dư chưa dùng hết
-    lable: 'Sử dụng',
-    startIcon: <AssignmentReturnIcon fontSize='small'/>
-  }
+  // {
+  //   value: 'watch',
+  //   lable: 'Xem',
+  //   startIcon: <TextSnippetIcon fontSize='small'/>
+  // },
+  // {
+  //   value: 'use', // khi kết thúc ck số tiền về tài khoản reset số dư về 0 nếu còn
+  //   lable: 'Sử dụng',
+  //   startIcon: <AssignmentReturnIcon fontSize='small'/>
+  // }
 ]
 
 const ITEM_HEIGHT = 48
 
-export default function AccumulateMenu({ isFinished }) { // isFinished = true or false
-  const [anchorEl, setAnchorEl] = React.useState(null)
+export default function AccumulateMenu({ isFinished, accumulation, afterCreateNew }) { // isFinished = true or false
+  console.log('🚀 ~ AccumulateMenu ~ accumulation:', accumulation)
+  const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
+  const [isDepositPopupOpen, setDepositPopupOpen] = useState(false)
+  const [isUsePopupOpen, setUsePopupOpen] = useState(false)
+  const [isFinishPopupOpen, setFinishPopupOpen] = useState(false)
+
   const options = isFinished==true ? accumulateFinishedgOptions : accumulateFollowingOptions
   const handleClick = (event) => {
     event.stopPropagation()
@@ -68,10 +76,23 @@ export default function AccumulateMenu({ isFinished }) { // isFinished = true or
     setAnchorEl(null)
   }
 
-  const handleSelected = (optionSelected) => {
-    console.log('🚀 ~ handleSelected ~ optionSelected:', optionSelected.value)
-    //TODO: Xử lý với các lựa chọn tương ứng
-    handleClose()
+  const handleSelected = (optionSelected, event) => {
+    // console.log('🚀 ~ handleSelected ~ optionSelected:', optionSelected.value)
+    event.stopPropagation()
+    switch (optionSelected.value) {
+    case 'deposit':
+      setDepositPopupOpen(true)
+      break
+    case 'use':
+      setUsePopupOpen(true)
+      break
+    case 'finish':
+      setFinishPopupOpen(true)
+      break
+    default:
+      break
+    }
+    handleClose(event)
   }
 
   return (
@@ -82,6 +103,8 @@ export default function AccumulateMenu({ isFinished }) { // isFinished = true or
         aria-controls={open ? 'long-menu' : undefined}
         aria-expanded={open ? 'true' : undefined}
         aria-haspopup="true"
+        onMouseDown={(e) => e.stopPropagation()}
+        onMouseUp={(e) => e.stopPropagation()}
         onClick={handleClick}
       >
         <MoreVertIcon />
@@ -94,6 +117,7 @@ export default function AccumulateMenu({ isFinished }) { // isFinished = true or
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
+        onClick={(e) => e.stopPropagation()}
         slotProps={{
           paper: {
             style: {
@@ -104,7 +128,12 @@ export default function AccumulateMenu({ isFinished }) { // isFinished = true or
         }}
       >
         {options.map((option) => (
-          <MenuItem key={option.value} onClick={() => handleSelected(option)}>
+          <MenuItem
+            key={option.value}
+            onMouseDown={(e) => e.stopPropagation()}
+            onMouseUp={(e) => e.stopPropagation()}
+            onClick={(event) => handleSelected(option, event)}
+          >
             <ListItemIcon>
               {option.startIcon}
             </ListItemIcon>
@@ -112,6 +141,39 @@ export default function AccumulateMenu({ isFinished }) { // isFinished = true or
           </MenuItem>
         ))}
       </Menu>
+
+      <DepositAccumulationPopup
+        accumulation={accumulation}
+        isOpen={isDepositPopupOpen}
+        onClick={(event) => event.stopPropagation()}
+        onClose={(event) => {
+          // event.stopPropagation()
+          setDepositPopupOpen(false)
+        }}
+        afterCreateNew={afterCreateNew}
+      />
+
+      <UseAccumulationPopup
+        accumulation={accumulation}
+        isOpen={isUsePopupOpen}
+        onClick={(event) => event.stopPropagation()}
+        onClose={(event) => {
+          // event.stopPropagation()
+          setUsePopupOpen(false)
+        }}
+        afterCreateNew={afterCreateNew}
+      />
+
+      <FinishAccumulationPopup
+        accumulation={accumulation}
+        isOpen={isFinishPopupOpen}
+        onClick={(event) => event.stopPropagation()}
+        onClose={(event) => {
+          // event.stopPropagation()
+          setFinishPopupOpen(false)
+        }}
+        afterCreateNew={afterCreateNew}
+      />
     </div>
   )
 }

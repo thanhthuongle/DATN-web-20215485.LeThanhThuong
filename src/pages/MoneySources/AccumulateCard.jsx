@@ -27,14 +27,14 @@ const style = {
   p: 2
 }
 
-function AccumulateCard({ data }) {
+function AccumulateCard({ data, afterCreateNew }) {
   const [openModal, setOpenModal] = useState(false)
   const [selectedAccumulation, setSelectedAccumulation] = useState(null)
   // console.log('🚀 ~ AccumulateCard ~ data:', data)
   const accumulateData = data
 
-  const activeAccumulateData = accumulateData.filter(item => !item.isFinished)
-  const finishedAccumulateData = accumulateData.filter(item => item.isFinished)
+  const activeAccumulateData = accumulateData.filter(item => !item.isFinish)
+  const finishedAccumulateData = accumulateData.filter(item => item.isFinish)
 
   const totalAmount = accumulateData.reduce((sum, item) => sum + item.balance, 0)
   const totalCount = accumulateData.length
@@ -136,7 +136,7 @@ function AccumulateCard({ data }) {
                     title={accumulation.accumulationName}
                     targetAmount={accumulation.targetBalance}
                     accumulatedAmount={accumulation.balance}
-                    menuComponent={<AccumulateMenu isFinished={false} />}
+                    menuComponent={<AccumulateMenu isFinished={false} accumulation={accumulation} afterCreateNew={afterCreateNew} />}
                     sx={{
                       cursor: 'pointer',
                       '&:hover': {
@@ -188,7 +188,7 @@ function AccumulateCard({ data }) {
                     title={accumulation.accummulationName}
                     targetAmount={accumulation.targetBalance}
                     accumulatedAmount={accumulation.balance}
-                    menuComponent={<AccumulateMenu isFinished={true} />}
+                    menuComponent={<AccumulateMenu isFinished={true} accumulation={accumulation} afterCreateNew={afterCreateNew}/>}
                     sx={{
                       cursor: 'pointer',
                       '&:hover': {
