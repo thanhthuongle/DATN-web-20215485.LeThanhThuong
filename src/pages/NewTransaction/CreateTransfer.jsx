@@ -19,8 +19,11 @@ import { FIELD_REQUIRED_MESSAGE } from '~/utils/validators'
 import FieldErrorAlert from '~/component/Form/FieldErrorAlert'
 import { MONEY_SOURCE_TYPE, TRANSACTION_TYPES } from '~/utils/constants'
 import CategorySelector from './CategorySelector'
+import { useSearchParams } from 'react-router-dom'
 
 function CreateTransfer() {
+  let [searchParams] = useSearchParams()
+
   const [wallets, setWallets] = useState([])
 
   const methods = useForm()
@@ -109,9 +112,12 @@ function CreateTransfer() {
   }
 
   useEffect(() => {
+    const { moneyFromId } = Object.fromEntries([...searchParams])
     getIndividualAccountAPI().then((res) => {
       setWallets(res)
-      if (res?.[0]?._id) {
+      if ( moneyFromId ) {
+        setValue('moneyFromId', moneyFromId)
+      } else if (res?.[0]?._id) {
         setValue('moneyFromId', res[0]._id)
       }
     })

@@ -67,7 +67,7 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   }
 }))
 
-function AccumulationPopup({ accumulation, handleCancel}) {
+function AccumulationPopup({ accumulation, handleCancel }) {
   console.log('🚀 ~ AccumulationPopup ~ accumulation:', accumulation)
   const [transactionProcessedDatas, setTransactionProcessedDatas] = useState(null)
 
@@ -171,7 +171,7 @@ function AccumulationPopup({ accumulation, handleCancel}) {
         {/* Lịch sử giao dịch */}
         <Box>
           <Typography variant='h6' sx={{ marginY: 1, fontWeight: 'bold' }}>Lịch sử giao dịch</Typography>
-          <Box>
+          <Box display={'flex'} flexDirection={'column'} gap={1}>
             {!transactionProcessedDatas ? ( <PageLoadingSpinner caption={'Đang tải...'} sx={{ height: 'fit-content', paddingY: 1 }} /> )
               : (
                 <>

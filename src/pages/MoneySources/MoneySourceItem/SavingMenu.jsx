@@ -8,39 +8,44 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn'
 import TextSnippetIcon from '@mui/icons-material/TextSnippet'
 import ListItemIcon from '@mui/material/ListItemIcon'
+import { useConfirm } from 'material-ui-confirm'
+import { Box } from '@mui/material'
+import CloseSavingPopup from '../MenuOptionPopup/CloseSavingPopup'
 
 const savingOpeningOptions = [
   {
     value: 'close',
     lable: 'Tất toán',
     startIcon: <AssignmentTurnedInIcon fontSize='small'/>
-  },
-  {
-    value: 'edit',
-    lable: 'Chỉnh sửa',
-    startIcon: <EditIcon fontSize='small'/>
-  },
-  {
-    value: 'delete',
-    lable: 'Xóa',
-    startIcon: <DeleteIcon fontSize='small'/>
   }
+  // {
+  //   value: 'edit',
+  //   lable: 'Chỉnh sửa',
+  //   startIcon: <EditIcon fontSize='small'/>
+  // },
+  // {
+  //   value: 'delete',
+  //   lable: 'Xóa',
+  //   startIcon: <DeleteIcon fontSize='small'/>
+  // }
 ]
 
 const savingClosedOptions = [
-  {
-    value: 'watch',
-    lable: 'Xem',
-    startIcon: <TextSnippetIcon fontSize='small'/>
-  }
+  // {
+  //   value: 'watch',
+  //   lable: 'Xem',
+  //   startIcon: <TextSnippetIcon fontSize='small'/>
+  // }
 ]
 
 const ITEM_HEIGHT = 48
 
-export default function SavingMenu({ isClosed }) { // isActive= true or false
+export default function SavingMenu({ isClosed, saving, afterCreateNew }) { // isActive= true or false
   const [anchorEl, setAnchorEl] = React.useState(null)
   const open = Boolean(anchorEl)
   const options = isClosed==true ? savingClosedOptions : savingOpeningOptions
+  const [isClosePopupOpen, setClosePopupOpen] = React.useState(false)
+
   const handleClick = (event) => {
     event.stopPropagation()
     setAnchorEl(event.currentTarget)
@@ -50,10 +55,18 @@ export default function SavingMenu({ isClosed }) { // isActive= true or false
     setAnchorEl(null)
   }
 
-  const handleSelected = (optionSelected) => {
-    console.log('🚀 ~ handleSelected ~ optionSelected:', optionSelected.value)
-    //TODO: Xử lý với các lựa chọn tương ứng
-    handleClose()
+
+  const handleSelected = (optionSelected, event) => {
+    // console.log('🚀 ~ handleSelected ~ optionSelected:', optionSelected.value)
+    switch (optionSelected.value) {
+    case 'close': {
+      setClosePopupOpen(saving)
+      break
+    }
+    default:
+      break
+    }
+    handleClose(event)
   }
 
   return (
@@ -64,6 +77,8 @@ export default function SavingMenu({ isClosed }) { // isActive= true or false
         aria-controls={open ? 'long-menu' : undefined}
         aria-expanded={open ? 'true' : undefined}
         aria-haspopup="true"
+        onMouseDown={(e) => e.stopPropagation()}
+        onMouseUp={(e) => e.stopPropagation()}
         onClick={handleClick}
       >
         <MoreVertIcon />
@@ -76,6 +91,7 @@ export default function SavingMenu({ isClosed }) { // isActive= true or false
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
+        onClick={(e) => e.stopPropagation()}
         slotProps={{
           paper: {
             style: {
@@ -86,7 +102,12 @@ export default function SavingMenu({ isClosed }) { // isActive= true or false
         }}
       >
         {options.map((option) => (
-          <MenuItem key={option.value} onClick={() => handleSelected(option)}>
+          <MenuItem
+            key={option.value}
+            onMouseDown={(e) => e.stopPropagation()}
+            onMouseUp={(e) => e.stopPropagation()}
+            onClick={(event) => handleSelected(option, event)}
+          >
             <ListItemIcon>
               {option.startIcon}
             </ListItemIcon>
@@ -94,6 +115,17 @@ export default function SavingMenu({ isClosed }) { // isActive= true or false
           </MenuItem>
         ))}
       </Menu>
+
+      <CloseSavingPopup
+        saving={saving}
+        isOpen={isClosePopupOpen}
+        onClick={(event) => event.stopPropagation()}
+        onClose={(event) => {
+          // event.stopPropagation()
+          setClosePopupOpen(false)
+        }}
+        afterCloseSaving={afterCreateNew}
+      />
     </div>
   )
 }

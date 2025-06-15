@@ -56,6 +56,7 @@ function SavingPopup({ saving, handleCancel }) {
   console.log('🚀 ~ SavingPopup ~ saving:', saving)
   const [transactionProcessedDatas, setTransactionProcessedDatas] = useState(null)
   console.log('🚀 ~ SavingPopup ~ transactionProcessedDatas:', transactionProcessedDatas)
+  console.log('kết thúc tại', moment('2025-05-31T17:00:00.000Z').add(saving.term, 'months').toISOString())
 
   const updateStateData = (res) => {
     const processedData = processDataRaw(res)

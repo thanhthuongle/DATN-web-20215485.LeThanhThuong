@@ -325,7 +325,7 @@ function CreateContribution() {
       {/* Hình ảnh */}
       <Box display={'flex'}>
         <Typography sx={{ width: '110px', flexShrink: 0 }}>Hình ảnh</Typography>
-        <ImageUploader />
+        <ImageUploader value={[]} />
       </Box>
 
       {/* submit create new expense */}

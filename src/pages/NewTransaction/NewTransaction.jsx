@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { StyledBox } from '../Overview/Overview'
 import Box from '@mui/material/Box'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
@@ -11,8 +11,9 @@ import CreateLend from './CreateLend'
 import CreateBorrowing from './CreateBorrowing'
 import CreateTransfer from './CreateTransfer'
 import CreateContribution from './CreateContribution'
+import { TRANSACTION_TYPES } from '~/utils/constants'
 
-const transactionTypes = {
+const transactionTypeLabels = {
   EXPENSE: 'Chi tiền',
   INCOME: 'Thu tiền',
   LEND: 'Cho vay',
@@ -24,12 +25,14 @@ const transactionTypes = {
 function NewTransaction() {
   // Lấy thông tin truyền vào khi tạo mới giao dịch
   const location = useLocation()
+  const navigate = useNavigate()
   const transactionTypeDefault = location.state?.transactionTypeDefault
 
-  const [transactionType, setTranactionType] = useState(transactionTypeDefault ?? transactionTypes.EXPENSE)
+  const [transactionType, setTransactionType] = useState(transactionTypeDefault ?? TRANSACTION_TYPES.EXPENSE)
 
   const handleChangeTransactionType = (event) => {
-    setTranactionType(event.target.value)
+    setTransactionType(event.target.value)
+    navigate(location.pathname)
   }
   return (
     <Box
@@ -64,24 +67,24 @@ function NewTransaction() {
                   }
                 }}
               >
-                <MenuItem value={transactionTypes.EXPENSE}>{transactionTypes.EXPENSE}</MenuItem>
-                <MenuItem value={transactionTypes.INCOME}>{transactionTypes.INCOME}</MenuItem>
-                <MenuItem value={transactionTypes.LEND}>{transactionTypes.LEND}</MenuItem>
-                <MenuItem value={transactionTypes.BORROWING}>{transactionTypes.BORROWING}</MenuItem>
-                <MenuItem value={transactionTypes.TRANSFER}>{transactionTypes.TRANSFER}</MenuItem>
-                <MenuItem value={transactionTypes.CONTRIBUTION}>{transactionTypes.CONTRIBUTION}</MenuItem>
+                <MenuItem value={TRANSACTION_TYPES.EXPENSE}>{transactionTypeLabels.EXPENSE}</MenuItem>
+                <MenuItem value={TRANSACTION_TYPES.INCOME}>{transactionTypeLabels.INCOME}</MenuItem>
+                <MenuItem value={TRANSACTION_TYPES.LOAN}>{transactionTypeLabels.LEND}</MenuItem>
+                <MenuItem value={TRANSACTION_TYPES.BORROWING}>{transactionTypeLabels.BORROWING}</MenuItem>
+                <MenuItem value={TRANSACTION_TYPES.TRANSFER}>{transactionTypeLabels.TRANSFER}</MenuItem>
+                <MenuItem value={TRANSACTION_TYPES.CONTRIBUTION}>{transactionTypeLabels.CONTRIBUTION}</MenuItem>
               </Select>
             </FormControl>
           </Box>
         </Box>
 
         {/* Nội dung chi tiết tạo giao dịch */}
-        {transactionType == transactionTypes.EXPENSE && <CreateExpense /> }
-        {transactionType == transactionTypes.INCOME && <CreateIncome /> }
-        {transactionType == transactionTypes.LEND && <CreateLend /> }
-        {transactionType == transactionTypes.BORROWING && <CreateBorrowing /> }
-        {transactionType == transactionTypes.TRANSFER && <CreateTransfer/> }
-        {transactionType == transactionTypes.CONTRIBUTION && <CreateContribution /> }
+        {transactionType == TRANSACTION_TYPES.EXPENSE && <CreateExpense /> }
+        {transactionType == TRANSACTION_TYPES.INCOME && <CreateIncome /> }
+        {transactionType == TRANSACTION_TYPES.LOAN && <CreateLend /> }
+        {transactionType == TRANSACTION_TYPES.BORROWING && <CreateBorrowing /> }
+        {transactionType == TRANSACTION_TYPES.TRANSFER && <CreateTransfer/> }
+        {transactionType == TRANSACTION_TYPES.CONTRIBUTION && <CreateContribution /> }
       </StyledBox>
     </Box>
   )
