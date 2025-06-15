@@ -36,7 +36,7 @@ function AppBar(props) {
         </Box>
       </Link>
 
-      {(props?.workspace != 'SETTING') && <Workspaces />}
+      {/* {(props?.workspace != 'SETTING') && <Workspaces />} */}
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <Notifications />

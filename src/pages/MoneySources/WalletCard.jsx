@@ -82,7 +82,7 @@ function WalletCard({ data, afterCreateNew }) {
   return (
     <StyledBox
       width='100%'
-      // minHeight='45vh'
+      minHeight='35vh'
       maxHeight={{ sm: '90vh' }}
       display={{ lg: 'flex' }}
       style={{ padding: 0 }}
