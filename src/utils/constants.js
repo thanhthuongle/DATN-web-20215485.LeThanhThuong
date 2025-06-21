@@ -38,7 +38,7 @@ export const ACCOUNT_TYPES = {
 
 export const INTEREST_PAID = {
   MATURITY: 'maturity',
-  UP_FRONT: 'up_front',
+  // UP_FRONT: 'up_front',
   MONTHLY: 'monthly'
 }
 

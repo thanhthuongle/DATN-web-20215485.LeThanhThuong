@@ -3,13 +3,8 @@ import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/Delete'
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn'
-import TextSnippetIcon from '@mui/icons-material/TextSnippet'
 import ListItemIcon from '@mui/material/ListItemIcon'
-import { useConfirm } from 'material-ui-confirm'
-import { Box } from '@mui/material'
 import CloseSavingPopup from '../MenuOptionPopup/CloseSavingPopup'
 
 const savingOpeningOptions = [
@@ -41,6 +36,7 @@ const savingClosedOptions = [
 const ITEM_HEIGHT = 48
 
 export default function SavingMenu({ isClosed, saving, afterCreateNew }) { // isActive= true or false
+  // console.log('🚀 ~ SavingMenu ~ saving:', saving)
   const [anchorEl, setAnchorEl] = React.useState(null)
   const open = Boolean(anchorEl)
   const options = isClosed==true ? savingClosedOptions : savingOpeningOptions
@@ -60,7 +56,7 @@ export default function SavingMenu({ isClosed, saving, afterCreateNew }) { // is
     // console.log('🚀 ~ handleSelected ~ optionSelected:', optionSelected.value)
     switch (optionSelected.value) {
     case 'close': {
-      setClosePopupOpen(saving)
+      setClosePopupOpen(true)
       break
     }
     default:

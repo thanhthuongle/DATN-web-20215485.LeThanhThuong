@@ -155,7 +155,7 @@ function SavingPopup({ saving, handleCancel }) {
             <Typography>Lịch sử giao dịch</Typography>
             <Divider sx={{ marginBottom: 1 }} />
           </Box>
-          <Box>
+          <Box display={'flex'} flexDirection={'column'} gap={1}>
             {!transactionProcessedDatas ? ( <PageLoadingSpinner caption={'Đang tải...'} sx={{ height: 'fit-content', paddingY: 1 }} /> )
               : (
                 <>

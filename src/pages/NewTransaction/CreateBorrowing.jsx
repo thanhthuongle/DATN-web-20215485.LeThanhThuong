@@ -25,12 +25,13 @@ function CreateBorrowing() {
   const [wallets, setWallets] = useState([])
 
   const methods = useForm()
-  const { register, setValue, control, reset, watch, formState: { errors } } = methods
+  const { register, setValue, control, reset, watch, formState: { errors, isSubmitting } } = methods
   const transactionTime = watch('transactionTime')
   const repaymentTime = watch('repaymentTime')
   const resetForm = () => {
     reset({
       amount: '',
+      rate: null,
       description: '',
       category: null,
       transactionTime: moment(),
@@ -405,7 +406,7 @@ function CreateBorrowing() {
 
           {/* submit create new expense */}
           <Box display={'flex'} justifyContent={'center'} marginTop={8}>
-            <Button variant='contained' type="submit" className='interceptor-loading'>Tạo giao dịch</Button>
+            <Button variant='contained' type="submit" className='interceptor-loading' disabled={isSubmitting}>Tạo giao dịch</Button>
           </Box>
         </Box>
       </form>

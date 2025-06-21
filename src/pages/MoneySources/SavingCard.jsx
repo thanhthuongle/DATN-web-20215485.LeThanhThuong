@@ -71,31 +71,34 @@ function SavingCard({ data = [], afterCreateNew }) {
   }
 
   useEffect(() => {
-    const grouped = Object.entries(
-      activeSavings.reduce((acc, item) => {
-        const bankId = item.bankId
-        if (!acc[bankId]) {
-          acc[bankId] = []
-        }
-        acc[bankId].push(item)
-        return acc
-      }, {})
-    ).map(([bankId, savings_accounts]) => {
-      const totalBalance = savings_accounts.reduce((sum, item) => sum + item.balance, 0)
-      return {
-        bankId,
-        savings_accounts,
-        totalBalance
-      }
-    })
-
     const fetchData = async () => {
-      const groupedActiveSavingsData = await fetchBankInfo(grouped)
+      const activeSavingsData = await fetchBankInfo(activeSavings)
       const blockedDataSavingsData = await fetchBankInfo(blockedSavings)
+      // Nhóm các stk theo ngân hàng
+      const groupedActiveSavingsData = Object.entries(
+        activeSavingsData.reduce((acc, item) => {
+          const bankId = item.bankId
+          if (!acc[bankId]) {
+            acc[bankId] = {
+              savings_accounts: [],
+              bankInfo: item.bankInfo
+            }
+          }
+          acc[bankId].savings_accounts.push(item)
+          return acc
+        }, {})
+      ).map(([bankId, { bankInfo, savings_accounts }]) => {
+        const totalBalance = savings_accounts.reduce((sum, item) => sum + item.balance, 0)
+        return {
+          bankId,
+          bankInfo,
+          savings_accounts,
+          totalBalance
+        }
+      })
       setGroupedActiveSavings(groupedActiveSavingsData)
       setBlockedDataSavings(blockedDataSavingsData)
     }
-
 
     fetchData()
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -108,7 +111,7 @@ function SavingCard({ data = [], afterCreateNew }) {
       maxHeight='90vh'
       display={{ lg: 'flex' }}
       style={{ padding: 0 }}
-      overflow= 'hidden'
+      overflow= 'auto'
     >
       {/* TIêu đề: Sổ tiết kiệm */}
       <Box width={{ lg: '10%' }} >

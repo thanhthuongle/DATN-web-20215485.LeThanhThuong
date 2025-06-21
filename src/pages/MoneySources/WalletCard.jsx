@@ -86,7 +86,7 @@ function WalletCard({ data, afterCreateNew }) {
       maxHeight={{ sm: '90vh' }}
       display={{ lg: 'flex' }}
       style={{ padding: 0 }}
-      overflow= 'hidden'
+      overflow= 'auto'
     >
       {/* Tiêu đề: Ví tiền */}
       <Box width={{ lg: '10%' }} >

@@ -7,8 +7,9 @@ import { toast } from 'react-toastify'
 import { closeSavingsAccountAPI, getIndividualAccountAPI } from '~/apis'
 import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
 import FieldErrorAlert from '~/component/Form/FieldErrorAlert'
-import { MONEY_SOURCE_TYPE } from '~/utils/constants'
+import { INTEREST_PAID, MONEY_SOURCE_TYPE, TERM_ENDED } from '~/utils/constants'
 import { FIELD_REQUIRED_MESSAGE } from '~/utils/validators'
+import InfoIcon from '@mui/icons-material/Info'
 
 const style = {
   position: 'absolute',
@@ -22,15 +23,47 @@ const style = {
   p: 4
 }
 
-function CalcInterest (initBalance, startDate, term, rate = 10, nonTermRate = 10) {
-  const isRegulation = moment().isSameOrAfter(moment(startDate).add(term, 'months'))
+function getAccumulationDaysInCurrentMonth(startDate, now) {
+  const sentDay = startDate.date()
+  let interestStart = now.clone().date(sentDay)
+  if (interestStart.isAfter(now)) interestStart = interestStart.subtract(1, 'month')
+  return now.diff(interestStart, 'days') + 1
+}
+
+function calcInterest(saving) {
+  const now = moment()
+  const startDate = moment(saving?.startDate)
   let interest = 0
-  if (isRegulation) {// Tất toán đúng kỳ hạn
-    interest = Math.round((initBalance*rate*term)/1200)
-  } else {// Tất toán không kỳ hạn
-    const dayOfSavings = moment().diff(moment(startDate), 'days')
-    interest = Math.round((initBalance*nonTermRate*dayOfSavings)/36500)
+
+  const isRollOver = [
+    TERM_ENDED.ROLL_OVER_PRINCIPAL,
+    TERM_ENDED.ROLL_OVER_PRINCIPAL_AND_INTEREST
+  ].includes(saving?.termEnded)
+
+  const isMonthly = saving?.interestPaid === INTEREST_PAID.MONTHLY
+  const isMaturity = saving?.interestPaid === INTEREST_PAID.MATURITY
+  const maturityDate = startDate.clone().add(saving?.term, 'months')
+  const isEarly = now.isBefore(maturityDate)
+
+  let accumulationDays = 0
+
+  if (isRollOver || isEarly) {
+    if (isMonthly) {
+      accumulationDays = getAccumulationDaysInCurrentMonth(startDate, now)
+    } else if (isMaturity) {
+      accumulationDays = now.diff(startDate, 'days') + 1
+    }
+    interest = Math.round((saving?.initBalance * saving?.nonTermRate * accumulationDays) / 36500)
+  } else {
+    // Đúng hạn
+    // eslint-disable-next-line no-lonely-if
+    if (isMonthly) {
+      interest = 0
+    } else if (isMaturity) {
+      interest = Math.round((saving?.initBalance * saving?.rate * saving?.term) / 1200)
+    }
   }
+
   return interest
 }
 
@@ -93,9 +126,44 @@ function CloseSavingPopup({ isOpen, onClose, saving, afterCloseSaving }) {
             </Typography>
           </Box>
 
+          {/* Thông báo lưu ý cho người dùng khi tất toán */}
+          <Box
+            display={'flex'}
+            alignItems={'center'}
+            padding={1}
+            gap={1}
+            marginTop={3}
+            sx={{ border: 'solid 1px rgb(13, 99, 197)', borderRadius: 1.5 }}
+          >
+            <InfoIcon fontSize='large' sx={{ color: 'rgb(69, 145, 231)' }} />
+            {(saving?.termEnded == TERM_ENDED.ROLL_OVER_PRINCIPAL || saving?.termEnded == TERM_ENDED.ROLL_OVER_PRINCIPAL_AND_INTEREST) &&
+              <Typography sx={{ color: 'rgb(69, 145, 231)', opacity: 1 }}>
+                Sổ tiết kiệm của bạn đang ở chế độ <strong>tái tục</strong>. Khi tất toán, <strong>lãi suất không kỳ hạn</strong> sẽ được áp dụng - mức này thường thấp hơn nhiều so với lãi suất có kỳ hạn.
+              </Typography>
+            }
+            {(saving?.termEnded == TERM_ENDED.CLOSE_ACCOUNT && moment().isBefore(moment(saving?.startDate).add(saving?.term, 'months'))) &&
+            <Typography sx={{ color: 'rgb(69, 145, 231)', opacity: 1 }}>
+                Bạn đang tất toán sổ tiết kiệm trước kỳ hạn. <strong>Lãi suất không kỳ hạn</strong> sẽ được áp dụng - mức này thường thấp hơn nhiều so với lãi suất có kỳ hạn.
+            </Typography>
+            }
+            {(moment().isSameOrAfter(moment(saving?.startDate).add(saving?.term, 'months'))) &&
+            <Typography sx={{ color: 'rgb(69, 145, 231)', opacity: 1 }}>
+                Bạn đang tất toán sổ tiết kiệm đến kỳ hạn. <strong>Lãi suất năm</strong> sẽ được áp dụng để tính tiền lãi.
+            </Typography>
+            }
+          </Box>
+
           <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(onSubmit)}>
-              <Box display={'flex'} flexDirection={'column'} gap={2} marginTop={5}>
+              <Box display={'flex'} flexDirection={'column'} gap={2} marginTop={2}>
+                {/* Ngân hàng */}
+                <Box>
+                  <Box display={'flex'} alignItems={'center'}>
+                    <Typography sx={{ width: '120px' }}>Ngân hàng</Typography>
+                    <Typography>{saving?.bankInfo?.name}</Typography>
+                  </Box>
+                </Box>
+                {/* Lãi suất */}
                 <Box display={'flex'} alignItems='center'>
                   {!moment().isSameOrAfter(moment(saving.startDate).add(saving.term, 'months')) &&
                   <>
@@ -135,7 +203,7 @@ function CloseSavingPopup({ isOpen, onClose, saving, afterCloseSaving }) {
                       decimalSeparator=","
                       allowNegative={true}
                       suffix=" ₫"
-                      value={Number(CalcInterest(saving.initBalance, saving.startDate, saving.term, saving.rate, saving.nonTermRate))}
+                      value={Number(calcInterest(saving))}
                       style={{ fontWeight: 'bold', color: '#27ae60', maxWidth: '100%' }}
                     />
                   </Box>
@@ -150,7 +218,7 @@ function CloseSavingPopup({ isOpen, onClose, saving, afterCloseSaving }) {
                       decimalSeparator=","
                       allowNegative={true}
                       suffix=" ₫"
-                      value={Number(CalcInterest(saving.initBalance, saving.startDate, saving.term, saving.rate, saving.nonTermRate)) + Number(saving.initBalance)}
+                      value={Number(saving?.balance) + Number(calcInterest(saving))}
                       style={{ fontWeight: 'bold', color: '#27ae60', maxWidth: '100%' }}
                     />
                   </Box>
@@ -222,7 +290,7 @@ function CloseSavingPopup({ isOpen, onClose, saving, afterCloseSaving }) {
                     <FieldErrorAlert errors={errors} fieldName={'moneyTargetId'}/>
                   </Box>
                 </Box>
-                <Typography variant='caption' sx={{ opacity: 0.7 }}>Số dư sẽ cần được chuyển về tài khoản để tất toán sổ tiết kiệm</Typography>
+                <Typography variant='body2' sx={{ opacity: 0.7 }}>Số dư sẽ cần được chuyển về tài khoản để tất toán sổ tiết kiệm</Typography>
 
                 {/* submit */}
                 <Box display={'flex'} justifyContent={'center'} marginTop={5} gap={3}>
@@ -235,7 +303,7 @@ function CloseSavingPopup({ isOpen, onClose, saving, afterCloseSaving }) {
         </Box>
       </Modal>
     </div>
-)
+  )
 }
 
 export default CloseSavingPopup

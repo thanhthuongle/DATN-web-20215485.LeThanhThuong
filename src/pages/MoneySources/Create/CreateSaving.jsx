@@ -72,7 +72,7 @@ function CreateSaving({ afterCreateSaving }) {
   React.useEffect(() => {
     if (interestPaid != INTEREST_PAID.MATURITY && termEnded == TERM_ENDED.ROLL_OVER_PRINCIPAL_AND_INTEREST)
       setValue('termEnded', '', { shouldValidate: true })
-    if (interestPaid == INTEREST_PAID.MATURITY)
+    if (interestPaid == INTEREST_PAID.MATURITY && termEnded != TERM_ENDED.ROLL_OVER_PRINCIPAL)
       setValue('interestPaidTargetId', '', { shouldValidate: true })
   }, [interestPaid, setValue, termEnded])
 
@@ -384,7 +384,7 @@ function CreateSaving({ afterCreateSaving }) {
                           }}
                         >
                           <MenuItem value={INTEREST_PAID.MATURITY}>Cuối kỳ</MenuItem>
-                          <MenuItem value={INTEREST_PAID.UP_FRONT}>Đầu kỳ</MenuItem>
+                          {/* <MenuItem value={INTEREST_PAID.UP_FRONT}>Đầu kỳ</MenuItem> */}
                           <MenuItem value={INTEREST_PAID.MONTHLY}>Hàng tháng</MenuItem>
                         </Select>
                       </FormControl>
@@ -431,7 +431,7 @@ function CreateSaving({ afterCreateSaving }) {
                 </Box>
 
                 {/* Tài khoản nhận lãi */}
-                {(interestPaid == INTEREST_PAID.UP_FRONT || interestPaid == INTEREST_PAID.MONTHLY) &&
+                {(interestPaid == INTEREST_PAID.MONTHLY || (interestPaid == INTEREST_PAID.MATURITY && termEnded == TERM_ENDED.ROLL_OVER_PRINCIPAL)) &&
                   <Box>
                     <Box sx={{ width: '100%' }}>
                       <Controller

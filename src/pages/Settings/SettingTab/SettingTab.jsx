@@ -48,9 +48,12 @@ function SettingTab() {
   const updateStartDayOfMonth = (newDay) => {
     console.log('🚀 ~ updateStartDayOfMonth ~ newDay:', newDay)
   }
-  const updateMinAmountToSync = () => {
-    console.log('🚀 ~ updateMinAmountToSync ~ newMinAmount:')
+  const onRemiderTimeChange = (value) => {
+    console.log('giờ nhắc nhở:', `${value.hour().toString().padStart(2, '0')}:${value.minute().toString().padStart(2, '0')}`)
   }
+  // const updateMinAmountToSync = () => {
+  //   console.log('🚀 ~ updateMinAmountToSync ~ newMinAmount:')
+  // }
 
   return (
     <Stack
@@ -118,9 +121,9 @@ function SettingTab() {
                 <Typography variant='body1' >Thời gian nhắc nhập liệu</Typography>
                 <TimePicker
                   ampm={false}
-                  defaultValue={moment('2025-01-29T15:30')}
+                  defaultValue={moment().hour(20).minute(0).second(0)}
                   timeSteps={{ minutes: 1 }}
-                  // onAccept={}
+                  onAccept={onRemiderTimeChange}
                   sx={{
                     width: '40%',
                     paddingX: '8px',

@@ -52,8 +52,8 @@ function Notifications() {
 
   // Điều hướng nếu thông báo chứa link
   const handleClickNotification = (notification) => {
-    handleClose()
     if (notification?.notificationData?.link) {
+      handleClose()
       if (!notification?.isRead) markReaded(notification?._id)
       navigate(notification?.notificationData?.link)
     }
@@ -90,7 +90,7 @@ function Notifications() {
         onClose={handleClose}
         MenuListProps={{ 'aria-labelledby': 'basic-button-open-notification' }}
       >
-        {(!notifications || notifications?.length === 0) && <MenuItem sx={{ minWidth: 200 }}>You do not have any new notifications.</MenuItem>}
+        {(!notifications || notifications?.length === 0) && <MenuItem sx={{ minWidth: 200 }}>Bạn chưa có thông báo nào.</MenuItem>}
         {notifications?.map((notification, index) =>
           <Box key={index}>
             <MenuItem
@@ -107,7 +107,7 @@ function Notifications() {
                 borderLeft: !notification.isRead ? '4px solid #ffc107' : 'none'
               }}
             >
-              <Box sx={{ maxWidth: '100%', wordBreak: 'break-word', whiteSpace: 'pre-wrap', display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <Box sx={{ width: '100%', wordBreak: 'break-word', whiteSpace: 'pre-wrap', display: 'flex', flexDirection: 'column', gap: 1 }}>
                 {/* Nội dung của thông báo */}
                 {/* <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Box><GroupAddIcon fontSize="small" /></Box>
@@ -153,9 +153,11 @@ function Notifications() {
                       </Box>
                     </Box>
                   </Box>
-                  <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', marginY: 1.5 }}>
-                    {notification?.notificationData?.message}
-                  </Typography>
+                  <Typography
+                    variant="body1"
+                    sx={{ whiteSpace: 'pre-wrap', marginY: 1.5 }}
+                    dangerouslySetInnerHTML={{ __html: notification?.notificationData?.message }}
+                  />
                 </Box>
 
                 {/* Thời gian của thông báo */}

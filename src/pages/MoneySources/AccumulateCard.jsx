@@ -53,7 +53,7 @@ function AccumulateCard({ data, afterCreateNew }) {
       maxHeight='90vh'
       display={{ lg: 'flex' }}
       style={{ padding: 0 }}
-      overflow= 'hidden'
+      overflow= 'auto'
     >
       {/* TIêu đề: Tích lũy */}
       <Box width={{ lg: '10%' }} >
@@ -167,8 +167,8 @@ function AccumulateCard({ data, afterCreateNew }) {
                   decimalSeparator=","
                   allowNegative={false}
                   prefix=' ('
-                  suffix="&nbsp;₫)"
-                  value={finishedAmount}
+                  suffix="&nbsp;tích lũy)"
+                  value={finishedAccumulateData?.length}
                   style={{ fontWeight: 'bold', maxWidth: '100%' }}
                 />
               </Typography>
@@ -185,7 +185,7 @@ function AccumulateCard({ data, afterCreateNew }) {
                 >
                   <MoneySourceItem2
                     key={accumulation._id}
-                    title={accumulation.accummulationName}
+                    title={accumulation.accumulationName}
                     targetAmount={accumulation.targetBalance}
                     accumulatedAmount={accumulation.balance}
                     menuComponent={<AccumulateMenu isFinished={true} accumulation={accumulation} afterCreateNew={afterCreateNew}/>}
