@@ -6,17 +6,18 @@ import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchUserNotificationsAPI, selectCurrentNotifications, updateUserNotificationsAPI } from '~/redux/notifications/notificationsSlice'
+import { addNotification, fetchUserNotificationsAPI, selectCurrentNotifications, updateUserNotificationsAPI } from '~/redux/notifications/notificationsSlice'
 import DoneAllIcon from '@mui/icons-material/DoneAll'
 
 import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
+import { useSocketNotification } from '~/customHooks/useSocketNotification'
 
 function Notifications() {
   const navigate = useNavigate()
   const [newNotification, setNewNotification] = useState(false)
-  
+
   // lấy noti từ redux
   const notifications = useSelector(selectCurrentNotifications)
 
@@ -29,6 +30,14 @@ function Notifications() {
   const handleClose = () => {
     setAnchorEl(null)
   }
+
+  useSocketNotification({
+    onNotification: (newNoti) => {
+      console.log('🚀 ~ Notifications ~ newNoti:', newNoti)
+      dispatch(addNotification(newNoti))
+      setNewNotification(true)
+    }
+  })
 
   // Lấy danh sách thông báo từ BE
   const dispatch = useDispatch()
