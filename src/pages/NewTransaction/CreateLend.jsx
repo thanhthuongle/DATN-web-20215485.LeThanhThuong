@@ -12,7 +12,6 @@ import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import Avatar from '@mui/material/Avatar'
-import RestaurantIcon from '@mui/icons-material/Restaurant'
 import ContactSelector from './ContactSelector'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { createIndividualTransactionAPI, getIndividualAccountAPI } from '~/apis'
@@ -32,6 +31,7 @@ function CreateLend() {
   const resetForm = () => {
     reset({
       amount: '',
+      rate: '',
       description: '',
       category: null,
       transactionTime: moment(),
@@ -65,7 +65,7 @@ function CreateLend() {
       if (data.collectTime) detailInfo.collectTime = data.collectTime.toISOString()
       formData.append('detailInfo', JSON.stringify(detailInfo ))
 
-      data.images.forEach((imgObj, idx) => {
+      data.images.forEach((imgObj) => {
         formData.append('images', imgObj.file)
       })
 
@@ -132,7 +132,7 @@ function CreateLend() {
         <Box display={'flex'} flexDirection={'column'} gap={2} marginTop={2}>
           {/* Số tiền */}
           <Box>
-            <Box display={'flex'} alignItems={'center'}>
+            <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
               <Typography sx={{ width: '100px', flexShrink: 0 }}>Số tiền</Typography>
               <Controller
                 control={control}
@@ -157,14 +157,14 @@ function CreateLend() {
                 )}
               />
             </Box>
-            <Box marginLeft={'100px'}>
+            <Box marginLeft={{ sm: '100px' }}>
               <FieldErrorAlert errors={errors} fieldName={'amount'}/>
             </Box>
           </Box>
 
           {/* Lãi suất */}
           <Box>
-            <Box display={'flex'} alignItems={'center'}>
+            <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
               <Typography sx={{ width: '100px', flexShrink: 0 }}>Lãi suất</Typography>
               <Controller
                 control={control}
@@ -193,14 +193,14 @@ function CreateLend() {
                 )}
               />
             </Box>
-            <Box marginLeft={'100px'}>
+            <Box marginLeft={{ sm: '100px' }}>
               <FieldErrorAlert errors={errors} fieldName={'rate'}/>
             </Box>
           </Box>
 
           {/* Mô tả */}
           <Box>
-            <Box display={'flex'}>
+            <Box display={{ xs: 'block', sm: 'flex' }}>
               <Typography sx={{ width: '100px', flexShrink: 0 }}>Mô tả</Typography>
               <TextField
                 // label="Mô tả"
@@ -213,14 +213,14 @@ function CreateLend() {
                 {...register('description')}
               />
             </Box>
-            <Box marginLeft={'100px'}>
+            <Box marginLeft={{ sm: '100px' }}>
               <FieldErrorAlert errors={errors} fieldName={'description'}/>
             </Box>
           </Box>
 
           {/* Hạng mục */}
           <Box>
-            <Box display={'flex'} alignItems={'center'}>
+            <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
               <Typography sx={{ width: '100px', flexShrink: 0 }}>Hạng mục</Typography>
               <Controller
                 render={({ field: { onChange, value } }) => (
@@ -237,14 +237,14 @@ function CreateLend() {
                 control={control}
               />
             </Box>
-            <Box marginLeft={'100px'}>
+            <Box marginLeft={{ sm: '100px' }}>
               <FieldErrorAlert errors={errors} fieldName={'category'}/>
             </Box>
           </Box>
 
           {/* Người vay */}
           <Box>
-            <Box display={'flex'} alignItems={'center'}>
+            <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
               <Typography sx={{ width: '100px', flexShrink: 0 }}>Người vay</Typography>
               <Controller
                 control={control}
@@ -259,19 +259,28 @@ function CreateLend() {
                 )}
               />
             </Box>
-            <Box marginLeft={'100px'}>
+            <Box marginLeft={{ sm: '100px' }}>
               <FieldErrorAlert errors={errors} fieldName={'borrower'}/>
             </Box>
           </Box>
 
           {/* Thời gian */}
           <Box>
-            <Box display={'flex'} alignItems={'center'}>
+            <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
               <Typography sx={{ width: '100px', flexShrink: 0 }}>Thời gian</Typography>
               <Controller
                 control={control}
                 name='transactionTime'
-                rules={{ required: FIELD_REQUIRED_MESSAGE }}
+                rules={{
+                  required: FIELD_REQUIRED_MESSAGE,
+                  validate: (value) => {
+                    if (moment(value).isAfter(moment())) {
+                      return 'Không thể tạo giao dịch trong tương lai!'
+                    }
+
+                    return true
+                  }
+                }}
                 defaultValue={moment()}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <DateTimePicker
@@ -287,14 +296,14 @@ function CreateLend() {
                 )}
               />
             </Box>
-            <Box marginLeft={'100px'}>
+            <Box marginLeft={{ sm: '100px' }}>
               <FieldErrorAlert errors={errors} fieldName={'transactionTime'}/>
             </Box>
           </Box>
 
           {/* Ngày thu nợ */}
           <Box>
-            <Box display={'flex'} alignItems={'center'}>
+            <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
               <Typography sx={{ width: '100px', flexShrink: 0 }}>Ngày thu nợ</Typography>
               <Controller
                 control={control}
@@ -322,14 +331,14 @@ function CreateLend() {
                 )}
               />
             </Box>
-            <Box marginLeft={'100px'}>
+            <Box marginLeft={{ sm: '100px' }}>
               <FieldErrorAlert errors={errors} fieldName={'collectTime'}/>
             </Box>
           </Box>
 
           {/* Nguồn tiền */}
           <Box>
-            <Box display={'flex'} alignItems={'center'}>
+            <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
               <Typography sx={{ width: '100px', flexShrink: 0 }}>Nguồn tiền</Typography>
               <Box sx={{ width: '100%' }}>
                 <Controller
@@ -359,7 +368,7 @@ function CreateLend() {
                             <Box display="flex" alignItems="center" gap={1}>
                               <Avatar
                                 alt="Logo"
-                                src=""
+                                src= {selectedWallet?.bankInfo?.logo ? selectedWallet?.bankInfo?.logo : selectedWallet?.icon}
                                 sx={{
                                   bgcolor: 'yellow',
                                   width: 40,
@@ -379,6 +388,7 @@ function CreateLend() {
                         {wallets?.map((w, index) => (
                           <MenuItem value={w._id} key={index}>
                             <FinanceItem1
+                              logo={w?.bankInfo?.logo ? w?.bankInfo?.logo : w?.icon}
                               title={w.accountName}
                               amount={w.balance}
                             />
@@ -412,7 +422,7 @@ function CreateLend() {
           </Box>
 
           {/* submit create new expense */}
-          <Box display={'flex'} justifyContent={'center'} marginTop={8}>
+          <Box display={'flex'} justifyContent={'center'} marginTop={5} marginBottom={3}>
             <Button variant='contained' type="submit" className='interceptor-loading'>Tạo giao dịch</Button>
           </Box>
         </Box>

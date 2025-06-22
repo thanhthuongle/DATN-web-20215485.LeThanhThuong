@@ -10,7 +10,7 @@ import CreateIncome from './CreateIncome'
 import CreateLend from './CreateLend'
 import CreateBorrowing from './CreateBorrowing'
 import CreateTransfer from './CreateTransfer'
-import CreateContribution from './CreateContribution'
+// import CreateContribution from './CreateContribution'
 import { TRANSACTION_TYPES } from '~/utils/constants'
 
 const transactionTypeLabels = {
@@ -72,7 +72,7 @@ function NewTransaction() {
                 <MenuItem value={TRANSACTION_TYPES.LOAN}>{transactionTypeLabels.LEND}</MenuItem>
                 <MenuItem value={TRANSACTION_TYPES.BORROWING}>{transactionTypeLabels.BORROWING}</MenuItem>
                 <MenuItem value={TRANSACTION_TYPES.TRANSFER}>{transactionTypeLabels.TRANSFER}</MenuItem>
-                <MenuItem value={TRANSACTION_TYPES.CONTRIBUTION}>{transactionTypeLabels.CONTRIBUTION}</MenuItem>
+                {/* <MenuItem value={TRANSACTION_TYPES.CONTRIBUTION}>{transactionTypeLabels.CONTRIBUTION}</MenuItem> */}
               </Select>
             </FormControl>
           </Box>
@@ -84,7 +84,7 @@ function NewTransaction() {
         {transactionType == TRANSACTION_TYPES.LOAN && <CreateLend /> }
         {transactionType == TRANSACTION_TYPES.BORROWING && <CreateBorrowing /> }
         {transactionType == TRANSACTION_TYPES.TRANSFER && <CreateTransfer/> }
-        {transactionType == TRANSACTION_TYPES.CONTRIBUTION && <CreateContribution /> }
+        {/* {transactionType == TRANSACTION_TYPES.CONTRIBUTION && <CreateContribution /> } */}
       </StyledBox>
     </Box>
   )

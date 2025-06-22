@@ -30,7 +30,7 @@ function FinanceOverview({ totalAmount, availableAmount }) {
       >
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', width: { xs: '100%', sm: '500px' }, gap: 6 }}>
           <Typography variant="h6">Tình hình tài chính</Typography>
-          <Box
+          {/* <Box
             onClick={() => console.log('Popup Thông tin tài chính nè!!')}
             component={Button}
             sx={{
@@ -39,7 +39,7 @@ function FinanceOverview({ totalAmount, availableAmount }) {
             }}
           >
             <Typography variant="subtitle1">Xem chi tiết</Typography>
-          </Box>
+          </Box> */}
         </Box>
 
         <Box display="flex" justifyContent="space-between" alignItems="center">
