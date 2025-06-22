@@ -10,7 +10,6 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import { NumericFormat } from 'react-number-format'
 import MoneySourceItem1 from './MoneySourceItem/MoneySourceItem1'
 import SavingMenu from './MoneySourceItem/SavingMenu'
-import { getBankInfo } from '~/apis'
 import { cloneDeep } from 'lodash'
 import moment from 'moment'
 import { Modal } from '@mui/material'
@@ -30,7 +29,7 @@ const style = {
   p: 2
 }
 
-function SavingCard({ data = [], afterCreateNew }) {
+function SavingCard({ data = [], accountData = [], afterCreateNew }) {
   const [openModal, setOpenModal] = useState(false)
   const [selectedSaving, setSelectedSaving] = useState(null)
   // console.log('🚀 ~ SavingCard ~ selectedSaving:', selectedSaving)
@@ -50,57 +49,32 @@ function SavingCard({ data = [], afterCreateNew }) {
   const totalAmount = savingData.reduce((sum, s) => sum + s.balance, 0)
   const totalCount = savingData.length
 
-  const fetchBankInfo = async (dataProp) => {
-    const updatedDatas = await Promise.all(
-      dataProp.map(async (item) => {
-        if (item.bankId) {
-          try {
-            const bankInfo = await getBankInfo(item.bankId)
-            return { ...item, bankInfo }
-          } catch (error) {
-            // eslint-disable-next-line no-console
-            console.error(`Lỗi khi lấy thông tin bank ${item.bankId}`, error)
-            return item
-          }
-        } else {
-          return item
-        }
-      })
-    )
-    return updatedDatas
-  }
-
   useEffect(() => {
-    const fetchData = async () => {
-      const activeSavingsData = await fetchBankInfo(activeSavings)
-      const blockedDataSavingsData = await fetchBankInfo(blockedSavings)
-      // Nhóm các stk theo ngân hàng
-      const groupedActiveSavingsData = Object.entries(
-        activeSavingsData.reduce((acc, item) => {
-          const bankId = item.bankId
-          if (!acc[bankId]) {
-            acc[bankId] = {
-              savings_accounts: [],
-              bankInfo: item.bankInfo
-            }
+    // Nhóm các stk theo ngân hàng
+    const groupedActiveSavingsData = Object.entries(
+      activeSavings.reduce((acc, item) => {
+        const bankId = item.bankId
+        if (!acc[bankId]) {
+          acc[bankId] = {
+            savings_accounts: [],
+            bankInfo: item.bankInfo
           }
-          acc[bankId].savings_accounts.push(item)
-          return acc
-        }, {})
-      ).map(([bankId, { bankInfo, savings_accounts }]) => {
-        const totalBalance = savings_accounts.reduce((sum, item) => sum + item.balance, 0)
-        return {
-          bankId,
-          bankInfo,
-          savings_accounts,
-          totalBalance
         }
-      })
-      setGroupedActiveSavings(groupedActiveSavingsData)
-      setBlockedDataSavings(blockedDataSavingsData)
-    }
+        acc[bankId].savings_accounts.push(item)
+        return acc
+      }, {})
+    ).map(([bankId, { bankInfo, savings_accounts }]) => {
+      const totalBalance = savings_accounts.reduce((sum, item) => sum + item.balance, 0)
+      return {
+        bankId,
+        bankInfo,
+        savings_accounts,
+        totalBalance
+      }
+    })
 
-    fetchData()
+    setGroupedActiveSavings(groupedActiveSavingsData)
+    setBlockedDataSavings(blockedSavings)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
 
@@ -203,7 +177,7 @@ function SavingCard({ data = [], afterCreateNew }) {
                           borderTop: 1,
                           borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
                         }}
-                        menuComponent={<SavingMenu isClosed={false} saving={saving} afterCreateNew={afterCreateNew} sx={{ marginLeft: 2 }}/>}
+                        menuComponent={<SavingMenu isClosed={false} saving={saving} accountData={accountData} afterCreateNew={afterCreateNew} sx={{ marginLeft: 2 }}/>}
                       />
                     </Box>
                   )}
@@ -248,7 +222,7 @@ function SavingCard({ data = [], afterCreateNew }) {
                       borderTop: 1,
                       borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
                     }}
-                    menuComponent={<SavingMenu isClosed={true} saving={saving} afterCreateNew={afterCreateNew} sx={{ marginLeft: 2 }}/>}
+                    // menuComponent={<SavingMenu isClosed={true} saving={saving} afterCreateNew={afterCreateNew} sx={{ marginLeft: 2 }}/>}
                   />
                 </Box>
               )}

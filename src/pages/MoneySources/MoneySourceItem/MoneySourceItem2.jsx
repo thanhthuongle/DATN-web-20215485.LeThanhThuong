@@ -1,10 +1,8 @@
 import React from 'react'
 import Box from '@mui/material/Box'
 import Avatar from '@mui/material/Avatar'
-import RestaurantIcon from '@mui/icons-material/Restaurant'
 import Typography from '@mui/material/Typography'
 import { NumericFormat } from 'react-number-format'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { Chip } from '@mui/material'
 
 import { styled } from '@mui/material/styles'

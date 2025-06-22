@@ -9,14 +9,14 @@ import { getIndividualTransactionAPI } from '~/apis'
 import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
 import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
 import { StyledBox } from '~/pages/Overview/Overview'
-import { MONEY_SOURCE_TYPE, TRANSACTION_TYPES } from '~/utils/constants'
+import { TRANSACTION_TYPES } from '~/utils/constants'
 
 const redTypes = [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.CONTRIBUTION]
 const greenTypes = [TRANSACTION_TYPES.INCOME, TRANSACTION_TYPES.BORROWING]
-const getColorForTransaction = (transactionTypeProp) => {
+const getColorForTransaction = (transactionTypeProp, transactionName) => {
   if (redTypes.includes(transactionTypeProp)) {
     return '#e74c3c'
-  } else if (greenTypes.includes(transactionTypeProp)) {
+  } else if (greenTypes.includes(transactionTypeProp) || transactionName.startsWith('Thu lãi')) {
     return '#27ae60'
   } else {
     return 'text.primary'
@@ -294,7 +294,7 @@ function AccountPopup({ account, handleCancel }) {
                         title={transaction?.name}
                         description={transaction?.description}
                         amount={transaction?.amount}
-                        amountColor={getColorForTransaction(transaction?.type)}
+                        amountColor={getColorForTransaction(transaction?.type, transaction?.name)}
                         sx={{
                           cursor: 'pointer',
                           '&:hover': {

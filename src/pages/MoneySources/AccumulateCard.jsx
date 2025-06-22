@@ -27,7 +27,7 @@ const style = {
   p: 2
 }
 
-function AccumulateCard({ data, afterCreateNew }) {
+function AccumulateCard({ data, accountData, afterCreateNew }) {
   const [openModal, setOpenModal] = useState(false)
   const [selectedAccumulation, setSelectedAccumulation] = useState(null)
   // console.log('🚀 ~ AccumulateCard ~ data:', data)
@@ -40,7 +40,7 @@ function AccumulateCard({ data, afterCreateNew }) {
   const totalCount = accumulateData.length
 
   const activeAmount = activeAccumulateData.reduce((sum, item) => sum + item.balance, 0)
-  const finishedAmount = finishedAccumulateData.reduce((sum, item) => sum + item.balance, 0)
+  // const finishedAmount = finishedAccumulateData.reduce((sum, item) => sum + item.balance, 0)
 
   const handleOpenModal = async (saving) => {
     setSelectedAccumulation(saving)
@@ -132,11 +132,12 @@ function AccumulateCard({ data, afterCreateNew }) {
                   onClick={() => handleOpenModal(accumulation)}
                 >
                   <MoneySourceItem2
+                    logo={'https://i.pinimg.com/736x/d2/27/54/d227545d8a52d0344ca75cf7b80eb523.jpg'}
                     key={accumulation._id}
                     title={accumulation.accumulationName}
                     targetAmount={accumulation.targetBalance}
                     accumulatedAmount={accumulation.balance}
-                    menuComponent={<AccumulateMenu isFinished={false} accumulation={accumulation} afterCreateNew={afterCreateNew} />}
+                    menuComponent={<AccumulateMenu isFinished={false} accumulation={accumulation} accountData={accountData} afterCreateNew={afterCreateNew} />}
                     sx={{
                       cursor: 'pointer',
                       '&:hover': {
@@ -184,11 +185,12 @@ function AccumulateCard({ data, afterCreateNew }) {
                   onClick={() => handleOpenModal(accumulation)}
                 >
                   <MoneySourceItem2
+                    logo={'https://i.pinimg.com/736x/d2/27/54/d227545d8a52d0344ca75cf7b80eb523.jpg'}
                     key={accumulation._id}
                     title={accumulation.accumulationName}
                     targetAmount={accumulation.targetBalance}
                     accumulatedAmount={accumulation.balance}
-                    menuComponent={<AccumulateMenu isFinished={true} accumulation={accumulation} afterCreateNew={afterCreateNew}/>}
+                    // menuComponent={<AccumulateMenu isFinished={true} accumulation={accumulation} afterCreateNew={afterCreateNew}/>}
                     sx={{
                       cursor: 'pointer',
                       '&:hover': {

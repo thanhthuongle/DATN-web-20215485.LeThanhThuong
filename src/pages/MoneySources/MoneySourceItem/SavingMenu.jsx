@@ -35,7 +35,7 @@ const savingClosedOptions = [
 
 const ITEM_HEIGHT = 48
 
-export default function SavingMenu({ isClosed, saving, afterCreateNew }) { // isActive= true or false
+export default function SavingMenu({ isClosed, saving, accountData, afterCreateNew }) { // isActive= true or false
   // console.log('🚀 ~ SavingMenu ~ saving:', saving)
   const [anchorEl, setAnchorEl] = React.useState(null)
   const open = Boolean(anchorEl)
@@ -114,9 +114,10 @@ export default function SavingMenu({ isClosed, saving, afterCreateNew }) { // is
 
       <CloseSavingPopup
         saving={saving}
+        accountData={accountData}
         isOpen={isClosePopupOpen}
         onClick={(event) => event.stopPropagation()}
-        onClose={(event) => {
+        onClose={() => {
           // event.stopPropagation()
           setClosePopupOpen(false)
         }}

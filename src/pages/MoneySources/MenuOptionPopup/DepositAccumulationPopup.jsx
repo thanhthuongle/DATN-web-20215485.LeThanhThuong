@@ -8,7 +8,7 @@ import { NumericFormat } from 'react-number-format'
 import { Avatar, Button, FormControl, MenuItem, Select, TextField } from '@mui/material'
 import FieldErrorAlert from '~/component/Form/FieldErrorAlert'
 import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
-import { createIndividualTransactionAPI, getIndividualAccountAPI, getIndividualCategoryAPI } from '~/apis'
+import { createIndividualTransactionAPI, getIndividualCategoryAPI } from '~/apis'
 import ImageUploader from '~/pages/NewTransaction/ImageUploader'
 import { DateTimePicker } from '@mui/x-date-pickers'
 import moment from 'moment'
@@ -21,15 +21,15 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 700,
+  width: { xs: '100%', sm: 700 },
   bgcolor: 'background.paper',
   // border: '2px solid #000',
   boxShadow: 24,
   p: 4
 }
 
-function DepositAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNew }) {
-  const [wallets, setWallets] = React.useState([])
+function DepositAccumulationPopup({ isOpen, onClose, accumulation, accountData, afterCreateNew }) {
+  const [wallets] = React.useState(accountData)
   const [transferCategory, setTransferCategory] = React.useState(null)
 
   const methods = useForm()
@@ -63,7 +63,7 @@ function DepositAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNe
         moneyTargetId: accumulation?._id
       }))
 
-      data.images.forEach((imgObj, idx) => {
+      data.images.forEach((imgObj) => {
         formData.append('images', imgObj.file)
       })
 
@@ -109,22 +109,26 @@ function DepositAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNe
   }
 
   React.useEffect(() => {
-    getIndividualAccountAPI().then((res) => {
-      setWallets(res)
-      if (res?.[0]?._id) {
-        setValue('moneyFromId', res[0]._id)
-      }
-    })
+    // getIndividualAccountAPI().then((res) => {
+    //   setWallets(res)
+    //   if (res?.[0]?._id) {
+    //     setValue('moneyFromId', res[0]._id)
+    //   }
+    // })
+    setValue('moneyFromId', wallets[0]._id)
     const searchPath = `?${createSearchParams({ 'q[type]': TRANSACTION_TYPES.TRANSFER })}`
     getIndividualCategoryAPI(searchPath).then(res => {
       setTransferCategory(res?.[0])
     })
-  }, [setValue])
+  }, [setValue, wallets])
   return (
     <div onClick={(event) => event.stopPropagation()}>
       <Modal
         open={isOpen}
-        onClose={onClose}
+        onClose={() => {
+          onClose()
+          resetForm()
+        }}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
@@ -141,7 +145,7 @@ function DepositAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNe
               <Box display={'flex'} flexDirection={'column'} gap={2} marginTop={3}>
                 {/* Số tiền */}
                 <Box>
-                  <Box display={'flex'} alignItems={'center'}>
+                  <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
                     <Typography sx={{ width: '100px', flexShrink: 0 }}>Số tiền</Typography>
                     <Controller
                       control={control}
@@ -165,14 +169,14 @@ function DepositAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNe
                       )}
                     />
                   </Box>
-                  <Box marginLeft={'100px'}>
+                  <Box marginLeft={{ sm: '100px' }}>
                     <FieldErrorAlert errors={errors} fieldName={'amount'}/>
                   </Box>
                 </Box>
 
                 {/* tài khoản nguồn */}
                 <Box>
-                  <Box display={'flex'} alignItems={'center'}>
+                  <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
                     <Typography sx={{ width: '100px', flexShrink: 0 }}>Nguồn tiền</Typography>
                     <Box sx={{ width: '100%' }}>
                       <Controller
@@ -202,12 +206,13 @@ function DepositAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNe
                                   <Box display="flex" alignItems="center" gap={1}>
                                     <Avatar
                                       alt="Logo"
-                                      src=""
+                                      src= {selectedWallet?.bankInfo?.logo ? selectedWallet?.bankInfo?.logo : selectedWallet?.icon}
                                       sx={{
                                         bgcolor: 'yellow',
                                         width: 40,
                                         height: 40,
-                                        flexShrink: 0
+                                        flexShrink: 0,
+                                        border: (theme) => theme.palette.mode == 'light' ? 'solid 0.5px yellow' : ''
                                       }}
                                     >
                                       {' '}
@@ -222,6 +227,7 @@ function DepositAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNe
                               {wallets?.map((w, index) => (
                                 <MenuItem value={w._id} key={index}>
                                   <FinanceItem1
+                                    logo={w?.bankInfo?.logo ? w?.bankInfo?.logo : w?.icon}
                                     title={w.accountName}
                                     amount={w.balance}
                                   />
@@ -233,14 +239,14 @@ function DepositAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNe
                       />
                     </Box>
                   </Box>
-                  <Box marginLeft={'100px'}>
+                  <Box marginLeft={{ sm: '100px' }}>
                     <FieldErrorAlert errors={errors} fieldName={'moneyFromId'}/>
                   </Box>
                 </Box>
 
                 {/* Thời gian */}
                 <Box>
-                  <Box display={'flex'} alignItems={'center'}>
+                  <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
                     <Typography sx={{ width: '100px', flexShrink: 0 }}>Thời gian</Typography>
                     <Controller
                       control={control}
@@ -260,13 +266,13 @@ function DepositAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNe
                       )}
                     />
                   </Box>
-                  <Box marginLeft={'100px'}>
+                  <Box marginLeft={{ sm: '100px' }}>
                     <FieldErrorAlert errors={errors} fieldName={'transactionTime'}/>
                   </Box>
                 </Box>
 
                 {/* Hình ảnh */}
-                <Box display={'flex'}>
+                <Box display={{ xs: 'block', sm: 'flex' }}>
                   <Typography sx={{ width: '100px', flexShrink: 0 }}>Hình ảnh</Typography>
                   <Controller
                     control={control}
@@ -283,7 +289,13 @@ function DepositAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNe
 
                 {/* submit */}
                 <Box display={'flex'} justifyContent={'center'} marginTop={5} gap={3}>
-                  <Button variant='outlined' onClick={onClose}>Hủy</Button>
+                  <Button
+                    variant='outlined'
+                    onClick={() => {
+                      onClose()
+                      resetForm()
+                    }}
+                  >Hủy</Button>
                   <Button variant='contained' type="submit" className='interceptor-loading'>Xác nhận</Button>
                 </Box>
               </Box>

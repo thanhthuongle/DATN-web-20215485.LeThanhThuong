@@ -68,7 +68,7 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
 }))
 
 function AccumulationPopup({ accumulation, handleCancel }) {
-  console.log('🚀 ~ AccumulationPopup ~ accumulation:', accumulation)
+  // console.log('🚀 ~ AccumulationPopup ~ accumulation:', accumulation)
   const [transactionProcessedDatas, setTransactionProcessedDatas] = useState(null)
 
   const updateStateData = (res) => {

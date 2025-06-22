@@ -1,7 +1,6 @@
 import React from 'react'
 import Box from '@mui/material/Box'
 import Avatar from '@mui/material/Avatar'
-import RestaurantIcon from '@mui/icons-material/Restaurant'
 import { Typography } from '@mui/material'
 import { NumericFormat } from 'react-number-format'
 
@@ -28,7 +27,8 @@ function FinanceItem1({ title, description, logo, logoSize=40, amount, amountDes
             bgcolor: logo ? '' : 'yellow',
             width: logoSize,
             height: logoSize,
-            flexShrink: 0
+            flexShrink: 0,
+            border: (theme) => theme.palette.mode == 'light' ? 'solid 0.5px yellow' : ''
           }}
         >
           {' '}

@@ -3,11 +3,7 @@ import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import SyncAltIcon from '@mui/icons-material/SyncAlt'
-import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/Delete'
 import ListItemIcon from '@mui/material/ListItemIcon'
-import TextSnippetIcon from '@mui/icons-material/TextSnippet'
 import AssignmentReturnedIcon from '@mui/icons-material/AssignmentReturned'
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn'
 import AssignmentReturnIcon from '@mui/icons-material/AssignmentReturn'
@@ -58,8 +54,8 @@ const accumulateFinishedgOptions = [
 
 const ITEM_HEIGHT = 48
 
-export default function AccumulateMenu({ isFinished, accumulation, afterCreateNew }) { // isFinished = true or false
-  console.log('🚀 ~ AccumulateMenu ~ accumulation:', accumulation)
+export default function AccumulateMenu({ isFinished, accumulation, accountData, afterCreateNew }) { // isFinished = true or false
+  // console.log('🚀 ~ AccumulateMenu ~ accumulation:', accumulation)
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
   const [isDepositPopupOpen, setDepositPopupOpen] = useState(false)
@@ -144,6 +140,7 @@ export default function AccumulateMenu({ isFinished, accumulation, afterCreateNe
 
       <DepositAccumulationPopup
         accumulation={accumulation}
+        accountData={accountData}
         isOpen={isDepositPopupOpen}
         onClick={(event) => event.stopPropagation()}
         onClose={(event) => {
@@ -166,6 +163,7 @@ export default function AccumulateMenu({ isFinished, accumulation, afterCreateNe
 
       <FinishAccumulationPopup
         accumulation={accumulation}
+        accountData={accountData}
         isOpen={isFinishPopupOpen}
         onClick={(event) => event.stopPropagation()}
         onClose={(event) => {
