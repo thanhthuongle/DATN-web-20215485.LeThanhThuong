@@ -106,7 +106,7 @@ const CategorySelector = ({ transactionType, onChange, value, error, sx = {} }) 
       <Button
         variant="outlined"
         endIcon={<KeyboardArrowRightIcon />}
-        sx={{ textTransform: 'none', minWidth: '300px', paddingY: 1, borderColor: error ? 'error.main' : undefined, ...sx }}
+        sx={{ textTransform: 'none', minWidth: { xs: 'auto', sm: '300px' }, paddingY: 1, borderColor: error ? 'error.main' : undefined, ...sx }}
         onClick={() => setOpen(true)}
       >{selectedName ?? 'Chọn hạng mục...'}</Button>
       <Dialog

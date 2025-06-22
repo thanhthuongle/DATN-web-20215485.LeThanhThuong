@@ -61,7 +61,7 @@ function CreateTransfer() {
         moneyTargetId: data.moneyTargetId
       }))
 
-      data.images.forEach((imgObj, idx) => {
+      data.images.forEach((imgObj) => {
         formData.append('images', imgObj.file)
       })
 
@@ -121,7 +121,7 @@ function CreateTransfer() {
         setValue('moneyFromId', res[0]._id)
       }
     })
-  }, [setValue])
+  }, [searchParams, setValue])
 
   return (
     <FormProvider {...methods}>
@@ -129,7 +129,7 @@ function CreateTransfer() {
         <Box display={'flex'} flexDirection={'column'} gap={2} marginTop={2}>
           {/* Số tiền */}
           <Box>
-            <Box display={'flex'} alignItems={'center'}>
+            <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
               <Typography sx={{ width: '100px', flexShrink: 0 }}>Số tiền</Typography>
               <Controller
                 control={control}
@@ -153,13 +153,13 @@ function CreateTransfer() {
                 )}
               />
             </Box>
-            <Box marginLeft={'100px'}>
+            <Box marginLeft={{ sm: '100px' }}>
               <FieldErrorAlert errors={errors} fieldName={'amount'}/>
             </Box>
           </Box>
 
           {/* Mô tả */}
-          <Box display={'flex'}>
+          <Box display={{ xs: 'block', sm: 'flex' }}>
             <Typography sx={{ width: '100px', flexShrink: 0 }}>Mô tả</Typography>
             <TextField
               // label="Mô tả"
@@ -174,7 +174,7 @@ function CreateTransfer() {
 
           {/* Hạng mục */}
           <Box>
-            <Box display={'flex'} alignItems={'center'}>
+            <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
               <Typography sx={{ width: '100px', flexShrink: 0 }}>Hạng mục</Typography>
               <Controller
                 render={({ field: { onChange, value } }) => (
@@ -191,14 +191,14 @@ function CreateTransfer() {
                 control={control}
               />
             </Box>
-            <Box marginLeft={'100px'}>
+            <Box marginLeft={{ sm: '100px' }}>
               <FieldErrorAlert errors={errors} fieldName={'category'}/>
             </Box>
           </Box>
 
           {/* tài khoản nguồn */}
           <Box>
-            <Box display={'flex'} alignItems={'center'}>
+            <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
               <Typography sx={{ width: '100px', flexShrink: 0 }}>Nguồn tiền</Typography>
               <Box sx={{ width: '100%' }}>
                 <Controller
@@ -228,7 +228,7 @@ function CreateTransfer() {
                             <Box display="flex" alignItems="center" gap={1}>
                               <Avatar
                                 alt="Logo"
-                                src=""
+                                src={selectedWallet?.bankInfo?.logo ? selectedWallet?.bankInfo?.logo : selectedWallet?.icon}
                                 sx={{
                                   bgcolor: 'yellow',
                                   width: 40,
@@ -248,6 +248,7 @@ function CreateTransfer() {
                         {wallets?.map((w, index) => (
                           <MenuItem value={w._id} key={index}>
                             <FinanceItem1
+                              logo={w?.bankInfo?.logo ? w?.bankInfo?.logo : w?.icon}
                               title={w.accountName}
                               amount={w.balance}
                             />
@@ -259,14 +260,14 @@ function CreateTransfer() {
                 />
               </Box>
             </Box>
-            <Box marginLeft={'100px'}>
+            <Box marginLeft={{ sm: '100px' }}>
               <FieldErrorAlert errors={errors} fieldName={'moneyFromId'}/>
             </Box>
           </Box>
 
           {/* Tài khoản đích */}
           <Box>
-            <Box display={'flex'} alignItems={'center'}>
+            <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
               <Typography sx={{ width: '100px', flexShrink: 0 }}>Nơi nhận</Typography>
               <Box sx={{ width: '100%' }}>
                 <Controller
@@ -304,7 +305,7 @@ function CreateTransfer() {
                             <Box display="flex" alignItems="center" gap={1}>
                               <Avatar
                                 alt="Logo"
-                                src=""
+                                src= {selectedWallet?.bankInfo?.logo ? selectedWallet?.bankInfo?.logo : selectedWallet?.icon}
                                 sx={{
                                   bgcolor: 'yellow',
                                   width: 40,
@@ -324,6 +325,7 @@ function CreateTransfer() {
                         {wallets?.map((w, index) => (
                           <MenuItem value={w._id} key={index}>
                             <FinanceItem1
+                              logo={w?.bankInfo?.logo ? w?.bankInfo?.logo : w?.icon}
                               title={w.accountName}
                               amount={w.balance}
                             />
@@ -335,19 +337,28 @@ function CreateTransfer() {
                 />
               </Box>
             </Box>
-            <Box marginLeft={'100px'}>
+            <Box marginLeft={{ sm: '100px' }}>
               <FieldErrorAlert errors={errors} fieldName={'moneyTargetId'}/>
             </Box>
           </Box>
 
           {/* Thời gian */}
           <Box>
-            <Box display={'flex'} alignItems={'center'}>
+            <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
               <Typography sx={{ width: '100px', flexShrink: 0 }}>Thời gian</Typography>
               <Controller
                 control={control}
                 name='transactionTime'
-                rules={{ required: FIELD_REQUIRED_MESSAGE }}
+                rules={{
+                  required: FIELD_REQUIRED_MESSAGE,
+                  validate: (value) => {
+                    if (moment(value).isAfter(moment())) {
+                      return 'Không thể tạo giao dịch trong tương lai!'
+                    }
+
+                    return true
+                  }
+                }}
                 defaultValue={moment()}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <DateTimePicker
@@ -362,7 +373,7 @@ function CreateTransfer() {
                 )}
               />
             </Box>
-            <Box marginLeft={'100px'}>
+            <Box marginLeft={{ sm: '100px' }}>
               <FieldErrorAlert errors={errors} fieldName={'transactionTime'}/>
             </Box>
           </Box>
@@ -384,7 +395,7 @@ function CreateTransfer() {
           </Box>
 
           {/* submit create new expense */}
-          <Box display={'flex'} justifyContent={'center'} marginTop={8}>
+          <Box display={'flex'} justifyContent={'center'} marginTop={5} marginBottom={3}>
             <Button variant='contained' type="submit" className='interceptor-loading'>Tạo giao dịch</Button>
           </Box>
         </Box>

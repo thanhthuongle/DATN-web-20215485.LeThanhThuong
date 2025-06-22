@@ -67,7 +67,7 @@ function ContactSelector({ onChange, value }) {
         variant="outlined"
         endIcon={<KeyboardArrowRightIcon />}
         onClick={() => setOpen(true)}
-        sx={{ textTransform: 'none', minWidth: '300px', paddingY: 1 }}
+        sx={{ textTransform: 'none', minWidth: { xs: 'auto', sm: '300px' }, paddingY: 1 }}
       >{selected?.name ?? 'Chọn liên hệ'}</Button>
 
       <Dialog
