@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { NumericFormat } from 'react-number-format'
 import { toast } from 'react-toastify'
-import { finishIndividualAccumulationAPI, getIndividualAccountAPI } from '~/apis'
+import { finishIndividualAccumulationAPI } from '~/apis'
 import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
 import FieldErrorAlert from '~/component/Form/FieldErrorAlert'
 import { MONEY_SOURCE_TYPE } from '~/utils/constants'
@@ -14,15 +14,15 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 700,
+  width: { xs: '100%', sm: 700 },
   bgcolor: 'background.paper',
   // border: '2px solid #000',
   boxShadow: 24,
   p: 4
 }
 
-function FinishAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNew }) {
-  const [wallets, setWallets] = useState([])
+function FinishAccumulationPopup({ isOpen, onClose, accumulation, accountData, afterCreateNew }) {
+  const [wallets] = useState(accountData)
 
   const methods = useForm()
   const { setValue, control, reset, formState: { errors } } = methods
@@ -56,18 +56,22 @@ function FinishAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNew
   }
 
   useEffect(() => {
-    getIndividualAccountAPI().then((res) => {
-      setWallets(res)
-      if (res?.[0]?._id) {
-        setValue('moneyTargetId', res[0]._id)
-      }
-    })
-  }, [setValue])
+    // getIndividualAccountAPI().then((res) => {
+    //   setWallets(res)
+    //   if (res?.[0]?._id) {
+    //     setValue('moneyTargetId', res[0]._id)
+    //   }
+    // })
+    setValue('moneyTargetId', wallets[0]._id)
+  }, [setValue, wallets])
   return (
     <div onClick={(event) => event.stopPropagation()}>
       <Modal
         open={isOpen}
-        onClose={onClose}
+        onClose={() => {
+          onClose()
+          resetForm()
+        }}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
@@ -100,7 +104,7 @@ function FinishAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNew
                     </Box>
                   </Box>
                   <Box>
-                    <Box display={'flex'} alignItems={'center'}>
+                    <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
                       <Typography sx={{ width: '100px', flexShrink: 0 }}>Nơi nhận</Typography>
                       <Box sx={{ width: '100%' }}>
                         <Controller
@@ -130,12 +134,13 @@ function FinishAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNew
                                     <Box display="flex" alignItems="center" gap={1}>
                                       <Avatar
                                         alt="Logo"
-                                        src=""
+                                        src= {selectedWallet?.bankInfo?.logo ? selectedWallet?.bankInfo?.logo : selectedWallet?.icon}
                                         sx={{
                                           bgcolor: 'yellow',
                                           width: 40,
                                           height: 40,
-                                          flexShrink: 0
+                                          flexShrink: 0,
+                                          border: (theme) => theme.palette.mode == 'light' ? 'solid 0.5px yellow' : ''
                                         }}
                                       >
                                         {' '}
@@ -150,6 +155,7 @@ function FinishAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNew
                                 {wallets?.map((w, index) => (
                                   <MenuItem value={w._id} key={index}>
                                     <FinanceItem1
+                                      logo={w?.bankInfo?.logo ? w?.bankInfo?.logo : w?.icon}
                                       title={w.accountName}
                                       amount={w.balance}
                                     />
@@ -161,22 +167,28 @@ function FinishAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNew
                         />
                       </Box>
                     </Box>
-                    <Box marginLeft={'100px'}>
+                    <Box marginLeft={{ sm: '100px' }}>
                       <FieldErrorAlert errors={errors} fieldName={'moneyTargetId'}/>
                     </Box>
                   </Box>
-                  <Typography variant='caption' sx={{ opacity: 0.7 }}>Số dư sẽ cần được chuyển về tài khoản để kết thúc khoản tích lũy</Typography>
+                  <Typography variant='body2' sx={{ opacity: 0.7 }}>Số dư sẽ cần được chuyển về tài khoản để kết thúc khoản tích lũy</Typography>
                 </>
                 }
                 {Number(accumulation?.balance) <= 0 &&
-                  <Box display={'flex'}>
-                    Bạn chắc chắn muốn kết thúc tích lũy:&nbsp; <Typography sx={{ fontWeight: 'bold' }}>{accumulation?.accumulationName}</Typography>
+                  <Box>
+                    Bạn chắc chắn muốn kết thúc tích lũy:&nbsp; <strong>{accumulation?.accumulationName}</strong>
                   </Box>
                 }
 
                 {/* submit */}
                 <Box display={'flex'} justifyContent={'center'} marginTop={5} gap={3}>
-                  <Button variant='outlined' onClick={onClose}>Hủy</Button>
+                  <Button
+                    variant='outlined'
+                    onClick={() => {
+                      onClose()
+                      resetForm()
+                    }}
+                  >Hủy</Button>
                   <Button variant='contained' type="submit" className='interceptor-loading'>Xác nhận</Button>
                 </Box>
               </Box>

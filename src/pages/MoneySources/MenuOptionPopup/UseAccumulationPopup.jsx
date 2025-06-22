@@ -17,7 +17,7 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 700,
+  width: { xs: '100%', sm: 700 },
   bgcolor: 'background.paper',
   // border: '2px solid #000',
   boxShadow: 24,
@@ -54,7 +54,7 @@ function UseAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNew })
         moneyFromId: accumulation?._id
       }))
 
-      data.images.forEach((imgObj, idx) => {
+      data.images.forEach((imgObj) => {
         formData.append('images', imgObj.file)
       })
 
@@ -99,7 +99,10 @@ function UseAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNew })
     <div onClick={(event) => event.stopPropagation()}>
       <Modal
         open={isOpen}
-        onClose={onClose}
+        onClose={() => {
+          onClose()
+          resetForm()
+        }}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
@@ -116,7 +119,7 @@ function UseAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNew })
               <Box display={'flex'} flexDirection={'column'} gap={2} marginTop={2}>
                 {/* Số tiền */}
                 <Box>
-                  <Box display={'flex'} alignItems={'center'}>
+                  <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
                     <Typography sx={{ width: '100px', flexShrink: 0 }}>Số tiền</Typography>
                     <Controller
                       control={control}
@@ -140,14 +143,14 @@ function UseAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNew })
                         />)}
                     />
                   </Box>
-                  <Box marginLeft={'100px'}>
+                  <Box marginLeft={{ sm: '100px' }}>
                     <FieldErrorAlert errors={errors} fieldName={'amount'}/>
                   </Box>
                 </Box>
 
                 {/* Hạng mục */}
                 <Box>
-                  <Box display={'flex'} alignItems={'center'}>
+                  <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
                     <Typography sx={{ width: '100px', flexShrink: 0 }}>Hạng mục</Typography>
                     <Controller
                       control={control}
@@ -163,14 +166,14 @@ function UseAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNew })
                       )}
                     />
                   </Box>
-                  <Box marginLeft={'100px'}>
+                  <Box marginLeft={{ sm: '100px' }}>
                     <FieldErrorAlert errors={errors} fieldName={'category'}/>
                   </Box>
                 </Box>
 
                 {/* Thời gian */}
                 <Box>
-                  <Box display={'flex'} alignItems={'center'}>
+                  <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
                     <Typography sx={{ width: '100px', flexShrink: 0 }}>Thời gian</Typography>
                     <Controller
                       control={control}
@@ -190,13 +193,13 @@ function UseAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNew })
                       )}
                     />
                   </Box>
-                  <Box marginLeft={'100px'}>
+                  <Box marginLeft={{ sm: '100px' }}>
                     <FieldErrorAlert errors={errors} fieldName={'transactionTime'}/>
                   </Box>
                 </Box>
 
                 {/* Hình ảnh */}
-                <Box display={'flex'}>
+                <Box display={{ xs: 'block', sm: 'flex' }}>
                   <Typography sx={{ width: '100px', flexShrink: 0 }}>Hình ảnh</Typography>
                   <Controller
                     control={control}
@@ -213,7 +216,13 @@ function UseAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNew })
 
                 {/* submit */}
                 <Box display={'flex'} justifyContent={'center'} marginTop={5} gap={3}>
-                  <Button variant='outlined' onClick={onClose}>Hủy</Button>
+                  <Button
+                    variant='outlined'
+                    onClick={() => {
+                      onClose()
+                      resetForm()
+                    }}
+                  >Hủy</Button>
                   <Button variant='contained' type="submit" className='interceptor-loading'>Xác nhận</Button>
                 </Box>
               </Box>

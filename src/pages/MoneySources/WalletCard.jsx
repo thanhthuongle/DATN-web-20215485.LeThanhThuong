@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import Box from '@mui/material/Box'
 import { StyledBox } from '../Overview/Overview'
 import Divider from '@mui/material/Divider'
@@ -10,7 +10,6 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import { NumericFormat } from 'react-number-format'
 import MoneySourceItem1 from './MoneySourceItem/MoneySourceItem1'
 import WalletMenu from './MoneySourceItem/WalletMenu'
-import { getBankInfo } from '~/apis'
 import { Modal } from '@mui/material'
 import AccountPopup from './DetailPopup/AccountPopup'
 
@@ -31,13 +30,13 @@ const style = {
 function WalletCard({ data, afterCreateNew }) {
   const [openModal, setOpenModal] = useState(false)
   const [selectedAccount, setSelectedAccount] = useState(null)
-  console.log('🚀 ~ WalletCard ~ selectedAccount:', selectedAccount)
+  // console.log('🚀 ~ WalletCard ~ selectedAccount:', selectedAccount)
   // console.log('🚀 ~ WalletCard ~ data:', data)
-  const [walletData, setWalletData] = useState(data)
+  const [walletData] = useState(data)
 
   // Tách tài khoản bị khóa và chưa bị khóa
   const activeWallets = walletData.filter(w => !w.isBlock)
-  console.log('🚀 ~ WalletCard ~ activeWallets:', activeWallets)
+  // console.log('🚀 ~ WalletCard ~ activeWallets:', activeWallets)
   const blockedWallets = walletData.filter(w => w.isBlock)
 
   // Tổng hợp tiền và số lượng
@@ -52,33 +51,33 @@ function WalletCard({ data, afterCreateNew }) {
     setOpenModal(true)
   }
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (data && Array.isArray(data) && data.length > 0) {
-        const updatedDatas = await Promise.all(
-          data.map(async (d) => {
-            if (d.bankId) {
-              try {
-                const bankInfo = await getBankInfo(d.bankId)
-                return { ...d, bankInfo }
-              } catch (error) {
-                // eslint-disable-next-line no-console
-                console.error(`Lỗi khi lấy thông tin bank ${d.bankId}`, error)
-                return d
-              }
-            } else {
-              return d
-            }
-          })
-        )
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     if (data && Array.isArray(data) && data.length > 0) {
+  //       const updatedDatas = await Promise.all(
+  //         data.map(async (d) => {
+  //           if (d.bankId) {
+  //             try {
+  //               const bankInfo = await getBankInfo(d.bankId)
+  //               return { ...d, bankInfo }
+  //             } catch (error) {
+  //               // eslint-disable-next-line no-console
+  //               console.error(`Lỗi khi lấy thông tin bank ${d.bankId}`, error)
+  //               return d
+  //             }
+  //           } else {
+  //             return d
+  //           }
+  //         })
+  //       )
 
-        // Cập nhật state thay vì gán trực tiếp cho `data`
-        setWalletData(updatedDatas)
-      }
-    }
+  //       // Cập nhật state thay vì gán trực tiếp cho `data`
+  //       setWalletData(updatedDatas)
+  //     }
+  //   }
 
-    fetchData()
-  }, [data])
+  //   fetchData()
+  // }, [data])
   return (
     <StyledBox
       width='100%'
@@ -166,7 +165,7 @@ function WalletCard({ data, afterCreateNew }) {
                     title={activeWallet.accountName}
                     amount={activeWallet.balance}
                     amountColor= {activeWallet.balance < 0 ? 'red' : 'inherit'} // Xét nếu amount < 0 thì truyền #e74c3c
-                    logo={activeWallet.bankInfo ? activeWallet.bankInfo.logo : ''}
+                    logo={activeWallet.bankInfo ? activeWallet.bankInfo.logo : activeWallet?.icon}
                     sx={{
                       cursor: 'pointer',
                       '&:hover': {
@@ -218,7 +217,7 @@ function WalletCard({ data, afterCreateNew }) {
                     title={blockedWallet.accountName}
                     amount= {blockedWallet.balance}
                     amountColor= {blockedWallet.balance < 0 ? 'red' : 'inherit'} // Xét nếu amount < 0 thì truyền #e74c3c
-                    logo={blockedWallet.bankInfo ? blockedWallet.bankInfo.logo : ''}
+                    logo={blockedWallet.bankInfo ? blockedWallet.bankInfo.logo : blockedWallet?.icon}
                     sx={{
                       cursor: 'pointer',
                       '&:hover': {

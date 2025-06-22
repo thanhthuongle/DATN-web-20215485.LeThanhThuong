@@ -16,20 +16,20 @@ import { NumericFormat } from 'react-number-format'
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
 import { Avatar, FormControl, InputLabel, MenuItem, Select } from '@mui/material'
 import { INTEREST_PAID, MONEY_SOURCE_TYPE, TERM_ENDED } from '~/utils/constants'
-import { createIndividualSavingAPI, getBanks, getIndividualAccountAPI } from '~/apis'
+import { createIndividualSavingAPI, getBanks } from '~/apis'
 import { toast } from 'react-toastify'
 import moment from 'moment'
 import { DatePicker } from '@mui/x-date-pickers'
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
 
-function CreateSaving({ afterCreateSaving }) {
+function CreateSaving({ afterCreateSaving, accountData = [] }) {
   const { register, setValue, control, handleSubmit, reset, watch, formState: { errors } } = useForm()
   let interestPaid = watch('interestPaid')
   let termEnded = watch('termEnded')
   const [open, setOpen] = React.useState(false)
   const [banks, setBanks] = React.useState([])
-  const [accounts, setAccounts] = React.useState([])
+  const [accounts] = React.useState(accountData)
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
@@ -61,9 +61,9 @@ function CreateSaving({ afterCreateSaving }) {
   React.useEffect(() => {
     const fetchData = async () => {
       const banks = await getBanks()
-      const accounts = await getIndividualAccountAPI()
+      // const accounts = await getIndividualAccountAPI()
       setBanks(banks)
-      setAccounts(accounts)
+      // setAccounts(accountData)
     }
 
     fetchData()
@@ -99,7 +99,7 @@ function CreateSaving({ afterCreateSaving }) {
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: 600,
+          width: { xs: '100%', sm: '600' },
           maxHeight: '80vh',
           overflowY: 'auto',
           bgcolor: 'white',

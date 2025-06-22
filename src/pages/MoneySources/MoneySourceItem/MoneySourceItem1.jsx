@@ -1,7 +1,6 @@
 import React from 'react'
 import Box from '@mui/material/Box'
 import Avatar from '@mui/material/Avatar'
-import RestaurantIcon from '@mui/icons-material/Restaurant'
 import Typography from '@mui/material/Typography'
 import { NumericFormat } from 'react-number-format'
 import Chip from '@mui/material/Chip'
@@ -30,7 +29,8 @@ function MoneySourceItem1({ title, description, logo, logoSize='40px', amount, a
             bgcolor: logo ? '' : 'yellow',
             width: logoSize,
             height: logoSize,
-            flexShrink: 0
+            flexShrink: 0,
+            border: (theme) => theme.palette.mode == 'light' ? 'solid 0.5px yellow' : ''
           }}
         >
           {' '}

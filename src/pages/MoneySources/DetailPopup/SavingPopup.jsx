@@ -19,10 +19,10 @@ import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
 
 const redTypes = [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.CONTRIBUTION]
 const greenTypes = [TRANSACTION_TYPES.INCOME, TRANSACTION_TYPES.BORROWING]
-const getColorForTransaction = (transactionTypeProp) => {
+const getColorForTransaction = (transactionTypeProp, transactionName) => {
   if (redTypes.includes(transactionTypeProp)) {
     return '#e74c3c'
-  } else if (greenTypes.includes(transactionTypeProp)) {
+  } else if (greenTypes.includes(transactionTypeProp) || transactionName.startsWith('Thu lãi')) {
     return '#27ae60'
   } else {
     return 'text.primary'
@@ -53,10 +53,10 @@ function processDataRaw(transactions) {
 }
 
 function SavingPopup({ saving, handleCancel }) {
-  console.log('🚀 ~ SavingPopup ~ saving:', saving)
+  // console.log('🚀 ~ SavingPopup ~ saving:', saving)
   const [transactionProcessedDatas, setTransactionProcessedDatas] = useState(null)
-  console.log('🚀 ~ SavingPopup ~ transactionProcessedDatas:', transactionProcessedDatas)
-  console.log('kết thúc tại', moment('2025-05-31T17:00:00.000Z').add(saving.term, 'months').toISOString())
+  // console.log('🚀 ~ SavingPopup ~ transactionProcessedDatas:', transactionProcessedDatas)
+  // console.log('kết thúc tại', moment('2025-05-31T17:00:00.000Z').add(saving.term, 'months').toISOString())
 
   const updateStateData = (res) => {
     const processedData = processDataRaw(res)
@@ -172,7 +172,7 @@ function SavingPopup({ saving, handleCancel }) {
                             title={transaction?.name}
                             description={transaction?.description}
                             amount={transaction?.amount}
-                            amountColor={getColorForTransaction(transaction?.type)}
+                            amountColor={getColorForTransaction(transaction?.type, transaction?.name)}
                             sx={{
                               cursor: 'pointer',
                               '&:hover': {

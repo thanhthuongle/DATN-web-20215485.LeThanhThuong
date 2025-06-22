@@ -40,7 +40,7 @@ function MoneySources() {
       <Grid container width='90%' justifyContent='space-between' spacing={2}>
         {/* <Button variant='contained'>Thêm ví viền</Button> */}
         <CreateAccount afterCreateNewAccount={afterCreateNew} />
-        <CreateSaving afterCreateSaving={afterCreateNew} />
+        <CreateSaving afterCreateSaving={afterCreateNew} accountData={MoneySourceData?.accounts} />
         <CreateAccumulation afterCreateAccumulation={afterCreateNew} />
       </Grid>
 
@@ -48,10 +48,10 @@ function MoneySources() {
       <WalletCard data={MoneySourceData.accounts} afterCreateNew={afterCreateNew}/>
 
       {/* Sổ tiết kiệm */}
-      <SavingCard data={MoneySourceData.savings_accounts} afterCreateNew={afterCreateNew}/>
+      <SavingCard data={MoneySourceData.savings_accounts} accountData={MoneySourceData?.accounts} afterCreateNew={afterCreateNew}/>
 
       {/* Tích lũy */}
-      <AccumulateCard data={MoneySourceData.accumulations} afterCreateNew={afterCreateNew}/>
+      <AccumulateCard data={MoneySourceData.accumulations} accountData={MoneySourceData?.accounts} afterCreateNew={afterCreateNew}/>
     </Box>
   )
 }

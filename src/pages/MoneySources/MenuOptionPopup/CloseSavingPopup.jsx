@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { NumericFormat } from 'react-number-format'
 import { toast } from 'react-toastify'
-import { closeSavingsAccountAPI, getIndividualAccountAPI } from '~/apis'
+import { closeSavingsAccountAPI } from '~/apis'
 import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
 import FieldErrorAlert from '~/component/Form/FieldErrorAlert'
 import { INTEREST_PAID, MONEY_SOURCE_TYPE, TERM_ENDED } from '~/utils/constants'
@@ -16,7 +16,7 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 700,
+  width: { xs: '100%', sm: 700 },
   bgcolor: 'background.paper',
   // border: '2px solid #000',
   boxShadow: 24,
@@ -67,9 +67,9 @@ function calcInterest(saving) {
   return interest
 }
 
-function CloseSavingPopup({ isOpen, onClose, saving, afterCloseSaving }) {
-  console.log('🚀 ~ CloseSavingPopup ~ saving:', saving)
-  const [wallets, setWallets] = useState([])
+function CloseSavingPopup({ isOpen, onClose, saving, accountData, afterCloseSaving }) {
+  // console.log('🚀 ~ CloseSavingPopup ~ saving:', saving)
+  const [wallets] = useState(accountData)
 
   const methods = useForm()
   const { setValue, control, reset, formState: { errors } } = methods
@@ -103,13 +103,15 @@ function CloseSavingPopup({ isOpen, onClose, saving, afterCloseSaving }) {
   }
 
   useEffect(() => {
-    getIndividualAccountAPI().then((res) => {
-      setWallets(res)
-      if (res?.[0]?._id) {
-        setValue('moneyTargetId', res[0]._id)
-      }
-    })
-  }, [setValue])
+    // getIndividualAccountAPI().then((res) => {
+    //   setWallets(res)
+    //   if (res?.[0]?._id) {
+    //     setValue('moneyTargetId', res[0]._id)
+    //   }
+    // })
+
+    setValue('moneyTargetId', wallets[0]._id)
+  }, [setValue, wallets])
   return (
     <div onClick={(event) => event.stopPropagation()}>
       <Modal
@@ -225,7 +227,7 @@ function CloseSavingPopup({ isOpen, onClose, saving, afterCloseSaving }) {
                 </Box>
                 {/* tài khoản nhận */}
                 <Box>
-                  <Box display={'flex'} alignItems={'center'}>
+                  <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
                     <Typography sx={{ width: '120px', flexShrink: 0 }}>Nơi nhận</Typography>
                     <Box sx={{ width: '100%' }}>
                       <Controller
@@ -255,12 +257,13 @@ function CloseSavingPopup({ isOpen, onClose, saving, afterCloseSaving }) {
                                   <Box display="flex" alignItems="center" gap={1}>
                                     <Avatar
                                       alt="Logo"
-                                      src=""
+                                      src= {selectedWallet?.bankInfo?.logo ? selectedWallet?.bankInfo?.logo : selectedWallet?.icon}
                                       sx={{
                                         bgcolor: 'yellow',
                                         width: 40,
                                         height: 40,
-                                        flexShrink: 0
+                                        flexShrink: 0,
+                                        border: (theme) => theme.palette.mode == 'light' ? 'solid 0.5px yellow' : ''
                                       }}
                                     >
                                       {' '}
@@ -275,6 +278,7 @@ function CloseSavingPopup({ isOpen, onClose, saving, afterCloseSaving }) {
                               {wallets?.map((w, index) => (
                                 <MenuItem value={w._id} key={index}>
                                   <FinanceItem1
+                                    logo={w?.bankInfo?.logo ? w?.bankInfo?.logo : w?.icon}
                                     title={w.accountName}
                                     amount={w.balance}
                                   />
@@ -286,7 +290,7 @@ function CloseSavingPopup({ isOpen, onClose, saving, afterCloseSaving }) {
                       />
                     </Box>
                   </Box>
-                  <Box marginLeft={'100px'}>
+                  <Box marginLeft={{ sm: '100px' }}>
                     <FieldErrorAlert errors={errors} fieldName={'moneyTargetId'}/>
                   </Box>
                 </Box>
