@@ -5,8 +5,8 @@ import TransactionSummary from './TransactionSummary'
 import SpendingAnalysis from './SpendingAnalysis'
 import DebtTracking from './DebtTracking'
 import RecentTransactions from './RecentTransactions'
-import { styled } from '@mui/material'
-import { getIndividualMoneySourceAPI, getIndividualTransactionAPI } from '~/apis'
+import { Button, styled } from '@mui/material'
+import { getIndividualMoneySourceAPI, getIndividualTransactionAPI, testRealTmeAPI } from '~/apis'
 import { createSearchParams } from 'react-router-dom'
 import { TRANSACTION_TYPES } from '~/utils/constants'
 import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
@@ -77,6 +77,10 @@ function Overview() {
     return <PageLoadingSpinner caption={'Loading data...'} />
   }
 
+  // const callTestRealTimeApi = async () => {
+  //   await testRealTmeAPI()
+  // }
+
   return (
     <Box sx={{
       width: '100%',
@@ -94,6 +98,7 @@ function Overview() {
         justifyContent: 'center',
         gap: 3
       }}>
+        {/* <Button variant='outlined' onClick={callTestRealTimeApi}>TEST REAL TIME</Button> */}
         {/* Tình hình tài chính */}
         <FinanceOverview
           totalAmount={totalAmount}

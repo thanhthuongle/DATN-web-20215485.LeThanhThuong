@@ -142,3 +142,9 @@ export const createIndividualBudgetAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${apiRoot}/budgets/individual`, data)
   return response.data
 }
+
+// notifications
+export const testRealTmeAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${apiRoot}/notifications/test`)
+  return response.data
+}
