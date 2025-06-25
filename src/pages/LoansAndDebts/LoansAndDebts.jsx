@@ -8,7 +8,7 @@ import LoanTab from './LoanTab'
 import DebtTab from './DebtTab'
 import { createSearchParams } from 'react-router-dom'
 import { TRANSACTION_TYPES } from '~/utils/constants'
-import { getIndividualDetailTransactions, getIndividualTransactionAPI } from '~/apis'
+import { getFullInfoIndividualTransactions, getIndividualDetailTransactions, getIndividualTransactionAPI } from '~/apis'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
@@ -88,7 +88,6 @@ const getTimeRange = (option) => {
     }
   }
 }
-
 
 const groupTransaction = (data, key) => {
   let addStatusData = []
@@ -190,6 +189,7 @@ function LoansAndDebts() {
   const [startDate, setStartDate] = React.useState(null)
   const [endDate, setEndDate] = React.useState(null)
   const [data, setData] = React.useState(null)
+  const [isLoading, setIsLoading] = React.useState(false)
   // console.log('🚀 ~ LoansAndDebts ~ data:', data)
 
   const handleChangeTab = (event, newValue) => {
@@ -231,44 +231,6 @@ function LoansAndDebts() {
     let collectionTransactions = res.filter(item => item.type == TRANSACTION_TYPES.COLLECT)
     let repaymentTransactions = res.filter(item => item.type == TRANSACTION_TYPES.REPAYMENT)
 
-    const loanDetails = await getIndividualDetailTransactions({ type: TRANSACTION_TYPES.LOAN, transactionIds: loanTransactions.map(item => item._id) })
-    const borrowingDetails = await getIndividualDetailTransactions({ type: TRANSACTION_TYPES.BORROWING, transactionIds: borrowingTransactions.map(item => item._id) })
-    const collectionDetails = await getIndividualDetailTransactions({ type: TRANSACTION_TYPES.COLLECT, transactionIds: collectionTransactions.map(item => item._id) })
-    const repaymentDetails = await getIndividualDetailTransactions({ type: TRANSACTION_TYPES.REPAYMENT, transactionIds: repaymentTransactions.map(item => item._id) })
-
-    loanTransactions = loanTransactions.map(transaction => {
-      totalLoan += transaction.amount
-      const detail = loanDetails.find(d => d.transactionId.toString() === transaction._id.toString())
-      return {
-        ...transaction,
-        detailInfo: detail || null
-      }
-    })
-    borrowingTransactions = borrowingTransactions.map(transaction => {
-      totalBorrowing += transaction.amount
-      const detail = borrowingDetails.find(d => d.transactionId.toString() === transaction._id.toString())
-      return {
-        ...transaction,
-        detailInfo: detail || null
-      }
-    })
-    collectionTransactions = collectionTransactions.map(transaction => {
-      totalCollected += transaction.amount
-      const detail = collectionDetails.find(d => d.transactionId.toString() === transaction._id.toString())
-      return {
-        ...transaction,
-        detailInfo: detail || null
-      }
-    })
-    repaymentTransactions = repaymentTransactions.map(transaction => {
-      totalPaid += transaction.amount
-      const detail = repaymentDetails.find(d => d.transactionId.toString() === transaction._id.toString())
-      return {
-        ...transaction,
-        detailInfo: detail || null
-      }
-    })
-
     const loanGroupedTransactions = groupTransaction([...loanTransactions, ...collectionTransactions], 'borrowerId')
     const borrowingGroupedTransactions = groupTransaction([...borrowingTransactions, ...repaymentTransactions], 'lenderId')
 
@@ -280,30 +242,31 @@ function LoansAndDebts() {
       loanGroupedTransactions,
       borrowingGroupedTransactions
     })
+    setIsLoading(false)
   }
 
   const getData = async ({ startTime = null, endTime = null }) => {
+    setIsLoading(true)
+
     const params = {}
     params['q[type'] = [TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.BORROWING, TRANSACTION_TYPES.COLLECT, TRANSACTION_TYPES.REPAYMENT]
     if (startTime) params['q[fromDate]'] = startTime.toISOString()
     if (endTime) params['q[toDate]'] = endTime.toISOString()
     const searchPath = `?${createSearchParams(params)}`
-    const result = await getIndividualTransactionAPI(searchPath)
+    // const result = await getIndividualTransactionAPI(searchPath)
+    const result = await getFullInfoIndividualTransactions(searchPath)
     updateStateData(result)
   }
 
   React.useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true)
       const searchPath = `?${createSearchParams({ 'q[type]': [TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.BORROWING, TRANSACTION_TYPES.COLLECT, TRANSACTION_TYPES.REPAYMENT] })}`
-      getIndividualTransactionAPI(searchPath).then(updateStateData)
+      getFullInfoIndividualTransactions(searchPath).then(updateStateData)
     }
 
     fetchData()
   }, [])
-
-  if (!data) {
-    return <PageLoadingSpinner caption={'Loanding data...'} />
-  }
 
   return (
     <Box sx={{
@@ -348,22 +311,29 @@ function LoansAndDebts() {
             </Box>
             }
           </Box>
-          <TabPanel value={TABS.LOANS}>
-            <LoanTab
-              collected={data.totalCollected}
-              totalLoan={data.totalLoan}
-              transactiosGrouped={data.loanGroupedTransactions}
-              handleOnCollectOrRepay={handleOnCollectOrRepay}
-            />
-          </TabPanel>
-          <TabPanel value={TABS.DEBTS}>
-            <DebtTab
-              paid={data.totalPaid}
-              totalBorrwed={data.totalBorrowing}
-              transactiosGrouped={data.borrowingGroupedTransactions}
-              handleOnCollectOrRepay={handleOnCollectOrRepay}
-            />
-          </TabPanel>
+          {isLoading &&
+            <PageLoadingSpinner caption={'Đang tải dữ liêu...'} sx={{ height: '', paddingTop: '20%' }} />
+          }
+          {!isLoading && data &&
+          <>
+            <TabPanel value={TABS.LOANS}>
+              <LoanTab
+                collected={data?.totalCollected}
+                totalLoan={data?.totalLoan}
+                transactiosGrouped={data?.loanGroupedTransactions}
+                handleOnCollectOrRepay={handleOnCollectOrRepay}
+              />
+            </TabPanel>
+            <TabPanel value={TABS.DEBTS}>
+              <DebtTab
+                paid={data?.totalPaid}
+                totalBorrwed={data?.totalBorrowing}
+                transactiosGrouped={data?.borrowingGroupedTransactions}
+                handleOnCollectOrRepay={handleOnCollectOrRepay}
+              />
+            </TabPanel>
+          </>
+          }
         </TabContext>
       </Box>
     </Box>

@@ -3,9 +3,14 @@ import Box from '@mui/material/Box'
 import Avatar from '@mui/material/Avatar'
 import Typography from '@mui/material/Typography'
 import { NumericFormat } from 'react-number-format'
-import Chip from '@mui/material/Chip'
 
-function MoneySourceItem1({ title, description, logo, logoSize='40px', amount, amountColor='text.primary', amountDesc, interestRate, sx, menuComponent }) {
+const getInitials = (name = '') => {
+  const words = name.trim().split(' ')
+  if (words.length === 1) return words[0].charAt(0).toUpperCase()
+  return (words[0][0] + words[words.length - 1][0]).toUpperCase()
+}
+
+function ContactItem({ contactName, amount, amountColor='text.primary', sx, menuComponent }) {
   return (
     <Box
       display='flex'
@@ -23,39 +28,23 @@ function MoneySourceItem1({ title, description, logo, logoSize='40px', amount, a
         flex={1}
       >
         <Avatar
-          alt="Logo"
-          src={logo}
+          alt="contactName"
           sx={{
-            bgcolor: logo ? '' : 'yellow',
-            width: logoSize,
-            height: logoSize,
-            flexShrink: 0,
-            border: (theme) => theme.palette.mode == 'light' ? 'solid 0.5px yellow' : ''
+            width: '40px',
+            height: '40px',
+            flexShrink: 0
           }}
         >
-          {' '}
+          {getInitials(contactName)}
         </ Avatar>
 
         <Box sx={{ minWidth: 0, flex: 1, marginRight: 2 }}>
-          {title &&
+          {contactName &&
           <Typography
             component={'div'}
           >
-            {title}
-            {interestRate && <Chip variant="outlined" color="info" size="small" sx={{ height: 1, marginLeft: '4px' }} label={interestRate} />}
+            {contactName}
           </Typography>
-          }
-          {description &&
-            <Typography
-              variant='body2'
-              sx={{
-                opacity: 0.6,
-                whiteSpace: 'normal',
-                wordBreak: 'break-word'
-              }}
-            >
-              {description}
-            </Typography>
           }
         </Box>
       </Box>
@@ -77,17 +66,6 @@ function MoneySourceItem1({ title, description, logo, logoSize='40px', amount, a
           style={{ fontWeight: '', color: amountColor, maxWidth: '100%' }}
         />
         }
-        {amountDesc &&
-          <Typography
-            noWrap
-            variant='body2'
-            sx={{
-              opacity: 0.6,
-              whiteSpace: 'pre-line',
-              wordBreak: 'break-word',
-              textAlign: 'right'
-            }}
-          >{amountDesc}</Typography>}
       </Box>
 
       <Box>
@@ -97,4 +75,4 @@ function MoneySourceItem1({ title, description, logo, logoSize='40px', amount, a
   )
 }
 
-export default MoneySourceItem1
+export default ContactItem

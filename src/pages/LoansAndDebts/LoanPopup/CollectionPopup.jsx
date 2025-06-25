@@ -1,4 +1,4 @@
-import { Avatar, Button, FormControl, MenuItem, Select, Typography } from '@mui/material'
+import { Button, FormControl, MenuItem, Select, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { DateTimePicker } from '@mui/x-date-pickers'
 import moment from 'moment'
@@ -48,7 +48,7 @@ function CollectionPopup({ LoanTransaction, handleCancel, handleOnCollect }) {
         realCollectTime: moment(data.realCollectTime).toISOString()
       }
     }
-    console.log('🚀 ~ onSubmit ~ payload:', payload)
+    // console.log('🚀 ~ onSubmit ~ payload:', payload)
 
     // Call API
     toast.promise(
@@ -189,34 +189,14 @@ function CollectionPopup({ LoanTransaction, handleCancel, handleOnCollect }) {
                                   }
                                 }
                               }}
-                              renderValue={(value) => {
-                                const selectedWallet = wallets.find(w => w._id === value)
-                                return (
-                                  <Box display="flex" alignItems="center" gap={1}>
-                                    <Avatar
-                                      alt="Logo"
-                                      src=""
-                                      sx={{
-                                        bgcolor: 'yellow',
-                                        width: 40,
-                                        height: 40,
-                                        flexShrink: 0
-                                      }}
-                                    >
-                                      {' '}
-                                    </ Avatar>
-                                    <Typography noWrap>
-                                      {selectedWallet?.accountName}&nbsp;({selectedWallet?.balance?.toLocaleString()}&nbsp;₫)
-                                    </Typography>
-                                  </Box>
-                                )
-                              }}
                             >
                               {wallets?.map((w, index) => (
                                 <MenuItem value={w._id} key={index}>
                                   <FinanceItem1
+                                    logo={w?.icon}
                                     title={w.accountName}
                                     amount={w.balance}
+                                    sx={{ padding: 0, paddingY: 0.25 }}
                                   />
                                 </MenuItem>
                               ))}

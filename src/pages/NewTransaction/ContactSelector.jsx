@@ -9,6 +9,12 @@ import { toast } from 'react-toastify'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import { createIndividualContactAPI, getIndividualContactAPI } from '~/apis'
 
+const getInitials = (name = '') => {
+  const words = name.trim().split(' ')
+  if (words.length === 1) return words[0].charAt(0).toUpperCase()
+  return (words[0][0] + words[words.length - 1][0]).toUpperCase()
+}
+
 function ContactSelector({ onChange, value, viewOnly = false }) {
   const [open, setOpen] = useState(false)
   const [contacts, setContacts] = useState([])
@@ -101,9 +107,9 @@ function ContactSelector({ onChange, value, viewOnly = false }) {
               >
                 <ListItemButton>
                   <ListItemAvatar>
-                    <Avatar>{contact.name.charAt(0)}</Avatar>
+                    <Avatar>{getInitials(contact?.name)}</Avatar>
                   </ListItemAvatar>
-                  <ListItemText primary={contact.name} />
+                  <ListItemText primary={contact?.name} />
                 </ListItemButton>
               </ListItem>
             ))}

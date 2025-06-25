@@ -20,7 +20,7 @@ function CalcCollection (loanAmount, loanTime, collectTime, rate = 10) {
 }
 
 function PaymentPopup({ DebtTransaction, handleCancel, handleOnCollectOrRepay }) {
-  console.log('🚀 ~ PaymentPopup ~ DebtTransaction:', DebtTransaction)
+  // console.log('🚀 ~ PaymentPopup ~ DebtTransaction:', DebtTransaction)
   const [wallets, setWallets] = useState([])
   const [repaymentCategory, setRepaymentCategory] = useState(null)
 
@@ -189,34 +189,14 @@ function PaymentPopup({ DebtTransaction, handleCancel, handleOnCollectOrRepay })
                                   }
                                 }
                               }}
-                              renderValue={(value) => {
-                                const selectedWallet = wallets.find(w => w._id === value)
-                                return (
-                                  <Box display="flex" alignItems="center" gap={1}>
-                                    <Avatar
-                                      alt="Logo"
-                                      src=""
-                                      sx={{
-                                        bgcolor: 'yellow',
-                                        width: 40,
-                                        height: 40,
-                                        flexShrink: 0
-                                      }}
-                                    >
-                                      {' '}
-                                    </ Avatar>
-                                    <Typography noWrap>
-                                      {selectedWallet?.accountName}&nbsp;({selectedWallet?.balance?.toLocaleString()}&nbsp;₫)
-                                    </Typography>
-                                  </Box>
-                                )
-                              }}
                             >
                               {wallets?.map((w, index) => (
                                 <MenuItem value={w._id} key={index}>
                                   <FinanceItem1
-                                    title={w.accountName}
-                                    amount={w.balance}
+                                    title={w?.accountName}
+                                    amount={w?.balance}
+                                    logo={w?.icon}
+                                    sx={{ padding: 0, paddingY: 0.25 }}
                                   />
                                 </MenuItem>
                               ))}
