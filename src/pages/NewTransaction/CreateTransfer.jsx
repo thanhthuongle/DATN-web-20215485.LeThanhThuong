@@ -20,6 +20,7 @@ import FieldErrorAlert from '~/component/Form/FieldErrorAlert'
 import { MONEY_SOURCE_TYPE, TRANSACTION_TYPES } from '~/utils/constants'
 import CategorySelector from './CategorySelector'
 import { useSearchParams } from 'react-router-dom'
+import { CircularProgress } from '@mui/material'
 
 function CreateTransfer() {
   let [searchParams] = useSearchParams()
@@ -27,24 +28,24 @@ function CreateTransfer() {
   const [wallets, setWallets] = useState([])
 
   const methods = useForm()
-  const { register, setValue, control, reset, watch, formState: { errors } } = methods
+  const { register, setValue, control, reset, watch, formState: { errors, isSubmitting } } = methods
   const moneyFromId = watch('moneyFromId')
   const resetForm = () => {
     reset({
       amount: '',
       description: '',
-      category: null,
+      category: '',
       transactionTime: moment(),
       moneyFromId: wallets[0]?._id || '',
-      moneyTargetId: null,
+      moneyTargetId: '',
       images: []
     })
   }
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     // console.log('🚀 ~ onSubmit ~ data:', data)
 
-    const hasFiles = Array.isArray(data.images) && data.images.some(img => img.file instanceof File)
+    const hasFiles = Array.isArray(data.images) && data.images.some(img => img?.file instanceof File)
     if (hasFiles) {
       const formData = new FormData()
 
@@ -65,16 +66,15 @@ function CreateTransfer() {
         formData.append('images', imgObj.file)
       })
 
-      toast.promise(
+      const res = await toast.promise(
         createIndividualTransactionAPI(formData),
         { pending: 'Đang tạo giao dịch...' }
-      ).then(async res => {
-        if (!res.error) {
-          toast.success('Tạo giao dịch chuyển khoản thành công!')
-          await refreshWallets()
-          resetForm()
-        }
-      })
+      )
+      if (!res.error) {
+        toast.success('Tạo giao dịch chuyển khoản thành công!')
+        resetForm()
+        await refreshWallets()
+      }
     } else {
       const payload = {
         type: TRANSACTION_TYPES.TRANSFER,
@@ -90,16 +90,16 @@ function CreateTransfer() {
         }
       }
       if (data.description) payload.description = data.description
-      toast.promise(
+
+      const res = await toast.promise(
         createIndividualTransactionAPI(payload),
         { pending: 'Đang tạo giao dịch...' }
-      ).then(async res => {
-        if (!res.error) {
-          toast.success('Tạo giao dịch chuyển khoản thành công!')
-          await refreshWallets()
-          resetForm()
-        }
-      })
+      )
+      if (!res.error) {
+        toast.success('Tạo giao dịch chuyển khoản thành công!')
+        resetForm()
+        await refreshWallets()
+      }
     }
   }
 
@@ -396,7 +396,14 @@ function CreateTransfer() {
 
           {/* submit create new expense */}
           <Box display={'flex'} justifyContent={'center'} marginTop={5} marginBottom={3}>
-            <Button variant='contained' type="submit" className='interceptor-loading'>Tạo giao dịch</Button>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={isSubmitting}
+              startIcon={isSubmitting && <CircularProgress size={20} />}
+            >
+              {isSubmitting ? 'Đang xử lý...' : 'Tạo giao dịch'}
+            </Button>
           </Box>
         </Box>
       </form>

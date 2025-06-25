@@ -11,8 +11,8 @@ import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
 import { StyledBox } from '~/pages/Overview/Overview'
 import { TRANSACTION_TYPES } from '~/utils/constants'
 
-const redTypes = [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.CONTRIBUTION]
-const greenTypes = [TRANSACTION_TYPES.INCOME, TRANSACTION_TYPES.BORROWING]
+const redTypes = [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.CONTRIBUTION, TRANSACTION_TYPES.REPAYMENT]
+const greenTypes = [TRANSACTION_TYPES.INCOME, TRANSACTION_TYPES.BORROWING, TRANSACTION_TYPES.COLLECT]
 const getColorForTransaction = (transactionTypeProp, transactionName) => {
   if (redTypes.includes(transactionTypeProp)) {
     return '#e74c3c'

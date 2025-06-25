@@ -13,7 +13,7 @@ import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
 import { cloneDeep } from 'lodash'
 import { toast } from 'react-toastify'
 
-const redTypes = [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.CONTRIBUTION]
+const redTypes = [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.CONTRIBUTION, TRANSACTION_TYPES.REPAYMENT]
 
 const processTransactionByCategory = (transactions) => {
   const data = cloneDeep(transactions)

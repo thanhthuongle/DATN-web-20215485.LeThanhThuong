@@ -14,8 +14,8 @@ import { TRANSACTION_TYPES } from '~/utils/constants'
 import { createSearchParams } from 'react-router-dom'
 import { getIndividualTransactionAPI } from '~/apis'
 
-const redTypes = [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.CONTRIBUTION]
-const greenTypes = [TRANSACTION_TYPES.INCOME, TRANSACTION_TYPES.BORROWING]
+const redTypes = [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.CONTRIBUTION, TRANSACTION_TYPES.REPAYMENT]
+const greenTypes = [TRANSACTION_TYPES.INCOME, TRANSACTION_TYPES.BORROWING, TRANSACTION_TYPES.COLLECT]
 const getColorForTransaction = (transactionTypeProp) => {
   if (redTypes.includes(transactionTypeProp)) {
     return '#e74c3c'

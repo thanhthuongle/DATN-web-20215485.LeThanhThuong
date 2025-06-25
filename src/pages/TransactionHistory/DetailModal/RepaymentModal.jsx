@@ -4,18 +4,17 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import { NumericFormat } from 'react-number-format'
 import TextField from '@mui/material/TextField'
+import CategorySelector from '~/pages/NewTransaction/CategorySelector'
 import moment from 'moment'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import ImageUploader from '~/pages/NewTransaction/ImageUploader'
 import Avatar from '@mui/material/Avatar'
-import CategorySelector from '~/pages/NewTransaction/CategorySelector'
 import { MONEY_SOURCE_TYPE, TRANSACTION_TYPES } from '~/utils/constants'
 import { Paper } from '@mui/material'
-import ContactSelector from '~/pages/NewTransaction/ContactSelector'
-import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
 import { getDetailIndividualTransaction } from '~/apis'
+import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
 
-function LoanModal({ transactionId, handleCancelModal }) {
+function RepaymentModal({ transactionId, handleCancelModal }) {
   const [transaction, setTransaction] = useState(null)
   const handleCancel = () => {
     handleCancelModal()
@@ -34,22 +33,25 @@ function LoanModal({ transactionId, handleCancelModal }) {
   if (!transaction) {
     return (
       <Box>
-        <Box bgcolor={'#00aff0'} display={'flex'} alignItems={'center'} justifyContent={'center'} paddingY={2} sx={{ fontWeight: 'bold' }}>Giao dịch cho vay</Box>
+        <Box bgcolor={'#00aff0'} display={'flex'} alignItems={'center'} justifyContent={'center'} paddingY={2} sx={{ fontWeight: 'bold' }}>Giao dịch trả nợ</Box>
         <PageLoadingSpinner caption={'Đang tải dữ liệu...'} sx={{ height: '100%', paddingY: 5 }} />
       </Box>
     )
   }
   return (
     <>
-      <Box bgcolor={'#00aff0'} display={'flex'} alignItems={'center'} justifyContent={'center'} paddingY={2} sx={{ fontWeight: 'bold' }}>Giao dịch cho vay</Box>
+      <Box bgcolor={'#00aff0'} display={'flex'} alignItems={'center'} justifyContent={'center'} paddingY={2} sx={{ fontWeight: 'bold' }}>Giao dịch trả nợ</Box>
       <Box display={'flex'} flexDirection={'column'} gap={2} marginTop={2}>
-        {/* Số tiền */}
+        {/* Số tiền đã trả */}
         <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
-          <Typography sx={{ width: '100px', flexShrink: 0 }}>Số tiền</Typography>
+          <Box display={{ xs: 'flex', sm: 'block' }}>
+            <Typography sx={{ width: { sm: '100px' }, flexShrink: 0 }}>Số tiền&nbsp;</Typography>
+            <Typography sx={{ width: { sm: '100px' }, flexShrink: 0 }}>đã trả</Typography>
+          </Box>
           <NumericFormat
             fullWidth
             customInput={TextField}
-            placeholder='Số tiền'
+            placeholder='Số tiền đã trả'
             thousandSeparator="."
             decimalSeparator=","
             allowNegative={false}
@@ -64,20 +66,27 @@ function LoanModal({ transactionId, handleCancelModal }) {
           />
         </Box>
 
-        {/* Lãi suất */}
+        {/* Số tiền đã vay */}
         <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
-          <Typography sx={{ width: '100px', flexShrink: 0 }}>Lãi suất</Typography>
+          <Box display={{ xs: 'flex', sm: 'block' }}>
+            <Typography sx={{ width: { sm: '100px' }, flexShrink: 0 }}>Số tiền&nbsp;</Typography>
+            <Typography sx={{ width: { sm: '100px' }, flexShrink: 0 }}>đã vay</Typography>
+          </Box>
           <NumericFormat
             fullWidth
             customInput={TextField}
-            placeholder='Nhập lãi suất (/năm)'
+            placeholder='Số tiền đã vay'
             thousandSeparator="."
             decimalSeparator=","
             allowNegative={false}
+            decimalScale={0}
             allowLeadingZeros={false}
-            suffix="&nbsp;%/năm"
-            InputProps={{ readOnly: true }}
-            value={transaction?.detailInfo?.rate ? transaction?.detailInfo?.rate : ''}
+            suffix="&nbsp;₫"
+            InputProps={{
+              readOnly: true,
+              style: { color: '#27ae60' }
+            }}
+            value={transaction?.borrowingTransaction?.amount ? transaction?.borrowingTransaction?.amount : ''}
           />
         </Box>
 
@@ -101,24 +110,17 @@ function LoanModal({ transactionId, handleCancelModal }) {
           <Typography sx={{ width: '100px', flexShrink: 0 }}>Hạng mục</Typography>
           <CategorySelector
             transactionType={TRANSACTION_TYPES.EXPENSE}
-            value={transaction?.category ? transaction?.category : null}
+            value={transaction?.category}
             viewOnly={true}
           />
         </Box>
 
-
-        {/* Người vay */}
+        {/* Thời gian thu nợ */}
         <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
-          <Typography sx={{ width: '100px', flexShrink: 0 }}>Người vay</Typography>
-          <ContactSelector
-            value={transaction?.detailInfo?.borrower ? transaction?.detailInfo?.borrower : null}
-            viewOnly={true}
-          />
-        </Box>
-
-        {/* Thời gian */}
-        <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
-          <Typography sx={{ width: '100px', flexShrink: 0 }}>Thời gian</Typography>
+          <Box display={{ xs: 'flex', sm: 'block' }}>
+            <Typography sx={{ width: { sm: '100px' }, flexShrink: 0 }}>Thời gian&nbsp;</Typography>
+            <Typography sx={{ width: { sm: '100px' }, flexShrink: 0 }}>trả nợ</Typography>
+          </Box>
           <DateTimePicker
             ampm={false}
             timeSteps={{ hours: 1, minutes: 1 }}
@@ -127,31 +129,19 @@ function LoanModal({ transactionId, handleCancelModal }) {
           />
         </Box>
 
-        {/* Ngày thu nợ dư kiến */}
-        {transaction?.detailInfo?.collectTime &&
+        {/* Thời gian đi vay */}
         <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
-          <Typography sx={{ width: { sm: '100px' }, flexShrink: 0 }}>Ngày thu nợ dự kiến</Typography>
+          <Box display={{ xs: 'flex', sm: 'block' }}>
+            <Typography sx={{ width: { sm: '100px' }, flexShrink: 0 }}>Thời gian&nbsp;</Typography>
+            <Typography sx={{ width: { sm: '100px' }, flexShrink: 0 }}>đi vay</Typography>
+          </Box>
           <DateTimePicker
             ampm={false}
             timeSteps={{ hours: 1, minutes: 1 }}
-            value={transaction?.detailInfo?.collectTime ? moment(transaction?.detailInfo?.collectTime) : null}
+            value={transaction?.borrowingTransaction?.transactionTime ? moment(transaction?.borrowingTransaction?.transactionTime) : null}
             disableOpenPicker
           />
         </Box>
-        }
-
-        {/* Ngày thu nợ thực tế */}
-        {transaction?.collectionTransaction &&
-        <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
-          <Typography sx={{ width: { sm: '100px' }, flexShrink: 0 }}>Ngày thu nợ thực tế</Typography>
-          <DateTimePicker
-            ampm={false}
-            timeSteps={{ hours: 1, minutes: 1 }}
-            value={transaction?.collectionTransaction?.transactionTime ? moment(transaction?.collectionTransaction?.transactionTime) : null}
-            disableOpenPicker
-          />
-        </Box>
-        }
 
         {/* Nguồn tiền */}
         <Box display={{ xs: 'block', sm: 'flex' }} alignItems={'center'}>
@@ -217,4 +207,4 @@ function LoanModal({ transactionId, handleCancelModal }) {
   )
 }
 
-export default LoanModal
+export default RepaymentModal

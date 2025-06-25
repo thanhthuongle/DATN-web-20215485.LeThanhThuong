@@ -20,7 +20,7 @@ function CalcCollection (loanAmount, loanTime, collectTime, rate = 10) {
 }
 
 function PaymentPopup({ DebtTransaction, handleCancel, handleOnCollectOrRepay }) {
-  // console.log('🚀 ~ PaymentPopup ~ DebtTransaction:', DebtTransaction)
+  console.log('🚀 ~ PaymentPopup ~ DebtTransaction:', DebtTransaction)
   const [wallets, setWallets] = useState([])
   const [repaymentCategory, setRepaymentCategory] = useState(null)
 
@@ -98,7 +98,7 @@ function PaymentPopup({ DebtTransaction, handleCancel, handleOnCollectOrRepay })
                 style={{ color: '#27ae60', fontWeight: 'bold' }} // #27ae60
               />
             </Typography>
-            <Typography>Lãi suất: %/năm</Typography>
+            <Typography>Lãi suất: {DebtTransaction?.detailInfo?.rate}%/năm</Typography>
             <Typography>Thời gian vay: {moment(DebtTransaction?.transactionTime).format('DD/MM/YYYY, LT')}</Typography>
             {DebtTransaction?.detailInfo?.repaymentTime &&<Typography>Thời gian trả dự kiến: {moment(DebtTransaction?.detailInfo?.repaymentTime).format('DD/MM/YYYY, LT')}</Typography>}
           </StyledBox>
@@ -158,7 +158,7 @@ function PaymentPopup({ DebtTransaction, handleCancel, handleOnCollectOrRepay })
                     decimalSeparator=","
                     allowNegative={false}
                     suffix="&nbsp;₫"
-                    value={CalcCollection(DebtTransaction?.amount, DebtTransaction?.transactionTime, realRepaymentTime)}
+                    value={CalcCollection(DebtTransaction?.amount, DebtTransaction?.transactionTime, realRepaymentTime, DebtTransaction?.detailInfo?.rate)}
                     style={{ color: '#e74c3c', fontWeight: 'bold' }} // #e74c3c
                   />
                 </Typography>

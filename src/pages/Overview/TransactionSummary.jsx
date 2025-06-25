@@ -16,8 +16,8 @@ import { TRANSACTION_TYPES } from '~/utils/constants'
 import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
 import { createSearchParams } from 'react-router-dom'
 
-const redTypes = [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.CONTRIBUTION]
-const greenTypes = [TRANSACTION_TYPES.INCOME, TRANSACTION_TYPES.BORROWING]
+const redTypes = [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.CONTRIBUTION, TRANSACTION_TYPES.REPAYMENT]
+const greenTypes = [TRANSACTION_TYPES.INCOME, TRANSACTION_TYPES.BORROWING, TRANSACTION_TYPES.COLLECT]
 
 const timeOptions = {
   TODAY: 'Hôm nay',

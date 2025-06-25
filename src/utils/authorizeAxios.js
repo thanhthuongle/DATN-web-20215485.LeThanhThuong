@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { toast } from 'react-toastify'
-import { interceptorLoadingElements } from '~/utils/formatters'
+// import { interceptorLoadingElements } from '~/utils/formatters'
 import { refreshTokenAPI } from '~/apis'
 import { logoutUserAPI } from '~/redux/user/userSlice'
 
@@ -18,7 +18,7 @@ authorizedAxiosInstance.defaults.withCredentials = true
 // Add a request interceptor
 authorizedAxiosInstance.interceptors.request.use( (config) => {
   // chặn spam click
-  interceptorLoadingElements(true)
+  // interceptorLoadingElements(true)
 
   return config
 }, (error) => {
@@ -31,11 +31,11 @@ let refreshTokenPromise = null
 
 // Add a response interceptor
 authorizedAxiosInstance.interceptors.response.use( (response) => {
-  interceptorLoadingElements(false)
+  // interceptorLoadingElements(false)
 
   return response
 }, (error) => {
-  interceptorLoadingElements(false)
+  // interceptorLoadingElements(false)
 
   if (error.response?.status === 401) {
     axiosReduxStore.dispatch(logoutUserAPI(false))

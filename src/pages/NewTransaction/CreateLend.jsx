@@ -20,12 +20,13 @@ import FieldErrorAlert from '~/component/Form/FieldErrorAlert'
 import CategorySelector from './CategorySelector'
 import { MONEY_SOURCE_TYPE, TRANSACTION_TYPES } from '~/utils/constants'
 import { toast } from 'react-toastify'
+import { CircularProgress } from '@mui/material'
 
 function CreateLend() {
   const [wallets, setWallets] = useState([])
 
   const methods = useForm()
-  const { register, setValue, control, reset, watch, formState: { errors } } = methods
+  const { register, setValue, control, reset, watch, formState: { errors, isSubmitting } } = methods
   const transactionTime = watch('transactionTime')
   const collectTime = watch('collectTime')
   const resetForm = () => {
@@ -33,19 +34,19 @@ function CreateLend() {
       amount: '',
       rate: '',
       description: '',
-      category: null,
+      category: '',
       transactionTime: moment(),
       collectTime: null,
       moneyFromId: wallets[0]?._id || '',
-      borrower: null,
+      borrower: '',
       images: []
     })
   }
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     // console.log('🚀 ~ onSubmit ~ data:', data)
 
-    const hasFiles = Array.isArray(data.images) && data.images.some(img => img.file instanceof File)
+    const hasFiles = Array.isArray(data.images) && data.images.some(img => img?.file instanceof File)
     if (hasFiles) {
       const formData = new FormData()
 
@@ -69,16 +70,15 @@ function CreateLend() {
         formData.append('images', imgObj.file)
       })
 
-      toast.promise(
+      const res = await toast.promise(
         createIndividualTransactionAPI(formData),
         { pending: 'Đang tạo giao dịch...' }
-      ).then(async res => {
-        if (!res.error) {
-          toast.success('Tạo giao dịch cho vay thành công!')
-          await refreshWallets()
-          resetForm()
-        }
-      })
+      )
+      if (!res.error) {
+        toast.success('Tạo giao dịch cho vay thành công!')
+        resetForm()
+        await refreshWallets()
+      }
     } else {
       if (!data.description) data.description = `Cho ${data.borrower.name} vay`
       const payload = {
@@ -96,16 +96,16 @@ function CreateLend() {
         }
       }
       if (data.collectTime) payload.detailInfo.collectTime = data.collectTime.toISOString()
-      toast.promise(
+
+      const res = await toast.promise(
         createIndividualTransactionAPI(payload),
         { pending: 'Đang tạo giao dịch...' }
-      ).then(async res => {
-        if (!res.error) {
-          toast.success('Tạo giao dịch cho vay thành công!')
-          await refreshWallets()
-          resetForm()
-        }
-      })
+      )
+      if (!res.error) {
+        toast.success('Tạo giao dịch cho vay thành công!')
+        resetForm()
+        await refreshWallets()
+      }
     }
   }
 
@@ -423,7 +423,14 @@ function CreateLend() {
 
           {/* submit create new expense */}
           <Box display={'flex'} justifyContent={'center'} marginTop={5} marginBottom={3}>
-            <Button variant='contained' type="submit" className='interceptor-loading'>Tạo giao dịch</Button>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={isSubmitting}
+              startIcon={isSubmitting && <CircularProgress size={20} />}
+            >
+              {isSubmitting ? 'Đang xử lý...' : 'Tạo giao dịch'}
+            </Button>
           </Box>
         </Box>
       </form>

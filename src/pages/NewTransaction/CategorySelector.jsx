@@ -24,7 +24,7 @@ const buildTree = (categories) => {
   return roots
 }
 
-const CategorySelector = ({ transactionType, onChange, value, error, sx = {} }) => {
+const CategorySelector = ({ transactionType, onChange, value, error, viewOnly = false, sx = {} }) => {
   const [categories, setCategories] = useState([])
   const treeData = buildTree(categories)
 
@@ -90,8 +90,10 @@ const CategorySelector = ({ transactionType, onChange, value, error, sx = {} }) 
   }
 
   useEffect(() => {
-    const searchPath = `?${createSearchParams({ 'q[type]': transactionType })}`
-    getIndividualCategoryAPI(searchPath).then(updateStateData)
+    if (!viewOnly) {
+      const searchPath = `?${createSearchParams({ 'q[type]': transactionType })}`
+      getIndividualCategoryAPI(searchPath).then(updateStateData)
+    }
     if (!value) {
       setSelected(null)
       setSelectedName(null)
@@ -99,7 +101,7 @@ const CategorySelector = ({ transactionType, onChange, value, error, sx = {} }) 
       setSelected(value._id)
       setSelectedName(value.name)
     }
-  }, [transactionType, value])
+  }, [transactionType, value, viewOnly])
 
   return (
     <>
@@ -107,7 +109,9 @@ const CategorySelector = ({ transactionType, onChange, value, error, sx = {} }) 
         variant="outlined"
         endIcon={<KeyboardArrowRightIcon />}
         sx={{ textTransform: 'none', minWidth: { xs: 'auto', sm: '300px' }, paddingY: 1, borderColor: error ? 'error.main' : undefined, ...sx }}
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          if (!viewOnly) setOpen(true)
+        }}
       >{selectedName ?? 'Chọn hạng mục...'}</Button>
       <Dialog
         open={open}

@@ -17,8 +17,8 @@ import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
 import theme from '~/theme'
 import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
 
-const redTypes = [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.CONTRIBUTION]
-const greenTypes = [TRANSACTION_TYPES.INCOME, TRANSACTION_TYPES.BORROWING]
+const redTypes = [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.CONTRIBUTION, TRANSACTION_TYPES.REPAYMENT]
+const greenTypes = [TRANSACTION_TYPES.INCOME, TRANSACTION_TYPES.BORROWING, TRANSACTION_TYPES.COLLECT]
 const getColorForTransaction = (transactionTypeProp, transactionName) => {
   if (redTypes.includes(transactionTypeProp)) {
     return '#e74c3c'

@@ -99,7 +99,7 @@ function CreateSaving({ afterCreateSaving, accountData = [] }) {
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: { xs: '100%', sm: '600' },
+          width: { xs: '100%', sm: 600 },
           maxHeight: '80vh',
           overflowY: 'auto',
           bgcolor: 'white',

@@ -14,15 +14,17 @@ import DoughnutChart from '~/component/Chart/DoughnutChart'
 import moment from 'moment'
 import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
 import { TRANSACTION_TYPES } from '~/utils/constants'
-import { getDetailIndividualTransaction, getIndividualTransactionAPI } from '~/apis'
+import { getIndividualTransactionAPI } from '~/apis'
 import { createSearchParams } from 'react-router-dom'
 import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
-import { ButtonBase, IconButton, Modal } from '@mui/material'
+import { CircularProgress, Modal } from '@mui/material'
 import ExpenseModal from './DetailModal/ExpenseModal'
 import IncomeModal from './DetailModal/IncomeModal'
 import LoanModal from './DetailModal/LoanModal'
 import BorrowingModal from './DetailModal/BorrowingModal'
 import TransferModal from './DetailModal/TransferModal'
+import CollectionModal from './DetailModal/CollectionModal'
+import RepaymentModal from './DetailModal/RepaymentModal'
 
 const transactionHistoryType = {
   ALL: 'Toàn bộ',
@@ -30,19 +32,19 @@ const transactionHistoryType = {
   EXPENSE: 'Tiền ra'
 }
 
-const redTypes = [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.CONTRIBUTION]
-const greenTypes = [TRANSACTION_TYPES.INCOME, TRANSACTION_TYPES.BORROWING]
-const getColorForTransaction = (transactionTypeProp) => {
+const redTypes = [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.CONTRIBUTION, TRANSACTION_TYPES.REPAYMENT]
+const greenTypes = [TRANSACTION_TYPES.INCOME, TRANSACTION_TYPES.BORROWING, TRANSACTION_TYPES.COLLECT]
+const getColorForTransaction = (transactionTypeProp, transactionName) => {
   if (redTypes.includes(transactionTypeProp)) {
     return '#e74c3c'
-  } else if (greenTypes.includes(transactionTypeProp)) {
+  } else if (greenTypes.includes(transactionTypeProp) || transactionName?.toLowerCase()?.startsWith('thu lãi')) {
     return '#27ae60'
   } else {
     return 'text.primary'
   }
 }
 
-function processDataRaw(transactions) {
+function processDataRaw(transactions, categoryTypeFilter = redTypes) {
   const result = {
     byDate: {},
     byCategory: {},
@@ -57,7 +59,7 @@ function processDataRaw(transactions) {
     if (!result.byDate[dateKey]) { result.byDate[dateKey] = [] }
     result.byDate[dateKey].push(transaction)
 
-    if (redTypes.includes(transaction.type)) {
+    if (categoryTypeFilter.includes(transaction.type)) {
       if (!result.byCategory[categoryKey])
         result.byCategory[categoryKey] = {
           amount: 0,
@@ -113,12 +115,10 @@ function TransactionHistory() {
   const [startDate, setStartDate] = useState(moment().subtract(1, 'month'))
   const [endDate, setEndDate] = useState(moment())
   const [activeButton, setActiveButton] = useState(transactionHistoryType.ALL)
+  const [isLoading, setIsLoading] = useState(true)
 
   const handleOpenModal = async (transaction) => {
-    const detailTransaction = await getDetailIndividualTransaction(transaction._id)
-    console.log('🚀 ~ handleOpenModal ~ detailTransaction:', detailTransaction)
-    detailTransaction.detailInfo.images = detailTransaction.detailInfo.images?.map(url => ({ url: url }))
-    setSelectedTransaction(detailTransaction)
+    setSelectedTransaction(transaction)
     setOpenModal(true)
   }
   const handleCloseModal = () => setOpenModal(false)
@@ -137,12 +137,19 @@ function TransactionHistory() {
 
   const updateStateData = (res) => {
     // console.log('🚀 ~ updateStateData ~ res:', res)
-    const processedData = processDataRaw(res)
+    let processedData
+    if (activeButton == transactionHistoryType.INCOME) {
+      processedData = processDataRaw(res, greenTypes)
+    } else {
+      processedData = processDataRaw(res, redTypes)
+    }
     // console.log('🚀 ~ updateStateData ~ processDataRaw(res):', processedData)
     setTransactionProcessedDatas(processedData)
+    setIsLoading(false)
   }
 
   const getTransactionData = () => {
+    setIsLoading(true)
     let transactionTypeFilter = ''
     if (activeButton == transactionHistoryType.EXPENSE) transactionTypeFilter = redTypes
     else if (activeButton == transactionHistoryType.INCOME) transactionTypeFilter = greenTypes
@@ -159,9 +166,9 @@ function TransactionHistory() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeButton])
 
-  if (!transactionProcessedDatas) {
-    return <PageLoadingSpinner caption='Loading data...' />
-  }
+  // if (!isLoading || !transactionProcessedDatas) {
+  //   return <PageLoadingSpinner caption='Đang tải dữ liệu...' />
+  // }
   return (
     <Box
       width={'100%'}
@@ -198,79 +205,88 @@ function TransactionHistory() {
               />
             </Box>
             <Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
-              <Button variant='contained' onClick={handleOkClick} sx={{ textTransform: 'none' }}>Tìm kiếm</Button>
+              <Button
+                variant='contained'
+                onClick={handleOkClick}
+                disabled={isLoading}
+                startIcon={isLoading && <CircularProgress size={20} />}
+                sx={{ textTransform: 'none' }}
+              >{isLoading ? 'Đang tìm kiếm...' : 'Tìm kiếm'}</Button>
             </Box>
           </StyledBox>
         </Box>
-
-        {/* Biểu đồ cột thu chi */}
-        <StyledBox display='flex' sx={{ gap: 1 }}>
-          <Box width='20%'>
-            <BarChart income={transactionProcessedDatas?.income} expense={transactionProcessedDatas?.expense} />
-          </Box>
-          <Stack width='80%' spacing={2} sx={{ justifyContent: 'end', pb: 1 }}>
-            <Box color='#27AE60' display='flex' justifyContent='space-between' alignItems='center'>
-              <Box display='flex' alignItems='center' gap={0.5}>
-                <CircleIcon
-                  color='inherit'
-                  fontSize='small'
-                  sx={{
-                    width: '12px',
-                    height: '12px'
-                  }}
-                />
-                <Typography color='text.primary'>Thu</Typography>
-              </Box>
-              <NumericFormat
-                displayType='text'
-                thousandSeparator="."
-                decimalSeparator=","
-                allowNegative={false}
-                suffix="&nbsp;₫"
-                value={transactionProcessedDatas?.income}
-              />
+        {!isLoading &&
+        <>
+          {/* Biểu đồ cột thu chi */}
+          <StyledBox display='flex' sx={{ gap: 1 }}>
+            <Box width='20%'>
+              <BarChart income={transactionProcessedDatas?.income} expense={transactionProcessedDatas?.expense} />
             </Box>
-            <Box color='#E74C3C' display='flex' justifyContent='space-between' alignItems='center'>
-              <Box display='flex' alignItems='center' gap={0.5}>
-                <CircleIcon
-                  color='inherit'
-                  fontSize='small'
-                  sx={{
-                    width: '12px',
-                    height: '12px'
-                  }}
-                />
-                <Typography color='text.primary'>Chi</Typography>
-              </Box>
-              <NumericFormat
-                displayType='text'
-                thousandSeparator="."
-                decimalSeparator=","
-                allowNegative={false}
-                suffix="&nbsp;₫"
-                value={transactionProcessedDatas?.expense}
-              />
-            </Box>
-            <Box>
-              <Divider />
-              <Box display='flex' justifyContent='end' paddingTop='8px'>
+            <Stack width='80%' spacing={2} sx={{ justifyContent: 'end', pb: 1 }}>
+              <Box color='#27AE60' display='flex' justifyContent='space-between' alignItems='center'>
+                <Box display='flex' alignItems='center' gap={0.5}>
+                  <CircleIcon
+                    color='inherit'
+                    fontSize='small'
+                    sx={{
+                      width: '12px',
+                      height: '12px'
+                    }}
+                  />
+                  <Typography color='text.primary'>Thu</Typography>
+                </Box>
                 <NumericFormat
                   displayType='text'
                   thousandSeparator="."
                   decimalSeparator=","
-                  allowNegative={true}
+                  allowNegative={false}
                   suffix="&nbsp;₫"
-                  value={transactionProcessedDatas?.income-transactionProcessedDatas?.expense}
+                  value={transactionProcessedDatas?.income}
                 />
               </Box>
-            </Box>
-          </Stack>
-        </StyledBox>
+              <Box color='#E74C3C' display='flex' justifyContent='space-between' alignItems='center'>
+                <Box display='flex' alignItems='center' gap={0.5}>
+                  <CircleIcon
+                    color='inherit'
+                    fontSize='small'
+                    sx={{
+                      width: '12px',
+                      height: '12px'
+                    }}
+                  />
+                  <Typography color='text.primary'>Chi</Typography>
+                </Box>
+                <NumericFormat
+                  displayType='text'
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  allowNegative={false}
+                  suffix="&nbsp;₫"
+                  value={transactionProcessedDatas?.expense}
+                />
+              </Box>
+              <Box>
+                <Divider />
+                <Box display='flex' justifyContent='end' paddingTop='8px'>
+                  <NumericFormat
+                    displayType='text'
+                    thousandSeparator="."
+                    decimalSeparator=","
+                    allowNegative={true}
+                    suffix="&nbsp;₫"
+                    value={transactionProcessedDatas?.income-transactionProcessedDatas?.expense}
+                  />
+                </Box>
+              </Box>
+            </Stack>
+          </StyledBox>
 
-        {/* Biểu đồ tròn hạng mục chi */}
-        <StyledBox display='flex' sx={{ paddingBottom: 1 }}>
-          <DoughnutChart dataProp={transactionProcessedDatas.groupedByCategory} />
-        </StyledBox>
+          {/* Biểu đồ tròn hạng mục chi */}
+          <StyledBox display='flex' sx={{ paddingBottom: 1 }}>
+            <DoughnutChart dataProp={transactionProcessedDatas.groupedByCategory} />
+          </StyledBox>
+        </>
+        }
       </Box>
 
       <Divider orientation="vertical" variant="middle" flexItem />
@@ -298,6 +314,7 @@ function TransactionHistory() {
         </Box>
 
         {/* Danh sách lịch sử giao dịch */}
+        {!isLoading &&
         <Box display={'flex'} flexDirection={'column'} gap={1}>
           {(Array.isArray(transactionProcessedDatas?.groupedByDate) && transactionProcessedDatas?.groupedByDate.length === 0) && (
             <Typography
@@ -320,7 +337,7 @@ function TransactionHistory() {
                     title={transaction?.name}
                     description={transaction?.description}
                     amount={transaction?.amount}
-                    amountColor={getColorForTransaction(transaction?.type)}
+                    amountColor={getColorForTransaction(transaction?.type, transaction?.name)}
                     sx={{
                       cursor: 'pointer',
                       '&:hover': {
@@ -336,6 +353,10 @@ function TransactionHistory() {
             </StyledBox>
           ))}
         </Box>
+        }
+        {isLoading &&
+          <PageLoadingSpinner caption='Đang tải dữ liệu...' sx={{ height: '100%', alignItems: 'start', paddingTop: '20%' }}/>
+        }
       </Box>
 
       <Modal
@@ -345,11 +366,13 @@ function TransactionHistory() {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          {selectedTransaction?.type == TRANSACTION_TYPES.EXPENSE && <ExpenseModal transaction={selectedTransaction} handleCancelModal={handleCloseModal}/>}
-          {selectedTransaction?.type == TRANSACTION_TYPES.INCOME && <IncomeModal transaction={selectedTransaction} handleCancelModal={handleCloseModal}/>}
-          {selectedTransaction?.type == TRANSACTION_TYPES.LOAN && <LoanModal transaction={selectedTransaction} handleCancelModal={handleCloseModal}/>}
-          {selectedTransaction?.type == TRANSACTION_TYPES.BORROWING && <BorrowingModal transaction={selectedTransaction} handleCancelModal={handleCloseModal}/>}
-          {selectedTransaction?.type == TRANSACTION_TYPES.TRANSFER && <TransferModal transaction={selectedTransaction} handleCancelModal={handleCloseModal}/>}
+          {selectedTransaction?.type == TRANSACTION_TYPES.EXPENSE && <ExpenseModal transactionId={selectedTransaction?._id} handleCancelModal={handleCloseModal}/>}
+          {selectedTransaction?.type == TRANSACTION_TYPES.INCOME && <IncomeModal transactionId={selectedTransaction?._id} handleCancelModal={handleCloseModal}/>}
+          {selectedTransaction?.type == TRANSACTION_TYPES.LOAN && <LoanModal transactionId={selectedTransaction?._id} handleCancelModal={handleCloseModal}/>}
+          {selectedTransaction?.type == TRANSACTION_TYPES.COLLECT && <CollectionModal transactionId={selectedTransaction?._id} handleCancelModal={handleCloseModal}/>}
+          {selectedTransaction?.type == TRANSACTION_TYPES.BORROWING && <BorrowingModal transactionId={selectedTransaction?._id} handleCancelModal={handleCloseModal}/>}
+          {selectedTransaction?.type == TRANSACTION_TYPES.REPAYMENT && <RepaymentModal transactionId={selectedTransaction?._id} handleCancelModal={handleCloseModal}/>}
+          {selectedTransaction?.type == TRANSACTION_TYPES.TRANSFER && <TransferModal transactionId={selectedTransaction?._id} handleCancelModal={handleCloseModal}/>}
         </Box>
       </Modal>
     </Box>

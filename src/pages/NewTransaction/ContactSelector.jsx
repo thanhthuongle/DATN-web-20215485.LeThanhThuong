@@ -9,7 +9,7 @@ import { toast } from 'react-toastify'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import { createIndividualContactAPI, getIndividualContactAPI } from '~/apis'
 
-function ContactSelector({ onChange, value }) {
+function ContactSelector({ onChange, value, viewOnly = false }) {
   const [open, setOpen] = useState(false)
   const [contacts, setContacts] = useState([])
   const [search, setSearch] = useState('')
@@ -56,17 +56,21 @@ function ContactSelector({ onChange, value }) {
   }
 
   useEffect(() => {
-    getIndividualContactAPI().then(updateStateData)
+    if (!viewOnly) {
+      getIndividualContactAPI().then(updateStateData)
+    }
     if (!value) setSelected(null)
     else setSelected(value)
-  }, [value])
+  }, [value, viewOnly])
 
   return (
     <>
       <Button
         variant="outlined"
         endIcon={<KeyboardArrowRightIcon />}
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          if (!viewOnly) setOpen(true)
+        }}
         sx={{ textTransform: 'none', minWidth: { xs: 'auto', sm: '300px' }, paddingY: 1 }}
       >{selected?.name ?? 'Chọn liên hệ'}</Button>
 
