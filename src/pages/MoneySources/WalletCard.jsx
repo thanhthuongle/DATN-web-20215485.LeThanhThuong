@@ -27,12 +27,12 @@ const style = {
   p: 2
 }
 
-function WalletCard({ data, afterCreateNew }) {
+function WalletCard({ walletData, refreshData }) {
   const [openModal, setOpenModal] = useState(false)
   const [selectedAccount, setSelectedAccount] = useState(null)
   // console.log('🚀 ~ WalletCard ~ selectedAccount:', selectedAccount)
   // console.log('🚀 ~ WalletCard ~ data:', data)
-  const [walletData] = useState(data)
+  // const [walletData] = useState(data)
 
   // Tách tài khoản bị khóa và chưa bị khóa
   const activeWallets = walletData.filter(w => !w.isBlock)
@@ -51,33 +51,6 @@ function WalletCard({ data, afterCreateNew }) {
     setOpenModal(true)
   }
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     if (data && Array.isArray(data) && data.length > 0) {
-  //       const updatedDatas = await Promise.all(
-  //         data.map(async (d) => {
-  //           if (d.bankId) {
-  //             try {
-  //               const bankInfo = await getBankInfo(d.bankId)
-  //               return { ...d, bankInfo }
-  //             } catch (error) {
-  //               // eslint-disable-next-line no-console
-  //               console.error(`Lỗi khi lấy thông tin bank ${d.bankId}`, error)
-  //               return d
-  //             }
-  //           } else {
-  //             return d
-  //           }
-  //         })
-  //       )
-
-  //       // Cập nhật state thay vì gán trực tiếp cho `data`
-  //       setWalletData(updatedDatas)
-  //     }
-  //   }
-
-  //   fetchData()
-  // }, [data])
   return (
     <StyledBox
       width='100%'
@@ -175,7 +148,7 @@ function WalletCard({ data, afterCreateNew }) {
                       borderTop: 1,
                       borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
                     }}
-                    menuComponent={<WalletMenu isActive={true} account={activeWallet} afterCreateNew={afterCreateNew} sx={{ marginLeft: 2 }} />}
+                    menuComponent={<WalletMenu isActive={true} account={activeWallet} refreshData={refreshData} sx={{ marginLeft: 2 }} />}
                   />
                 </Box>)}
             </AccordionDetails>
@@ -227,7 +200,7 @@ function WalletCard({ data, afterCreateNew }) {
                       borderTop: 1,
                       borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
                     }}
-                    menuComponent={<WalletMenu isActive={false} account={blockedWallet} afterCreateNew={afterCreateNew} sx={{ marginLeft: 2 }} />}
+                    menuComponent={<WalletMenu isActive={false} account={blockedWallet} refreshData={refreshData} sx={{ marginLeft: 2 }} />}
                   />
                 </Box>
               )}

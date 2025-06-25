@@ -28,7 +28,7 @@ const style = {
   p: 4
 }
 
-function DepositAccumulationPopup({ isOpen, onClose, accumulation, accountData, afterCreateNew }) {
+function DepositAccumulationPopup({ isOpen, onClose, accumulation, accountData, refreshData }) {
   const [wallets] = React.useState(accountData)
   const [transferCategory, setTransferCategory] = React.useState(null)
 
@@ -75,7 +75,7 @@ function DepositAccumulationPopup({ isOpen, onClose, accumulation, accountData, 
           toast.success('Gửi tiền vào tích lũy thành công!')
           onClose()
           resetForm()
-          afterCreateNew()
+          refreshData()
         }
       })
     } else {
@@ -102,7 +102,7 @@ function DepositAccumulationPopup({ isOpen, onClose, accumulation, accountData, 
           toast.success('Gửi tiền vào tích lũy thành công!')
           onClose()
           resetForm()
-          afterCreateNew()
+          refreshData()
         }
       })
     }
