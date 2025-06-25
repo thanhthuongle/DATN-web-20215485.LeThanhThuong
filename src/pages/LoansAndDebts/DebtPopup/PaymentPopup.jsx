@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, FormControl, MenuItem, Select, Typography } from '@mui/material'
+import { Box, Button, CircularProgress, FormControl, MenuItem, Select, Typography } from '@mui/material'
 import { DateTimePicker } from '@mui/x-date-pickers'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
@@ -25,10 +25,10 @@ function PaymentPopup({ DebtTransaction, handleCancel, handleOnCollectOrRepay })
   const [repaymentCategory, setRepaymentCategory] = useState(null)
 
   const methods = useForm()
-  const { setValue, control, reset, watch, formState: { errors } } = methods
+  const { setValue, control, reset, watch, formState: { errors, isSubmitting } } = methods
   const realRepaymentTime = watch('realRepaymentTime')
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     // console.log('🚀 ~ onSubmit ~ data:', data)
     const payload = {
       type: TRANSACTION_TYPES.REPAYMENT,
@@ -49,17 +49,16 @@ function PaymentPopup({ DebtTransaction, handleCancel, handleOnCollectOrRepay })
     // console.log('🚀 ~ onSubmit ~ payload:', payload)
 
     // Call API
-    toast.promise(
+    const res = await toast.promise(
       createIndividualTransactionAPI(payload),
       { pending: 'Đang tạo giao dịch...' }
-    ).then(async res => {
-      if (!res.error) {
-        toast.success('Tạo giao dịch trả nợ thành công!')
-        reset()
-        handleCancel()
-        handleOnCollectOrRepay()
-      }
-    })
+    )
+    if (!res.error) {
+      toast.success('Tạo giao dịch trả nợ thành công!')
+      reset()
+      handleCancel()
+      handleOnCollectOrRepay()
+    }
   }
 
   useEffect(() => {
@@ -213,7 +212,12 @@ function PaymentPopup({ DebtTransaction, handleCancel, handleOnCollectOrRepay })
               </StyledBox>
               <Box display={'flex'} justifyContent={'center'} marginTop={5} gap={3}>
                 <Button variant='outlined' onClick={handleCancel}>Hủy</Button>
-                <Button variant='contained' type="submit" className='interceptor-loading'>Xác nhận</Button>
+                <Button
+                  variant='contained'
+                  type="submit"
+                  disabled={isSubmitting}
+                  startIcon={isSubmitting && <CircularProgress size={20} />}
+                >{isSubmitting ? 'Đang xử lý...' : 'Xác nhận'}</Button>
               </Box>
             </form>
           </FormProvider>

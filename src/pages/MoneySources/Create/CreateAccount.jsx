@@ -14,23 +14,23 @@ import { FIELD_REQUIRED_MESSAGE } from '~/utils/validators'
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 import { NumericFormat } from 'react-number-format'
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
-import { Avatar, FormControl, InputLabel, MenuItem, Select, Tooltip } from '@mui/material'
+import { Avatar, CircularProgress, FormControl, InputLabel, MenuItem, Select, Tooltip } from '@mui/material'
 import { ACCOUNT_TYPES } from '~/utils/constants'
 import { createIndividualAccountAPI, getBanks } from '~/apis'
 import { toast } from 'react-toastify'
 
 function CreateAccount({ afterCreateNewAccount }) {
-  const { register, control, handleSubmit, reset, watch, formState: { errors } } = useForm()
+  const { register, control, handleSubmit, reset, watch, formState: { errors, isSubmitting } } = useForm()
   const type = watch('type')
   const [open, setOpen] = React.useState(false)
   const [banks, setBanks] = React.useState([])
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
-    setOpen(false)
     reset()
+    setOpen(false)
   }
-  const submitCreateNewAccount = (data) => {
+  const submitCreateNewAccount = async (data) => {
     const { type, accountName, initBalance } = data
     const newAccount = {
       type,
@@ -40,16 +40,15 @@ function CreateAccount({ afterCreateNewAccount }) {
     if (data.description) newAccount.description = data.description
     if (data.bankId) newAccount.bankId = data.bankId
 
-    toast.promise(
+    const res = await toast.promise(
       createIndividualAccountAPI(newAccount),
       { pending: 'Đang tạo tài khoản...' }
-    ).then((res) => {
-      if (!res.error) {
-        toast.success('Tạo tài khoản thành công!')
-        handleClose()
-        afterCreateNewAccount()
-      }
-    })
+    )
+    if (!res.error) {
+      toast.success('Tạo tài khoản thành công!')
+      handleClose()
+      afterCreateNewAccount()
+    }
   }
 
   React.useEffect(() => {
@@ -277,14 +276,16 @@ function CreateAccount({ afterCreateNewAccount }) {
                     variant='outlined'
                     onClick={handleClose}
                     sx={{ marginRight: 2 }}
-                  >Cancel</Button>
+                  >Hủy</Button>
                   <Button
                     className="interceptor-loading"
                     type="submit"
                     variant="contained"
                     color="primary"
+                    disabled={isSubmitting}
+                    startIcon={isSubmitting && <CircularProgress size={20} />}
                   >
-                    Create
+                    {isSubmitting ? 'Đang xử lý...' : 'Thêm tài khoản'}
                   </Button>
                 </Box>
               </Box>

@@ -8,7 +8,7 @@ import LoanTab from './LoanTab'
 import DebtTab from './DebtTab'
 import { createSearchParams } from 'react-router-dom'
 import { TRANSACTION_TYPES } from '~/utils/constants'
-import { getFullInfoIndividualTransactions, getIndividualDetailTransactions, getIndividualTransactionAPI } from '~/apis'
+import { getFullInfoIndividualTransactions } from '~/apis'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
@@ -226,10 +226,35 @@ function LoansAndDebts() {
     let totalBorrowing = 0
     let totalCollected = 0
     let totalPaid = 0
-    let loanTransactions = res.filter(item => item.type == TRANSACTION_TYPES.LOAN)
-    let borrowingTransactions = res.filter(item => item.type == TRANSACTION_TYPES.BORROWING)
-    let collectionTransactions = res.filter(item => item.type == TRANSACTION_TYPES.COLLECT)
-    let repaymentTransactions = res.filter(item => item.type == TRANSACTION_TYPES.REPAYMENT)
+
+    let loanTransactions = []
+    let borrowingTransactions = []
+    let collectionTransactions = []
+    let repaymentTransactions = []
+
+    res.forEach(item => {
+      switch (item.type) {
+      case TRANSACTION_TYPES.LOAN:
+        totalLoan += item.amount
+        loanTransactions.push(item)
+        break
+
+      case TRANSACTION_TYPES.BORROWING:
+        totalBorrowing += item.amount
+        borrowingTransactions.push(item)
+        break
+
+      case TRANSACTION_TYPES.COLLECT:
+        totalCollected += item.amount
+        collectionTransactions.push(item)
+        break
+
+      case TRANSACTION_TYPES.REPAYMENT:
+        totalPaid += item.amount
+        repaymentTransactions.push(item)
+        break
+      }
+    })
 
     const loanGroupedTransactions = groupTransaction([...loanTransactions, ...collectionTransactions], 'borrowerId')
     const borrowingGroupedTransactions = groupTransaction([...borrowingTransactions, ...repaymentTransactions], 'lenderId')
@@ -317,10 +342,10 @@ function LoansAndDebts() {
             </Box>
             }
           </Box>
-          {isLoading &&
+          {isLoading && !data &&
             <PageLoadingSpinner caption={'Đang tải dữ liêu...'} sx={{ height: '', paddingTop: '20%' }} />
           }
-          {!isLoading && data &&
+          {data &&
           <>
             <TabPanel value={TABS.LOANS}>
               <LoanTab

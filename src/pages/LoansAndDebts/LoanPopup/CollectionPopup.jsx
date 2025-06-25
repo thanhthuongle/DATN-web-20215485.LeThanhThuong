@@ -1,4 +1,4 @@
-import { Button, FormControl, MenuItem, Select, Typography } from '@mui/material'
+import { Button, CircularProgress, FormControl, MenuItem, Select, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { DateTimePicker } from '@mui/x-date-pickers'
 import moment from 'moment'
@@ -26,10 +26,10 @@ function CollectionPopup({ LoanTransaction, handleCancel, handleOnCollect }) {
   const [collectCategory, setCollectCategory] = useState(null)
 
   const methods = useForm()
-  const { setValue, control, reset, watch, formState: { errors } } = methods
+  const { setValue, control, reset, watch, formState: { errors, isSubmitting } } = methods
   const realCollectTime = watch('realCollectTime')
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     // data.loanTransactionId = LoanTransaction._id
     // console.log('🚀 ~ onSubmit ~ data:', data)
     const payload = {
@@ -51,17 +51,16 @@ function CollectionPopup({ LoanTransaction, handleCancel, handleOnCollect }) {
     // console.log('🚀 ~ onSubmit ~ payload:', payload)
 
     // Call API
-    toast.promise(
+    const res = await toast.promise(
       createIndividualTransactionAPI(payload),
       { pending: 'Đang tạo giao dịch...' }
-    ).then(async res => {
-      if (!res.error) {
-        toast.success('Tạo giao dịch thu nợ thành công!')
-        reset()
-        handleCancel()
-        handleOnCollect()
-      }
-    })
+    )
+    if (!res.error) {
+      toast.success('Tạo giao dịch thu nợ thành công!')
+      reset()
+      handleCancel()
+      handleOnCollect()
+    }
   }
 
   useEffect(() => {
@@ -213,7 +212,12 @@ function CollectionPopup({ LoanTransaction, handleCancel, handleOnCollect }) {
               </StyledBox>
               <Box display={'flex'} justifyContent={'center'} marginTop={5} gap={3}>
                 <Button variant='outlined' onClick={handleCancel}>Hủy</Button>
-                <Button variant='contained' type="submit" className='interceptor-loading'>Xác nhận</Button>
+                <Button
+                  variant='contained'
+                  type="submit"
+                  disabled={isSubmitting}
+                  startIcon={isSubmitting && <CircularProgress size={20} />}
+                >{isSubmitting ? 'Đang xử lý...' : 'Xác nhận'}</Button>
               </Box>
             </form>
           </FormProvider>

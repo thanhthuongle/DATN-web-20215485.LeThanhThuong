@@ -14,7 +14,7 @@ import { FIELD_REQUIRED_MESSAGE } from '~/utils/validators'
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 import { NumericFormat } from 'react-number-format'
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
-import { Avatar, FormControl, InputLabel, MenuItem, Select, Tooltip } from '@mui/material'
+import { Avatar, CircularProgress, FormControl, InputLabel, MenuItem, Select, Tooltip } from '@mui/material'
 import { INTEREST_PAID, MONEY_SOURCE_TYPE, TERM_ENDED } from '~/utils/constants'
 import { createIndividualSavingAPI, getBanks } from '~/apis'
 import { toast } from 'react-toastify'
@@ -24,7 +24,7 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
 
 function CreateSaving({ afterCreateSaving, accountData = [] }) {
-  const { register, setValue, control, handleSubmit, reset, watch, formState: { errors } } = useForm()
+  const { register, setValue, control, handleSubmit, reset, watch, formState: { errors, isSubmitting } } = useForm()
   let interestPaid = watch('interestPaid')
   let termEnded = watch('termEnded')
   const [open, setOpen] = React.useState(false)
@@ -33,10 +33,10 @@ function CreateSaving({ afterCreateSaving, accountData = [] }) {
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
-    setOpen(false)
     reset()
+    setOpen(false)
   }
-  const submitCreateSaving= (data) => {
+  const submitCreateSaving= async (data) => {
     data.moneyFromType = MONEY_SOURCE_TYPE.ACCOUNT
     const { savingsAccountName, bankId, initBalance, startDate, term, rate, nonTermRate, interestPaid, termEnded, moneyFromType, moneyFromId } = data
     const newSaving = { savingsAccountName, bankId, initBalance, startDate, term, rate, nonTermRate, interestPaid, termEnded, moneyFromType, moneyFromId }
@@ -46,16 +46,15 @@ function CreateSaving({ afterCreateSaving, accountData = [] }) {
     }
     if (data.description) newSaving.description = data.description
 
-    toast.promise(
+    const res = await toast.promise(
       createIndividualSavingAPI(newSaving),
       { pending: 'Đang tạo sổ tiết kiệm...' }
-    ).then((res) => {
-      if (!res.error) {
-        toast.success('Tạo sổ tiết kiệm thành công!')
-        handleClose()
-        afterCreateSaving()
-      }
-    })
+    )
+    if (!res.error) {
+      toast.success('Tạo sổ tiết kiệm thành công!')
+      handleClose()
+      afterCreateSaving()
+    }
   }
 
   React.useEffect(() => {
@@ -525,34 +524,14 @@ function CreateSaving({ afterCreateSaving, accountData = [] }) {
                                 }
                               }
                             }}
-                            renderValue={(wallet) => {
-                              const selectedWallet = accounts.find(w => w._id === wallet)
-                              return (
-                                <Box display="flex" alignItems="center" gap={1}>
-                                  <Avatar
-                                    alt="Logo"
-                                    src=""
-                                    sx={{
-                                      bgcolor: 'yellow',
-                                      width: 40,
-                                      height: 40,
-                                      flexShrink: 0
-                                    }}
-                                  >
-                                    {' '}
-                                  </ Avatar>
-                                  <Typography noWrap>
-                                    {selectedWallet?.accountName}&nbsp;({selectedWallet?.balance?.toLocaleString()}&nbsp;₫)
-                                  </Typography>
-                                </Box>
-                              )
-                            }}
                           >
                             {accounts?.map((w, index) => (
                               <MenuItem value={w._id} key={index}>
                                 <FinanceItem1
+                                  logo={w?.icon}
                                   title={w.accountName}
                                   amount={w.balance}
+                                  sx={{ padding: 0, paddingY: 0.25 }}
                                 />
                               </MenuItem>
                             ))}
@@ -591,14 +570,16 @@ function CreateSaving({ afterCreateSaving, accountData = [] }) {
                     variant='outlined'
                     onClick={handleClose}
                     sx={{ marginRight: 2 }}
-                  >Cancel</Button>
+                  >Hủy</Button>
                   <Button
                     className="interceptor-loading"
                     type="submit"
                     variant="contained"
                     color="primary"
+                    disabled={isSubmitting}
+                    startIcon={isSubmitting && <CircularProgress size={20} />}
                   >
-                    Create
+                    {isSubmitting ? 'Đang xử lý...' : 'Thêm sổ tiết kiệm'}
                   </Button>
                 </Box>
               </Box>

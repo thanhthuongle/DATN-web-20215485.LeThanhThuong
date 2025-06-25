@@ -12,7 +12,7 @@ import FieldErrorAlert from '~/component/Form/FieldErrorAlert'
 import { FIELD_REQUIRED_MESSAGE } from '~/utils/validators'
 import { NumericFormat } from 'react-number-format'
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
-import { Checkbox, Divider, FormControl, FormControlLabel, InputLabel, MenuItem, Select } from '@mui/material'
+import { Checkbox, CircularProgress, Divider, FormControl, FormControlLabel, InputLabel, MenuItem, Select } from '@mui/material'
 import { TRANSACTION_TYPES } from '~/utils/constants'
 import { toast } from 'react-toastify'
 import CategorySelector from '../NewTransaction/CategorySelector'
@@ -56,7 +56,7 @@ const getTimeRange = (option) => {
 }
 
 function Create({ afterCreateNew, isLoading }) {
-  const { register, control, handleSubmit, reset, formState: { errors } } = useForm({
+  const { register, control, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm({
     defaultValues: {
       repeat: false
     }
@@ -84,7 +84,7 @@ function Create({ afterCreateNew, isLoading }) {
     }
   }
 
-  const submitCreateNewAccount = (data) => {
+  const submitCreateNewAccount = async (data) => {
     if (!startDate || !endDate) {
       toast.warn('Cần chọn cả hai mốc thời gian!')
       return
@@ -99,16 +99,15 @@ function Create({ afterCreateNew, isLoading }) {
     if (startDate) newBudget.startTime = startDate.toISOString()
     if (endDate) newBudget.endTime = endDate.toISOString()
 
-    toast.promise(
+    const res = await toast.promise(
       createIndividualBudgetAPI(newBudget),
       { pending: 'Đang tạo ngân sách mới...' }
-    ).then((res) => {
-      if (!res.error) {
-        toast.success('Tạo ngân sách mới thành công!')
-        handleClose()
-        afterCreateNew()
-      }
-    })
+    )
+    if (!res.error) {
+      toast.success('Tạo ngân sách mới thành công!')
+      handleClose()
+      afterCreateNew()
+    }
   }
 
   React.useEffect(() => {
@@ -260,7 +259,7 @@ function Create({ afterCreateNew, isLoading }) {
                 </Box>
 
                 {/* Repeat */}
-                <Box>
+                {/* <Box>
                   <Controller
                     control={control}
                     name="repeat"
@@ -277,7 +276,7 @@ function Create({ afterCreateNew, isLoading }) {
                   <Box>
                     <FieldErrorAlert errors={errors} fieldName={'repeat'}/>
                   </Box>
-                </Box>
+                </Box> */}
 
                 {/* button */}
                 <Box sx={{ alignSelf: 'flex-end' }}>
@@ -285,14 +284,16 @@ function Create({ afterCreateNew, isLoading }) {
                     variant='outlined'
                     onClick={handleClose}
                     sx={{ marginRight: 2 }}
-                  >Cancel</Button>
+                  >Hủy</Button>
                   <Button
                     className="interceptor-loading"
                     type="submit"
                     variant="contained"
                     color="primary"
+                    disabled={isSubmitting}
+                    startIcon={isSubmitting && <CircularProgress size={20} />}
                   >
-                    Create
+                    {isSubmitting ? 'Đang xử lý...' : 'Tạo ngân sách mới'}
                   </Button>
                 </Box>
               </Box>
