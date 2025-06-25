@@ -12,7 +12,7 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: { xs: '100%', sm: 800 },
+  width: { xs: '100%', sm: 900 },
   maxHeight: '80vh',
   overflowY: 'auto',
   bgcolor: 'background.paper',
@@ -117,6 +117,7 @@ function ContactDebtList({ contactDebtData, handleCancel, handleOnCollectOrRepay
                         title={transaction?.name}
                         description={transaction.description}
                         amount={transaction?.amount}
+                        interestRate={(transaction?.detailInfo?.rate != null && transaction?.detailInfo?.rate != undefined) ? `${transaction?.detailInfo?.rate}%` : ''}
                         amountColor={(transaction?.type == TRANSACTION_TYPES.BORROWING) ? '#27ae60' : '#e74c3c'} // #27ae60, #e74c3c
                         amountDesc={`${amountDescription1}${amountDescription2}`}
                         menuComponent={transaction.type == TRANSACTION_TYPES.BORROWING && (

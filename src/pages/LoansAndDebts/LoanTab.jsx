@@ -9,16 +9,16 @@ import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
-import MoneySourceItem1 from '../MoneySources/MoneySourceItem/MoneySourceItem1'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import ContactLoanList from './LoanPopup/ContactLoanList'
+import ContactItem from './ContactItem'
 
 const style = {
   position: 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: { xs: '100%', sm: 800 },
+  width: { xs: '100%', sm: 900 },
   maxHeight: '80vh',
   overflowY: 'auto',
   bgcolor: 'background.paper',
@@ -149,9 +149,9 @@ function LoanTab({ totalLoan, collected, transactiosGrouped, handleOnCollectOrRe
                     key={item.borrowerId}
                     onClick={() => handleOpenModal(item)}
                   >
-                    <MoneySourceItem1
+                    <ContactItem
                       // key={item.borrowerId}
-                      title={item.transactions[0].detailInfo.borrower.name}
+                      contactName={item.transactions[0].detailInfo.borrower.name}
                       amount={item.totalAmountWithReturn}
                       amountColor='#e74c3c'
                       sx={{
@@ -195,9 +195,9 @@ function LoanTab({ totalLoan, collected, transactiosGrouped, handleOnCollectOrRe
                     key={item.borrowerId}
                     onClick={() => handleOpenModal(item)}
                   >
-                    <MoneySourceItem1
+                    <ContactItem
                       // key={item.borrowerId}
-                      title={item.transactions[0].detailInfo.borrower.name}
+                      contactName={item.transactions[0].detailInfo.borrower.name}
                       sx={{
                         cursor: 'pointer',
                         '&:hover': {

@@ -29,6 +29,8 @@ authorizedAxiosInstance.interceptors.request.use( (config) => {
 // Khởi tạo một cái promise cho việc gọi api refresh_token để gọi lại api bị lỗi sau khi refresh_token hoàn tất
 let refreshTokenPromise = null
 
+let isShowingNetworkError = false
+
 // Add a response interceptor
 authorizedAxiosInstance.interceptors.response.use( (response) => {
   // interceptorLoadingElements(false)
@@ -36,6 +38,7 @@ authorizedAxiosInstance.interceptors.response.use( (response) => {
   return response
 }, (error) => {
   // interceptorLoadingElements(false)
+  const config = error.config
 
   if (error.response?.status === 401) {
     axiosReduxStore.dispatch(logoutUserAPI(false))
@@ -60,6 +63,38 @@ authorizedAxiosInstance.interceptors.response.use( (response) => {
     return refreshTokenPromise.then(accessToken => {
       return authorizedAxiosInstance(originalRequests)
     })
+  }
+
+  // Retry nếu là lỗi mạng
+  const shouldRetry = !error.response && (error.code === 'ECONNABORTED' || error.message === 'Network Error')
+  const maxRetries = 3
+  if (shouldRetry && (!config._retryCount || config._retryCount < maxRetries)) {
+    config._retryCount = (config._retryCount || 0) + 1
+    console.log('Thực hiện gọi lại API tự động khi lỗi mạng lần thứ ', config._retryCount)
+    const retryDelay = 1000 * config._retryCount
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(authorizedAxiosInstance(config))
+      }, retryDelay)
+    })
+  }
+
+  //Gom lỗi mạng thành 1 thông báo duy nhất
+  if (shouldRetry) {
+    if (!isShowingNetworkError) {
+      let errorMessage = error?.message
+      if (error.response?.data?.message) {
+        errorMessage = error.response?.data?.message
+      }
+      isShowingNetworkError = true
+      toast.error(errorMessage)
+      // toast.error('Lỗi kết nối mạng. Vui lòng kiểm tra kết nối Internet.', { theme: 'colored' })
+      setTimeout(() => {
+        isShowingNetworkError = false
+      }, 5000) // sau 5s mới cho phép hiện lại
+    }
+
+    return Promise.reject(error)
   }
 
   let errorMessage = error?.message

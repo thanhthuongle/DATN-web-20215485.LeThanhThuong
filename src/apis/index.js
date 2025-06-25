@@ -33,6 +33,14 @@ export const getIndividualTransactionAPI = async (searchPath) => {
   const response = await authorizedAxiosInstance.get(url)
   return response.data
 }
+export const getFullInfoIndividualTransactions = async (searchPath) => {
+  const url = searchPath
+    ? `${apiRoot}/transactions/individual/fullInfo${searchPath}`
+    : `${apiRoot}/transactions/individual/fullInfo`
+
+  const response = await authorizedAxiosInstance.get(url)
+  return response.data
+}
 export const getIndividualRecentTransactions = async () => {
   const response = await authorizedAxiosInstance.get(`${apiRoot}/transactions/individual/recentTransactions`)
   return response.data
