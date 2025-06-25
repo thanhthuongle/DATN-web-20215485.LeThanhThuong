@@ -20,6 +20,7 @@ import { createIndividualTransactionAPI, getIndividualAccountAPI } from '~/apis'
 import FieldErrorAlert from '~/component/Form/FieldErrorAlert'
 import { FIELD_REQUIRED_MESSAGE } from '~/utils/validators'
 import { CircularProgress } from '@mui/material'
+import { createSearchParams } from 'react-router-dom'
 
 function CreateIncome() {
   const [wallets, setWallets] = useState([])
@@ -100,7 +101,7 @@ function CreateIncome() {
   }
 
   const refreshWallets = async () => {
-    const res = await getIndividualAccountAPI()
+    const res = await getIndividualAccountAPI(`?${createSearchParams({ 'q[isBlock]': false })}`)
     setWallets(res)
     if (res?.[0]?._id) {
       setValue('moneyTargetId', res[0]._id)
@@ -108,7 +109,7 @@ function CreateIncome() {
   }
 
   useEffect(() => {
-    getIndividualAccountAPI().then((res) => {
+    getIndividualAccountAPI(`?${createSearchParams({ 'q[isBlock]': false })}`).then((res) => {
       setWallets(res)
       if (res?.[0]?._id) {
         setValue('moneyTargetId', res[0]._id)

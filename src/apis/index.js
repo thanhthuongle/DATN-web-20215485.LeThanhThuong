@@ -70,8 +70,11 @@ export const getIndividualMoneySourceAPI = async () => {
 }
 
 /** account */
-export const getIndividualAccountAPI = async () => {
-  const response = await authorizedAxiosInstance.get(`${apiRoot}/accounts/individual`)
+export const getIndividualAccountAPI = async (searchPath) => {
+  const url = searchPath
+    ? `${apiRoot}/accounts/individual${searchPath}`
+    : `${apiRoot}/accounts/individual`
+  const response = await authorizedAxiosInstance.get(url)
   return response.data
 }
 export const createIndividualAccountAPI = async (data) => {

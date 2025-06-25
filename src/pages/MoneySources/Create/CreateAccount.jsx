@@ -14,7 +14,7 @@ import { FIELD_REQUIRED_MESSAGE } from '~/utils/validators'
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 import { NumericFormat } from 'react-number-format'
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
-import { Avatar, FormControl, InputLabel, MenuItem, Select } from '@mui/material'
+import { Avatar, FormControl, InputLabel, MenuItem, Select, Tooltip } from '@mui/material'
 import { ACCOUNT_TYPES } from '~/utils/constants'
 import { createIndividualAccountAPI, getBanks } from '~/apis'
 import { toast } from 'react-toastify'
@@ -64,14 +64,16 @@ function CreateAccount({ afterCreateNewAccount }) {
   return (
     <>
       <Box>
-        <Button
-          onClick={handleOpen}
-          variant="outlined"
-          startIcon={<LibraryAddIcon />}
-          sx={{ paddingY: '12px' }}
-        >
-          Thêm tài khoản
-        </Button>
+        <Tooltip title="Thêm tài khoản mới">
+          <Button
+            onClick={handleOpen}
+            variant="outlined"
+            startIcon={<LibraryAddIcon />}
+            sx={{ paddingY: '12px' }}
+          >
+            Thêm tài khoản
+          </Button>
+        </Tooltip>
       </Box>
       <Modal
         open={open}

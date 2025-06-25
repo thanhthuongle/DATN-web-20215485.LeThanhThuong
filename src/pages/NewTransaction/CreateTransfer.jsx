@@ -19,7 +19,7 @@ import { FIELD_REQUIRED_MESSAGE } from '~/utils/validators'
 import FieldErrorAlert from '~/component/Form/FieldErrorAlert'
 import { MONEY_SOURCE_TYPE, TRANSACTION_TYPES } from '~/utils/constants'
 import CategorySelector from './CategorySelector'
-import { useSearchParams } from 'react-router-dom'
+import { createSearchParams, useSearchParams } from 'react-router-dom'
 import { CircularProgress } from '@mui/material'
 
 function CreateTransfer() {
@@ -104,7 +104,7 @@ function CreateTransfer() {
   }
 
   const refreshWallets = async () => {
-    const res = await getIndividualAccountAPI()
+    const res = await getIndividualAccountAPI(`?${createSearchParams({ 'q[isBlock]': false })}`)
     setWallets(res)
     if (res?.[0]?._id) {
       setValue('moneyFromId', res[0]._id)
@@ -113,7 +113,7 @@ function CreateTransfer() {
 
   useEffect(() => {
     const { moneyFromId } = Object.fromEntries([...searchParams])
-    getIndividualAccountAPI().then((res) => {
+    getIndividualAccountAPI(`?${createSearchParams({ 'q[isBlock]': false })}`).then((res) => {
       setWallets(res)
       if ( moneyFromId ) {
         setValue('moneyFromId', moneyFromId)

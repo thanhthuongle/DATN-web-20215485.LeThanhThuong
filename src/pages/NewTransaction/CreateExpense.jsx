@@ -20,6 +20,7 @@ import { MONEY_SOURCE_TYPE, TRANSACTION_TYPES } from '~/utils/constants'
 import { createIndividualTransactionAPI, getIndividualAccountAPI } from '~/apis'
 import { toast } from 'react-toastify'
 import { CircularProgress } from '@mui/material'
+import { createSearchParams } from 'react-router-dom'
 
 function CreateExpense() {
   const [wallets, setWallets] = useState([])
@@ -94,7 +95,7 @@ function CreateExpense() {
   }
 
   const refreshWallets = async () => {
-    const res = await getIndividualAccountAPI()
+    const res = await getIndividualAccountAPI(`?${createSearchParams({ 'q[isBlock]': false })}`)
     setWallets(res)
     if (res?.[0]?._id) {
       setValue('moneyFromId', res[0]._id)
@@ -102,7 +103,7 @@ function CreateExpense() {
   }
 
   useEffect(() => {
-    getIndividualAccountAPI().then((res) => {
+    getIndividualAccountAPI(`?${createSearchParams({ 'q[isBlock]': false })}`).then((res) => {
       setWallets(res)
       if (res?.[0]?._id) {
         setValue('moneyFromId', res[0]._id)

@@ -14,7 +14,7 @@ import { FIELD_REQUIRED_MESSAGE } from '~/utils/validators'
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 import { NumericFormat } from 'react-number-format'
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
-import { Avatar, FormControl, InputLabel, MenuItem, Select } from '@mui/material'
+import { Avatar, FormControl, InputLabel, MenuItem, Select, Tooltip } from '@mui/material'
 import { INTEREST_PAID, MONEY_SOURCE_TYPE, TERM_ENDED } from '~/utils/constants'
 import { createIndividualSavingAPI, getBanks } from '~/apis'
 import { toast } from 'react-toastify'
@@ -79,14 +79,16 @@ function CreateSaving({ afterCreateSaving, accountData = [] }) {
   return (
     <>
       <Box>
-        <Button
-          onClick={handleOpen}
-          variant="outlined"
-          startIcon={<LibraryAddIcon />}
-          sx={{ paddingY: '12px' }}
-        >
-          Thên sổ tiết kiệm
-        </Button>
+        <Tooltip title="Thêm sổ tiết kiệm mới">
+          <Button
+            onClick={handleOpen}
+            variant="outlined"
+            startIcon={<LibraryAddIcon />}
+            sx={{ paddingY: '12px' }}
+          >
+            Thên sổ tiết kiệm
+          </Button>
+        </Tooltip>
       </Box>
       <Modal
         open={open}

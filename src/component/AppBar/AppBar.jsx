@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Typography } from '@mui/material'
+import { Box, Tooltip, Typography } from '@mui/material'
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn'
 import Workspaces from './Menus/Workspaces'
 import Notifications from './Notifications/Notifications'
@@ -27,14 +27,16 @@ function AppBar(props) {
         '&::-webkit-scrollbar-track': { m: 2 }
       }}
     >
-      <Link to='/overview' style={{ textDecoration: 'none' }}>
-        <Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            <MonetizationOnIcon sx={{ color: 'white' }}/>
-            <Typography variant='span' sx={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'white' }} > QLTC </Typography>
+      <Tooltip title="Trang chủ">
+        <Link to='/overview' style={{ textDecoration: 'none' }}>
+          <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <MonetizationOnIcon sx={{ color: 'white' }}/>
+              <Typography variant='span' sx={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'white' }} > QLTC </Typography>
+            </Box>
           </Box>
-        </Box>
-      </Link>
+        </Link>
+      </Tooltip>
 
       {/* {(props?.workspace != 'SETTING') && <Workspaces />} */}
 

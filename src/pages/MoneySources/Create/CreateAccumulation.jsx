@@ -18,6 +18,7 @@ import { toast } from 'react-toastify'
 import { createIndividualAccumulationAPI } from '~/apis'
 import { DatePicker } from '@mui/x-date-pickers'
 import moment from 'moment'
+import { Tooltip } from '@mui/material'
 
 function CreateAccumulation({ afterCreateAccumulation }) {
   const { register, control, handleSubmit, reset, watch, formState: { errors } } = useForm()
@@ -56,14 +57,16 @@ function CreateAccumulation({ afterCreateAccumulation }) {
   return (
     <>
       <Box>
-        <Button
-          onClick={handleOpen}
-          variant="outlined"
-          startIcon={<LibraryAddIcon />}
-          sx={{ paddingY: '12px' }}
-        >
-          Thêm tích lũy
-        </Button>
+        <Tooltip title="Thêm khoản tích lũy mới">
+          <Button
+            onClick={handleOpen}
+            variant="outlined"
+            startIcon={<LibraryAddIcon />}
+            sx={{ paddingY: '12px' }}
+          >
+            Thêm tích lũy
+          </Button>
+        </Tooltip>
       </Box>
       <Modal
         open={open}
