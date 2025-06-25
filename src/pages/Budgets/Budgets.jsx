@@ -87,6 +87,7 @@ const style = {
 
 function Budgets() {
   const [openModal, setOpenModal] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [selectedCategoryBudget, setSelectedCategoryBudget] = useState(null)
   const [selectedBudgetType, setSelectedBudgetType] = useState(budgetType.APPLYING)
   const [selectedBudgetApplying, setSelectedBudgetApplying] = useState(null)
@@ -129,7 +130,12 @@ function Budgets() {
   }
 
   const getData = async (isFinish) => {
-    getIndividualBudgetAPI(`?${createSearchParams({ 'q[isFinish]': isFinish })}`).then(updateStateData)
+    setIsLoading(true)
+    getIndividualBudgetAPI(`?${createSearchParams({ 'q[isFinish]': isFinish })}`)
+      .then(updateStateData)
+      .finally(() => {
+        setIsLoading(false)
+      })
   }
 
   const afterCreateNew = async () => {
@@ -138,16 +144,21 @@ function Budgets() {
   }
 
   useEffect(() => {
+    setIsLoading(true)
     const fetchData = async () => {
-      getIndividualBudgetAPI().then(updateStateData)
+      getIndividualBudgetAPI()
+        .then(updateStateData)
+        .finally(() => {
+          setIsLoading(false)
+        })
     }
 
     fetchData()
   }, [])
 
-  if (!data) {
-    return <PageLoadingSpinner caption={'Loading data...'} />
-  }
+  // if (!data) {
+  //   return <PageLoadingSpinner caption={'Loading data...'} />
+  // }
   return (
     <Box
       width='100%'
@@ -159,8 +170,10 @@ function Budgets() {
       {/* overview */}
       <StyledBox width='100%'>
         <Grid container width='100%' display='flex'>
-          <Grid size={{ xs: 12, md: _.isEmpty(data) ? 12 : 3.5 }}>
+          <Grid size={{ xs: 12, md: _.isEmpty(data) && !isLoading ? 12 : 3.5 }}>
             <Box width='100%' display='flex' flexDirection='column' gap={3} alignItems='center' marginBottom={2} >
+
+              {/* Loại ngân sách */}
               <FormControl variant="outlined" sx={{ width: 150, borderRadius: '4px' }}>
                 <InputLabel id="budget-type-label">Loại ngân sách</InputLabel>
                 <Select
@@ -175,6 +188,8 @@ function Budgets() {
                   <MenuItem value={budgetType.FINISHED}>{budgetType.FINISHED}</MenuItem>
                 </Select>
               </FormControl>
+
+              {/* Danh sách ngân sách */}
               {_.isEmpty(data) ? (<></>) : (
                 <FormControl variant="outlined" sx={{ borderRadius: '4px' }}>
                   <InputLabel id="budget-label">Ngân sách</InputLabel>
@@ -192,6 +207,7 @@ function Budgets() {
                         }
                       }
                     }}
+                    disabled= {isLoading ? true : false}
                   >
                     {data?.map((budget) => {
                       return <MenuItem key={budget._id} value={budget}>{budget.budgetName}</MenuItem>
@@ -201,140 +217,158 @@ function Budgets() {
               )}
             </Box>
           </Grid>
-          {_.isEmpty(data) ? ( <></> ) : (
-            <Grid size={{ xs: 12, md: 8.5 }}>
-              <Box flex={1} display='flex' flexDirection='column' alignItems='center' justifyContent='center' gap={1}>
-                <OverviewChart
-                  totalExpense={selectedBudgetApplying.totalSpent}
-                  totalBudget={selectedBudgetApplying.totalAmount}
-                  budgetTypeProp={selectedBudgetType}
-                />
-                <Box
-                  sx={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    bgcolor: 'background.paper',
-                    gap: 2,
-                    '& svg': {
-                      m: 1
-                    }
-                  }}
-                >
-                  <Box display='flex' flexDirection='column' justifyContent='center' alignItems='center'>
-                    <NumericFormat
-                      displayType='text'
-                      thousandSeparator="."
-                      decimalSeparator=","
-                      allowNegative={false}
-                      suffix="&nbsp;₫"
-                      value={selectedBudgetApplying.totalAmount}
-                    />
-                    <Typography>Tổng ngân sách</Typography>
-                  </Box>
-                  <Divider orientation="vertical" variant="middle" flexItem />
-                  {selectedBudgetType == budgetType.APPLYING &&
-                  <Box display='flex' flexDirection='column' justifyContent='center' alignItems='center'>
-                    <NumericFormat
-                      displayType='text'
-                      thousandSeparator="."
-                      decimalSeparator=","
-                      allowNegative={false}
-                      suffix="&nbsp;₫"
-                      value={selectedBudgetApplying.totalSpent}
-                    />
-                    <Typography>Tổng đã chi</Typography>
-                  </Box>}
-                  {selectedBudgetType == budgetType.FINISHED &&
-                  <Box display='flex' flexDirection='column' justifyContent='center' alignItems='center'>
-                    <NumericFormat
-                      displayType='text'
-                      thousandSeparator="."
-                      decimalSeparator=","
-                      allowNegative={false}
-                      suffix="&nbsp;₫"
-                      value={selectedBudgetApplying.totalAmount - selectedBudgetApplying.totalSpent}
-                    />
-                    <Typography>Còn lại</Typography>
-                  </Box>}
-                  <Divider orientation="vertical" variant="middle" flexItem />
-                  {selectedBudgetType == budgetType.APPLYING &&
-                  <Box display='flex' flexDirection='column' justifyContent='center' alignItems='center'>
-                    <Typography>{moment(selectedBudgetApplying.endTime).diff(moment(), 'days')}</Typography>
-                    <Typography>Ngày còn lại</Typography>
-                  </Box>}
-                  {selectedBudgetType == budgetType.FINISHED &&
-                  <Box display='flex' flexDirection='column' justifyContent='center' alignItems='center'>
-                    <Typography>{moment(selectedBudgetApplying.endTime).diff(moment(selectedBudgetApplying.startTime), 'days')}</Typography>
-                    <Typography>Ngày</Typography>
-                  </Box>}
-                </Box>
-              </Box>
+
+          {/* Biểu đồ */}
+          {isLoading
+            ?
+            <Grid size={{ xs: 12, md: 8.5 }} display={'flex'} alignItems={'center'} justifyContent={'center'}>
+              <PageLoadingSpinner sx={{ height: '' }} />
             </Grid>
-          )}
+            :
+            <>
+              {_.isEmpty(data) ? ( <></> ) : (
+                <Grid size={{ xs: 12, md: 8.5 }}>
+                  <Box flex={1} display='flex' flexDirection='column' alignItems='center' justifyContent='center' gap={1}>
+                    <OverviewChart
+                      totalExpense={selectedBudgetApplying.totalSpent}
+                      totalBudget={selectedBudgetApplying.totalAmount}
+                      budgetTypeProp={selectedBudgetType}
+                    />
+                    <Box
+                      sx={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        bgcolor: 'background.paper',
+                        gap: 2,
+                        '& svg': {
+                          m: 1
+                        }
+                      }}
+                    >
+                      <Box display='flex' flexDirection='column' justifyContent='center' alignItems='center'>
+                        <NumericFormat
+                          displayType='text'
+                          thousandSeparator="."
+                          decimalSeparator=","
+                          allowNegative={false}
+                          suffix="&nbsp;₫"
+                          value={selectedBudgetApplying.totalAmount}
+                        />
+                        <Typography>Tổng ngân sách</Typography>
+                      </Box>
+                      <Divider orientation="vertical" variant="middle" flexItem />
+                      {selectedBudgetType == budgetType.APPLYING &&
+                      <Box display='flex' flexDirection='column' justifyContent='center' alignItems='center'>
+                        <NumericFormat
+                          displayType='text'
+                          thousandSeparator="."
+                          decimalSeparator=","
+                          allowNegative={false}
+                          suffix="&nbsp;₫"
+                          value={selectedBudgetApplying.totalSpent}
+                        />
+                        <Typography>Tổng đã chi</Typography>
+                      </Box>}
+                      {selectedBudgetType == budgetType.FINISHED &&
+                      <Box display='flex' flexDirection='column' justifyContent='center' alignItems='center'>
+                        <NumericFormat
+                          displayType='text'
+                          thousandSeparator="."
+                          decimalSeparator=","
+                          allowNegative={false}
+                          suffix="&nbsp;₫"
+                          value={selectedBudgetApplying.totalAmount - selectedBudgetApplying.totalSpent}
+                        />
+                        <Typography>Còn lại</Typography>
+                      </Box>}
+                      <Divider orientation="vertical" variant="middle" flexItem />
+                      {selectedBudgetType == budgetType.APPLYING &&
+                      <Box display='flex' flexDirection='column' justifyContent='center' alignItems='center'>
+                        <Typography>{moment(selectedBudgetApplying.endTime).diff(moment(), 'days')}</Typography>
+                        <Typography>Ngày còn lại</Typography>
+                      </Box>}
+                      {selectedBudgetType == budgetType.FINISHED &&
+                      <Box display='flex' flexDirection='column' justifyContent='center' alignItems='center'>
+                        <Typography>{moment(selectedBudgetApplying.endTime).diff(moment(selectedBudgetApplying.startTime), 'days')}</Typography>
+                        <Typography>Ngày</Typography>
+                      </Box>}
+                    </Box>
+                  </Box>
+                </Grid>
+              )}
+            </>
+          }
         </Grid>
       </StyledBox>
 
       {/* Tạo ngân sách */}
       {/* <Button variant='contained'>tạo ngân sách</Button> */}
-      <Create afterCreateNew={afterCreateNew} />
+      <Create afterCreateNew={afterCreateNew} isLoading={isLoading} />
 
-      {_.isEmpty(data) &&
+      {_.isEmpty(data) && !isLoading &&
         <Box display={'flex'} height={'20vh'} alignItems={'center'}>
           <Typography>Bạn chưa có ngân sách nào {selectedBudgetType}</Typography>
         </ Box>
       }
 
       {/* Danh sách hạng mục được lập ngân sách */}
-      {selectedBudgetApplying.categories?.length > 0 &&
-        <Box width={'100%'}>
-          <StyledBox marginBottom={2}>
-            <Typography fontWeight={'bold'}>{selectedBudgetApplying.budgetName}</Typography>
-            {selectedBudgetApplying.categories?.map((category) => (
-              <Box key={category.categoryId} display={'flex'} flexDirection={'column'} gap={2}>
-                <Box
-                  onClick={() => handleOpenModal(category)}
-                >
-                  <BudgetItem
-                    title={category.categoryName}
-                    totalBudget={category.amount}
-                    totalExpense={category.spent}
-                    sx={{
-                      cursor: 'pointer',
-                      '&:hover': {
-                        backgroundColor: 'action.hover'
-                      },
-                      borderTop: 1,
-                      borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
-                    }}
-                  />
-                </ Box>
-                {category?.subCategories?.map((subCategory) => (
+      {!isLoading &&
+      <>
+        {selectedBudgetApplying?.categories?.length > 0 &&
+          <Box width={'100%'}>
+            <StyledBox marginBottom={2}>
+              <Typography fontWeight={'bold'}>{selectedBudgetApplying.budgetName}</Typography>
+              {selectedBudgetApplying.categories?.map((category) => (
+                <Box key={category.categoryId} display={'flex'} flexDirection={'column'} gap={2}>
                   <Box
-                    key={subCategory.categoryId}
                     onClick={() => handleOpenModal(category)}
                   >
                     <BudgetItem
-                      // key={subCategory.categoryId}
-                      title={subCategory.categoryName}
-                      totalBudget={subCategory.amount}
-                      totalExpense={subCategory.spent}
-                      logoSize='32px'
+                      title={category.categoryName}
+                      totalBudget={category.amount}
+                      totalExpense={category.spent}
                       sx={{
                         cursor: 'pointer',
                         '&:hover': {
                           backgroundColor: 'action.hover'
                         },
-                        borderColor: (theme) => theme.palette.mode === 'light' ? '#eee' : '#555',
-                        borderTopStyle: 'dotted'
+                        borderTop: 1,
+                        borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
                       }}
                     />
                   </ Box>
-                )
-                )}
-              </ Box>
-            ))}
-          </StyledBox>
-        </Box>
+                  {category?.subCategories?.map((subCategory) => (
+                    <Box
+                      key={subCategory.categoryId}
+                      onClick={() => handleOpenModal(category)}
+                    >
+                      <BudgetItem
+                        // key={subCategory.categoryId}
+                        title={subCategory.categoryName}
+                        totalBudget={subCategory.amount}
+                        totalExpense={subCategory.spent}
+                        logoSize='32px'
+                        sx={{
+                          cursor: 'pointer',
+                          '&:hover': {
+                            backgroundColor: 'action.hover'
+                          },
+                          borderColor: (theme) => theme.palette.mode === 'light' ? '#eee' : '#555',
+                          borderTopStyle: 'dotted'
+                        }}
+                      />
+                    </ Box>
+                  )
+                  )}
+                </ Box>
+              ))}
+            </StyledBox>
+          </Box>
+        }
+      </>
+      }
+      {isLoading &&
+        <PageLoadingSpinner caption={'Đang tải dữ liệu...'} sx={{ height: '', paddingTop: '10%' }} />
       }
 
       <Modal

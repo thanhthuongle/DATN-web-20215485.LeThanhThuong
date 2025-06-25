@@ -242,27 +242,33 @@ function LoansAndDebts() {
       loanGroupedTransactions,
       borrowingGroupedTransactions
     })
-    setIsLoading(false)
   }
 
   const getData = async ({ startTime = null, endTime = null }) => {
     setIsLoading(true)
 
     const params = {}
-    params['q[type'] = [TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.BORROWING, TRANSACTION_TYPES.COLLECT, TRANSACTION_TYPES.REPAYMENT]
+    params['q[type]'] = [TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.BORROWING, TRANSACTION_TYPES.COLLECT, TRANSACTION_TYPES.REPAYMENT]
     if (startTime) params['q[fromDate]'] = startTime.toISOString()
     if (endTime) params['q[toDate]'] = endTime.toISOString()
     const searchPath = `?${createSearchParams(params)}`
     // const result = await getIndividualTransactionAPI(searchPath)
-    const result = await getFullInfoIndividualTransactions(searchPath)
-    updateStateData(result)
+    getFullInfoIndividualTransactions(searchPath)
+      .then(updateStateData)
+      .finally(() => {
+        setIsLoading(false)
+      })
   }
 
   React.useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true)
       const searchPath = `?${createSearchParams({ 'q[type]': [TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.BORROWING, TRANSACTION_TYPES.COLLECT, TRANSACTION_TYPES.REPAYMENT] })}`
-      getFullInfoIndividualTransactions(searchPath).then(updateStateData)
+      getFullInfoIndividualTransactions(searchPath)
+        .then(updateStateData)
+        .finally(() => {
+          setIsLoading(false)
+        })
     }
 
     fetchData()

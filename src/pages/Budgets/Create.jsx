@@ -55,7 +55,7 @@ const getTimeRange = (option) => {
   }
 }
 
-function Create({ afterCreateNew }) {
+function Create({ afterCreateNew, isLoading }) {
   const { register, control, handleSubmit, reset, formState: { errors } } = useForm({
     defaultValues: {
       repeat: false
@@ -126,6 +126,7 @@ function Create({ afterCreateNew }) {
           variant="contained"
           startIcon={<LibraryAddIcon />}
           sx={{ paddingY: '12px' }}
+          disabled={isLoading ? true : false}
         >
           Tạo ngân sách
         </Button>

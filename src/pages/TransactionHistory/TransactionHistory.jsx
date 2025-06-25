@@ -145,7 +145,6 @@ function TransactionHistory() {
     }
     // console.log('🚀 ~ updateStateData ~ processDataRaw(res):', processedData)
     setTransactionProcessedDatas(processedData)
-    setIsLoading(false)
   }
 
   const getTransactionData = () => {
@@ -158,7 +157,11 @@ function TransactionHistory() {
     if (startDate) params['q[fromDate]'] = startDate.toISOString()
     if (endDate) params['q[toDate]'] = endDate.toISOString()
     const searchPath = `?${createSearchParams(params)}`
-    getIndividualTransactionAPI(searchPath).then(updateStateData)
+    getIndividualTransactionAPI(searchPath)
+      .then(updateStateData)
+      .finally(() => {
+        setIsLoading(false)
+      })
   }
 
   useEffect(() => {
