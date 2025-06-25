@@ -20,6 +20,7 @@ import CategorySelector from './CategorySelector'
 import { MONEY_SOURCE_TYPE, TRANSACTION_TYPES } from '~/utils/constants'
 import { toast } from 'react-toastify'
 import { CircularProgress } from '@mui/material'
+import { createSearchParams } from 'react-router-dom'
 
 function CreateBorrowing() {
   const [wallets, setWallets] = useState([])
@@ -117,7 +118,7 @@ function CreateBorrowing() {
   }
 
   const refreshWallets = async () => {
-    const res = await getIndividualAccountAPI()
+    const res = await getIndividualAccountAPI(`?${createSearchParams({ 'q[isBlock]': false })}`)
     setWallets(res)
     if (res?.[0]?._id) {
       setValue('moneyTargetId', res[0]._id)
@@ -125,7 +126,7 @@ function CreateBorrowing() {
   }
 
   useEffect(() => {
-    getIndividualAccountAPI().then((res) => {
+    getIndividualAccountAPI(`?${createSearchParams({ 'q[isBlock]': false })}`).then((res) => {
       setWallets(res)
       if (res?.[0]?._id) {
         setValue('moneyTargetId', res[0]._id)

@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { StyledBox } from '../Overview/Overview'
 import Box from '@mui/material/Box'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { createSearchParams, useLocation, useNavigate } from 'react-router-dom'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
@@ -12,6 +12,9 @@ import CreateBorrowing from './CreateBorrowing'
 import CreateTransfer from './CreateTransfer'
 // import CreateContribution from './CreateContribution'
 import { TRANSACTION_TYPES } from '~/utils/constants'
+import { getIndividualAccountAPI } from '~/apis'
+import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
+import { Button, Typography } from '@mui/material'
 
 const transactionTypeLabels = {
   EXPENSE: 'Chi tiền',
@@ -28,12 +31,39 @@ function NewTransaction() {
   const navigate = useNavigate()
   const transactionTypeDefault = location.state?.transactionTypeDefault
 
+  const [isChecking, setIsChecking] = useState(true)
+  const [activeAccounts, setActiveAccounts] = useState(null)
   const [transactionType, setTransactionType] = useState(transactionTypeDefault ?? TRANSACTION_TYPES.EXPENSE)
 
   const handleChangeTransactionType = (event) => {
     setTransactionType(event.target.value)
     navigate(location.pathname)
   }
+
+  useEffect(() => {
+    const checkActiveAccounts = async () => {
+      const activeAccounts = await getIndividualAccountAPI(`?${createSearchParams({ 'q[isBlock]': false })}`)
+      setActiveAccounts(activeAccounts)
+      setIsChecking(false)
+    }
+
+    checkActiveAccounts()
+  }, [])
+
+  if (isChecking) {
+    return <PageLoadingSpinner caption={'Đang kiểm tra tài khoản...'} />
+  }
+
+  if (!activeAccounts || activeAccounts.length === 0) {
+    return (
+      <Box display={'flex'} flexDirection={'column'} alignItems={'center'} gap={2} marginTop={'10vh'}>
+        <Typography>Không có tài khoản nào khả dụng để thực hiện giao dịch.</Typography>
+        <Typography>Hãy thêm mới hoặc tái sử dụng các tài khoản đã khóa ở <strong>nguồn tiền</strong> để tạo giao dịch mới!</Typography>
+        <Button variant='outlined' sx={{ marginTop: 1 }} onClick={() => navigate('/money-sources')}>Nguồn tiền</Button>
+      </Box>
+    )
+  }
+
   return (
     <Box
       display={'flex'}
