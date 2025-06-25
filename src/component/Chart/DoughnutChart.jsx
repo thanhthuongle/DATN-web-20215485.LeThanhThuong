@@ -16,7 +16,7 @@ const options = {
   },
   plugins: {
     legend: {
-      display: false,
+      display: false
       // position: 'right',
       // labels: {
       //   boxWidth: 10,
@@ -41,13 +41,23 @@ const processData = (data, topExpense = 7) => {
   if (othersTotal > 0) {
     finalData.push({
       categoryId: 'Khac',
-      categoryName: 'Khác',
+      categoryName: 'Loại khác',
       amount: othersTotal
     })
   }
 
   const categoryLists = finalData.map(item => {
-    const percent = ((item.amount / totalAmount) * 100).toFixed(1)
+    if (item.amount <= 0) return `${item.categoryName} (0%)`
+
+    let fixed = 2
+    const maxFixed = 8
+    let rawPercent = ((item.amount / totalAmount) * 100)
+    let percent = rawPercent.toFixed(fixed)
+    while (!(percent > 0) && fixed <= maxFixed) {
+      fixed += 1
+      percent = rawPercent.toFixed(fixed)
+    }
+
     return `${item.categoryName} (${percent}%)`
   })
 
@@ -60,7 +70,7 @@ const processData = (data, topExpense = 7) => {
 
 function DoughnutChart({ dataProp }) {
   // console.log('🚀 ~ DoughnutChart ~ dataProp:', dataProp)
-  const processedData =processData(dataProp)
+  const processedData = processData(dataProp)
   const data = {
     labels: processedData.categoryLists,
     datasets: [

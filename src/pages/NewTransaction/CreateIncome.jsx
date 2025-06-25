@@ -19,27 +19,28 @@ import { toast } from 'react-toastify'
 import { createIndividualTransactionAPI, getIndividualAccountAPI } from '~/apis'
 import FieldErrorAlert from '~/component/Form/FieldErrorAlert'
 import { FIELD_REQUIRED_MESSAGE } from '~/utils/validators'
+import { CircularProgress } from '@mui/material'
 
 function CreateIncome() {
   const [wallets, setWallets] = useState([])
 
   const methods = useForm()
-  const { register, setValue, control, reset, formState: { errors } } = methods
+  const { register, setValue, control, reset, formState: { errors, isSubmitting } } = methods
   const resetForm = () => {
     reset({
       amount: '',
       description: '',
-      category: null,
+      category: '',
       transactionTime: moment(),
       moneyTargetId: wallets[0]?._id || '',
       images: []
     })
   }
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     // console.log('🚀 ~ onSubmit create income ~ data:', data)
 
-    const hasFiles = Array.isArray(data.images) && data.images.some(img => img.file instanceof File)
+    const hasFiles = Array.isArray(data.images) && data.images.some(img => img?.file instanceof File)
     if (hasFiles) {
       const formData = new FormData()
 
@@ -58,16 +59,19 @@ function CreateIncome() {
         formData.append('images', imgObj.file)
       })
 
-      toast.promise(
-        createIndividualTransactionAPI(formData),
+      const promiseCreateAPI = createIndividualTransactionAPI(formData)
+
+      const res = await toast.promise(
+        promiseCreateAPI,
         { pending: 'Đang tạo giao dịch...' }
-      ).then(async res => {
-        if (!res.error) {
-          toast.success('Tạo giao dịch thu tiền thành công!')
-          await refreshWallets()
-          resetForm()
-        }
-      })
+      )
+
+      if (!res.error) {
+        toast.success('Tạo giao dịch thu tiền thành công!')
+        resetForm()
+        await refreshWallets()
+      }
+
     } else {
       const payload = {
         type: TRANSACTION_TYPES.INCOME,
@@ -81,16 +85,17 @@ function CreateIncome() {
         }
       }
       if (data.description) payload.description = data.description
-      toast.promise(
-        createIndividualTransactionAPI(payload),
+
+      const promiseCreateAPI = createIndividualTransactionAPI(payload)
+      const res = await toast.promise(
+        promiseCreateAPI,
         { pending: 'Đang tạo giao dịch...' }
-      ).then(async res => {
-        if (!res.error) {
-          toast.success('Tạo giao dịch thu tiền thành công!')
-          await refreshWallets()
-          resetForm()
-        }
-      })
+      )
+      if (!res.error) {
+        toast.success('Tạo giao dịch thu tiền thành công!')
+        resetForm()
+        await refreshWallets()
+      }
     }
   }
 
@@ -307,7 +312,14 @@ function CreateIncome() {
 
           {/* submit create new expense */}
           <Box display={'flex'} justifyContent={'center'} marginTop={5} marginBottom={3}>
-            <Button variant='contained' type="submit" className='interceptor-loading'>Tạo giao dịch</Button>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={isSubmitting}
+              startIcon={isSubmitting && <CircularProgress size={20} />}
+            >
+              {isSubmitting ? 'Đang xử lý...' : 'Tạo giao dịch'}
+            </Button>
           </Box>
         </Box>
       </form>

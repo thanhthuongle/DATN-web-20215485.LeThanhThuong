@@ -67,12 +67,12 @@ function NewTransaction() {
                   }
                 }}
               >
-                <MenuItem value={TRANSACTION_TYPES.EXPENSE}>{transactionTypeLabels.EXPENSE}</MenuItem>
-                <MenuItem value={TRANSACTION_TYPES.INCOME}>{transactionTypeLabels.INCOME}</MenuItem>
-                <MenuItem value={TRANSACTION_TYPES.LOAN}>{transactionTypeLabels.LEND}</MenuItem>
-                <MenuItem value={TRANSACTION_TYPES.BORROWING}>{transactionTypeLabels.BORROWING}</MenuItem>
-                <MenuItem value={TRANSACTION_TYPES.TRANSFER}>{transactionTypeLabels.TRANSFER}</MenuItem>
-                {/* <MenuItem value={TRANSACTION_TYPES.CONTRIBUTION}>{transactionTypeLabels.CONTRIBUTION}</MenuItem> */}
+                <MenuItem value={TRANSACTION_TYPES.EXPENSE} key={TRANSACTION_TYPES.EXPENSE}>{transactionTypeLabels.EXPENSE}</MenuItem>
+                <MenuItem value={TRANSACTION_TYPES.INCOME} key={TRANSACTION_TYPES.INCOME}>{transactionTypeLabels.INCOME}</MenuItem>
+                <MenuItem value={TRANSACTION_TYPES.LOAN} key={TRANSACTION_TYPES.LOAN}>{transactionTypeLabels.LEND}</MenuItem>
+                <MenuItem value={TRANSACTION_TYPES.BORROWING} key={TRANSACTION_TYPES.BORROWING}>{transactionTypeLabels.BORROWING}</MenuItem>
+                <MenuItem value={TRANSACTION_TYPES.TRANSFER} key={TRANSACTION_TYPES.TRANSFER}>{transactionTypeLabels.TRANSFER}</MenuItem>
+                {/* <MenuItem value={TRANSACTION_TYPES.CONTRIBUTION} key={TRANSACTION_TYPES.CONTRIBUTION}>{transactionTypeLabels.CONTRIBUTION}</MenuItem> */}
               </Select>
             </FormControl>
           </Box>

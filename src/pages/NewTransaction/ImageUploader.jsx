@@ -4,7 +4,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import { toast } from 'react-toastify'
 import { singleFileValidator } from '~/utils/validators'
 
-export default function ImageUploader({ value = [], onChange }) {
+export default function ImageUploader({ value = [], onChange, viewOnly= false }) {
   const fileInputRef = useRef(null)
   const [images, setImages] = useState(value)
   const [preview, setPreview] = useState(null)
@@ -62,15 +62,16 @@ export default function ImageUploader({ value = [], onChange }) {
         ref={fileInputRef}
         onChange={handleImageChange}
       />
-      <Button
-        variant="contained"
-        onClick={() => fileInputRef.current.click()}
-        disabled={images.length >= 5}
-        sx={{ textTransform: 'none' }}
-      >
-        Chọn ảnh ({images.length}/5)
-      </Button>
-
+      {!viewOnly &&
+        <Button
+          variant="contained"
+          onClick={() => fileInputRef.current.click()}
+          disabled={images.length >= 5}
+          sx={{ textTransform: 'none' }}
+        >
+          Chọn ảnh ({images.length}/5)
+        </Button>
+      }
       <Box mt={2} display="flex" gap={1} flexWrap="wrap">
         {images.map((img, index) => (
           <Box
@@ -89,29 +90,55 @@ export default function ImageUploader({ value = [], onChange }) {
               alt="preview"
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
-            <IconButton
-              size="small"
-              sx={{
-                position: 'absolute',
-                top: -10,
-                right: -10,
-                backgroundColor: 'white',
-                boxShadow: 1
-              }}
-              onClick={(e) => {
-                e.stopPropagation()
-                handleRemoveImage(index)
-              }}
-            >
-              <CloseIcon sx={{ color: 'red' }} fontSize="small" />
-            </IconButton>
+            {!viewOnly &&
+              <IconButton
+                size="small"
+                sx={{
+                  position: 'absolute',
+                  top: -10,
+                  right: -10,
+                  backgroundColor: 'white',
+                  boxShadow: 1
+                }}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleRemoveImage(index)
+                }}
+              >
+                <CloseIcon sx={{ color: 'red' }} fontSize="small" />
+              </IconButton>
+            }
           </Box>
         ))}
       </Box>
 
-      <Dialog open={!!preview} onClose={() => setPreview(null)}>
+      {/* <Dialog open={!!preview} onClose={() => setPreview(null)}>
         <DialogContent>
           <img src={preview} alt="Phóng to" style={{ maxWidth: '100%' }} />
+        </DialogContent>
+      </Dialog> */}
+      <Dialog open={!!preview} onClose={() => setPreview(null)} maxWidth="xl">
+        <DialogContent
+          sx={{
+            maxHeight: '90vh',
+            maxWidth: '90vw',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            p: 0, // bỏ padding mặc định nếu muốn ảnh sát mép
+            overflow: 'auto' // cho phép cuộn nếu cần,
+          }}
+        >
+          <Box
+            component="img"
+            src={preview}
+            alt="Phóng to"
+            sx={{
+              maxHeight: '90vh',
+              maxWidth: '90vw',
+              objectFit: 'contain'
+            }}
+          />
         </DialogContent>
       </Dialog>
     </Box>
