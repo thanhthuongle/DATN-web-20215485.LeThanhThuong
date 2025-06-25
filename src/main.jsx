@@ -49,7 +49,7 @@ createRoot(document.getElementById('root')).render(
             }}
           >
             <LocalizationProvider dateAdapter={AdapterMoment}>
-              <RouterProvider router={routes} />
+              {/* <RouterProvider router={routes} /> */}
               <CssBaseline />
               <App />
               <ToastContainer position="bottom-left" theme="colored" />

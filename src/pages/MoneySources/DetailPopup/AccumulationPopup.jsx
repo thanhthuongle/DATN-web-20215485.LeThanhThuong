@@ -70,6 +70,7 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
 function AccumulationPopup({ accumulation, handleCancel }) {
   // console.log('🚀 ~ AccumulationPopup ~ accumulation:', accumulation)
   const [transactionProcessedDatas, setTransactionProcessedDatas] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   const updateStateData = (res) => {
     const processedData = processDataRaw(res)
@@ -86,7 +87,10 @@ function AccumulationPopup({ accumulation, handleCancel }) {
     const params = {}
     params['q[transactionIds]'] = accumulation?.transactionIds || []
     const searchPath = `?${createSearchParams(params)}`
-    getIndividualTransactionAPI(searchPath).then(updateStateData)
+    setIsLoading(true)
+    getIndividualTransactionAPI(searchPath)
+      .then(updateStateData)
+      .finally(() => { setIsLoading(false) })
   }
 
   useEffect(() => {
@@ -172,7 +176,9 @@ function AccumulationPopup({ accumulation, handleCancel }) {
         <Box>
           <Typography variant='h6' sx={{ marginY: 1, fontWeight: 'bold' }}>Lịch sử giao dịch</Typography>
           <Box display={'flex'} flexDirection={'column'} gap={1}>
-            {!transactionProcessedDatas ? ( <PageLoadingSpinner caption={'Đang tải...'} sx={{ height: 'fit-content', paddingY: 1 }} /> )
+            {isLoading && <PageLoadingSpinner caption={'Đang tải...'} sx={{ height: 'fit-content', paddingY: 1 }} />}
+            {(!isLoading && transactionProcessedDatas?.groupedByDate?.length == 0)
+              ? <Box display={'flex'} justifyContent={'center'} paddingY={1}>Tích lũy không có giao dịch nào!</Box>
               : (
                 <>
                   {transactionProcessedDatas?.groupedByDate?.map((transactionData, index) => (

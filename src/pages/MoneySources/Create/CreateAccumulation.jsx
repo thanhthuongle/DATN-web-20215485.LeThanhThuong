@@ -18,10 +18,10 @@ import { toast } from 'react-toastify'
 import { createIndividualAccumulationAPI } from '~/apis'
 import { DatePicker } from '@mui/x-date-pickers'
 import moment from 'moment'
-import { Tooltip } from '@mui/material'
+import { CircularProgress, Tooltip } from '@mui/material'
 
 function CreateAccumulation({ afterCreateAccumulation }) {
-  const { register, control, handleSubmit, reset, watch, formState: { errors } } = useForm()
+  const { register, control, handleSubmit, reset, watch, formState: { errors, isSubmitting } } = useForm()
   const startDate = watch('startDate')
   const endDate = watch('endDate')
   const [open, setOpen] = React.useState(false)
@@ -31,7 +31,7 @@ function CreateAccumulation({ afterCreateAccumulation }) {
     setOpen(false)
     reset()
   }
-  const submitCreateAccumulation = (data) => {
+  const submitCreateAccumulation = async (data) => {
     // console.log('🚀 ~ submitCreateAccumulation ~ data:', data)
     const { accumulationName, targetBalance, startDate, endDate } = data
     const newAccumulation= {
@@ -42,16 +42,15 @@ function CreateAccumulation({ afterCreateAccumulation }) {
     }
     if (data.description) newAccumulation.description = data.description
 
-    toast.promise(
+    const res = await toast.promise(
       createIndividualAccumulationAPI(newAccumulation),
       { pending: 'Đang tạo khoản tích lũy...' }
-    ).then((res) => {
-      if (!res.error) {
-        toast.success('Tạo khoản tích lũy thành công!')
-        handleClose()
-        afterCreateAccumulation()
-      }
-    })
+    )
+    if (!res.error) {
+      toast.success('Tạo khoản tích lũy thành công!')
+      handleClose()
+      afterCreateAccumulation()
+    }
   }
 
   return (
@@ -257,14 +256,16 @@ function CreateAccumulation({ afterCreateAccumulation }) {
                     variant='outlined'
                     onClick={handleClose}
                     sx={{ marginRight: 2 }}
-                  >Cancel</Button>
+                  >Hủy</Button>
                   <Button
                     className="interceptor-loading"
                     type="submit"
                     variant="contained"
                     color="primary"
+                    disabled={isSubmitting}
+                    startIcon={isSubmitting && <CircularProgress size={20} />}
                   >
-                    Create
+                    {isSubmitting ? 'Đang xử lý...' : 'Thêm tích lũy'}
                   </Button>
                 </Box>
               </Box>

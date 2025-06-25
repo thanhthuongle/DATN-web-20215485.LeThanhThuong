@@ -71,7 +71,7 @@ function processDataRaw(transactions, categoryTypeFilter = redTypes) {
 
     // Cộng income / expense
     if (redTypes.includes(transaction.type)) { result.expense += Number(transaction.amount) || 0 }
-    else if (greenTypes.includes(transaction.type)) { result.income += Number(transaction.amount) || 0 }
+    else if (greenTypes.includes(transaction.type) || transaction?.name?.toLowerCase()?.startsWith('thu lãi')) { result.income += Number(transaction.amount) || 0 }
   })
 
   const groupedByDate = Object.entries(result.byDate).map(([date, transactions]) => ({

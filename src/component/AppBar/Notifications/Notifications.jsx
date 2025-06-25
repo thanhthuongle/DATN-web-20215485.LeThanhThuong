@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Box, Button, Chip, Divider, IconButton, Typography } from '@mui/material'
+import { Box, Button, Chip, CircularProgress, Divider, Typography } from '@mui/material'
 import Tooltip from '@mui/material/Tooltip'
 import Badge from '@mui/material/Badge'
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
@@ -16,6 +16,7 @@ import { useSocketNotification } from '~/customHooks/useSocketNotification'
 
 function Notifications() {
   const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState([])
   const [newNotification, setNewNotification] = useState(false)
 
   // lấy noti từ redux
@@ -33,7 +34,7 @@ function Notifications() {
 
   useSocketNotification({
     onNotification: (newNoti) => {
-      console.log('🚀 ~ Notifications ~ newNoti:', newNoti)
+      // console.log('🚀 ~ Notifications ~ newNoti:', newNoti)
       dispatch(addNotification(newNoti))
       setNewNotification(true)
     }
@@ -53,9 +54,14 @@ function Notifications() {
 
   // Đánh dấu đã đọc thông báo
   const markReaded = (userNotificationId) => {
+    setIsLoading((prev) => [...prev, userNotificationId])
     dispatch(updateUserNotificationsAPI({ isRead: true, userNotificationId }))
+      // eslint-disable-next-line no-unused-vars
       .then(res => {
-        console.log('🚀 ~ markReaded ~ res:', res)
+        // console.log('🚀 ~ markReaded ~ res:', res)
+      })
+      .finally(() => {
+        setIsLoading((prev) => prev.filter(id => id !== userNotificationId))
       })
   }
 
@@ -112,7 +118,7 @@ function Notifications() {
                   backgroundColor: theme => theme.palette.action.hover
                 },
                 transition: 'background-color 0.2s ease',
-                backgroundColor: !notification.isRead ? '#fffbea' : 'white',
+                // backgroundColor: !notification.isRead ? '#fffbea' : 'white',
                 borderLeft: !notification.isRead ? '4px solid #ffc107' : 'none'
               }}
             >
@@ -139,6 +145,7 @@ function Notifications() {
                             variant="contained"
                             color="success"
                             size="small"
+                            disabled={isLoading?.includes(notification?._id) ? true : false}
                             onClick={(e) => {
                               e.stopPropagation()
                               markReaded(notification?._id)
@@ -149,7 +156,7 @@ function Notifications() {
                               borderRadius: '12px'
                             }}
                           >
-                            Đánh dấu đã đọc
+                            {isLoading?.includes(notification?._id) ? <CircularProgress size={18} thickness={5} /> : 'Đánh dấu đã đọc'}
                           </Button>
                         </Box>
                       }

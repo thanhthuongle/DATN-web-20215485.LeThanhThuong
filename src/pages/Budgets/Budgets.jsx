@@ -207,7 +207,7 @@ function Budgets() {
                         }
                       }
                     }}
-                    disabled= {isLoading ? true : false}
+                    disabled= {(isLoading && !data) ? true : false}
                   >
                     {data?.map((budget) => {
                       return <MenuItem key={budget._id} value={budget}>{budget.budgetName}</MenuItem>
@@ -219,7 +219,7 @@ function Budgets() {
           </Grid>
 
           {/* Biểu đồ */}
-          {isLoading
+          {(isLoading && !data)
             ?
             <Grid size={{ xs: 12, md: 8.5 }} display={'flex'} alignItems={'center'} justifyContent={'center'}>
               <PageLoadingSpinner sx={{ height: '' }} />
@@ -312,7 +312,7 @@ function Budgets() {
       }
 
       {/* Danh sách hạng mục được lập ngân sách */}
-      {!isLoading &&
+      {(!isLoading || data) &&
       <>
         {selectedBudgetApplying?.categories?.length > 0 &&
           <Box width={'100%'}>
@@ -367,7 +367,7 @@ function Budgets() {
         }
       </>
       }
-      {isLoading &&
+      {(isLoading && !data) &&
         <PageLoadingSpinner caption={'Đang tải dữ liệu...'} sx={{ height: '', paddingTop: '10%' }} />
       }
 

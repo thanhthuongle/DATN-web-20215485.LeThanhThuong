@@ -38,7 +38,7 @@ function processDataRaw(transactions) {
 
     // Cộng income / expense
     if (redTypes.includes(transaction.type)) { result.expense += Number(transaction.amount) || 0 }
-    else if (greenTypes.includes(transaction.type)) { result.income += Number(transaction.amount) || 0 }
+    else if (greenTypes.includes(transaction.type) || transaction?.name?.toLowerCase()?.startsWith('thu lãi')) { result.income += Number(transaction.amount) || 0 }
   })
 
   const groupedByDate = Object.entries(result.byDate).map(([date, transactions]) => ({
@@ -124,6 +124,7 @@ function AccountPopup({ account, handleCancel }) {
   const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(null)
   const [transactionProcessedDatas, setTransactionProcessedDatas] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleChangeTime = async (event) => {
     const newTime = event.target.value
@@ -158,12 +159,16 @@ function AccountPopup({ account, handleCancel }) {
       updateStateData([])
       return
     }
+
     const params = {}
     if (startTime) params['q[fromDate]'] = startTime.toISOString()
     if (endTime) params['q[toDate]'] = endTime.toISOString()
     params['q[transactionIds]'] = account?.transactionIds || []
     const searchPath = `?${createSearchParams(params)}`
-    getIndividualTransactionAPI(searchPath).then(updateStateData)
+    setIsLoading(true)
+    getIndividualTransactionAPI(searchPath)
+      .then(updateStateData)
+      .finally(() => { setIsLoading(false) })
   }
 
   useEffect(() => {
@@ -203,6 +208,7 @@ function AccountPopup({ account, handleCancel }) {
                 value={time}
                 label="Thời gian"
                 onChange={handleChangeTime}
+                disabled={isLoading ? true : false}
               >
                 {Object.entries(timeOptions).map(([key, value]) => (
                   <MenuItem key={key} value={value}>{value}</MenuItem>
@@ -213,118 +219,125 @@ function AccountPopup({ account, handleCancel }) {
           {time == timeOptions.CUSTOM &&
           <Box>
             <Box display={'flex'} flexDirection={{ xs: 'column', md: 'row' }} gap={2}>
-              <DatePicker disableFuture={true} format="DD/MM/YYYY" label="Từ" maxDate={endDate} value={startDate} onChange={(newValue) => setStartDate(newValue)} />
+              <DatePicker disabled={isLoading?true:false} disableFuture={true} format="DD/MM/YYYY" label="Từ" maxDate={endDate} value={startDate} onChange={(newValue) => setStartDate(newValue)} />
               <Divider orientation="vertical" variant="middle" flexItem />
-              <DatePicker disableFuture={true} format="DD/MM/YYYY" label="Đến" minDate={startDate} value={endDate} onChange={(newValue) => setEndDate(newValue)} />
+              <DatePicker disabled={isLoading?true:false} disableFuture={true} format="DD/MM/YYYY" label="Đến" minDate={startDate} value={endDate} onChange={(newValue) => setEndDate(newValue)} />
             </Box>
             <Box display={'flex'} justifyContent={'center'} marginTop={1}>
-              <Button variant='contained' onClick={handleOkClickOk} sx={{ paddingX: 5 }} className='interceptor-loading'>OK</Button>
+              <Button variant='contained' onClick={handleOkClickOk} sx={{ paddingX: 5 }} className='interceptor-loading' disabled={isLoading?true:false}>OK</Button>
             </Box>
           </Box>
           }
         </Box>
-        {(Array.isArray(transactionProcessedDatas?.groupedByDate) && transactionProcessedDatas?.groupedByDate.length === 0)
-          ? (
-            <Typography
-              component={Box}
-              display={'flex'}
-              justifyContent={'center'}
-              sx={{ width: '100%', paddingY: 4 }}
-            >Tài khoản chưa có giao dịch nào!</Typography>
-          )
-          : (
-            <Box display={'flex'} flexDirection={'column'} gap={1}>
-              <StyledBox display={'flex'} justifyContent={'space-between'} paddingY={2} marginBottom={1}>
-                <Typography>Số dư hiện tại</Typography>
-                <NumericFormat
-                  displayType='text'
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  allowNegative={true}
-                  decimalScale={0}
-                  allowLeadingZeros={false}
-                  suffix="&nbsp;₫"
-                  value={account?.balance}
-                  style={{ fontWeight: 'bold', color: account?.balance < 0 ? 'red' : '' }}
-                />
-              </StyledBox>
 
-              <StyledBox display={'flex'} justifyContent={'space-evenly'}>
-                <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
-                  <Typography sx={{ fontWeight: 'bold' }}>Tổng thu</Typography>
+        {isLoading && <PageLoadingSpinner caption={'Đang tải...'} sx={{ height: '', paddingY: '15%' }} />}
+
+        {!isLoading &&
+        <>
+          {(Array.isArray(transactionProcessedDatas?.groupedByDate) && transactionProcessedDatas?.groupedByDate.length === 0)
+            ? (
+              <Typography
+                component={Box}
+                display={'flex'}
+                justifyContent={'center'}
+                sx={{ width: '100%', paddingY: 4 }}
+              >Tài khoản chưa có giao dịch nào!</Typography>
+            )
+            : (
+              <Box display={'flex'} flexDirection={'column'} gap={1}>
+                <StyledBox display={'flex'} justifyContent={'space-between'} paddingY={2} marginBottom={1}>
+                  <Typography>Số dư hiện tại</Typography>
                   <NumericFormat
                     displayType='text'
                     thousandSeparator="."
                     decimalSeparator=","
-                    allowNegative={false}
+                    allowNegative={true}
                     decimalScale={0}
                     allowLeadingZeros={false}
                     suffix="&nbsp;₫"
-                    value={transactionProcessedDatas.income}
-                    style={{ color: '#27ae60', fontWeight: 'bold' }} // #27ae60
+                    value={account?.balance}
+                    style={{ fontWeight: 'bold', color: account?.balance < 0 ? 'red' : '' }}
                   />
-                </Box>
-                <Divider orientation="vertical" variant="fullWidth" flexItem />
-                <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
-                  <Typography sx={{ fontWeight: 'bold' }}>Tổng chi</Typography>
-                  <NumericFormat
-                    displayType='text'
-                    thousandSeparator="."
-                    decimalSeparator=","
-                    allowNegative={false}
-                    decimalScale={0}
-                    allowLeadingZeros={false}
-                    suffix="&nbsp;₫"
-                    value={transactionProcessedDatas.expense}
-                    style={{ color: '#e74c3c', fontWeight: 'bold' }} // #e74c3c
-                  />
-                </Box>
-              </StyledBox>
-
-              {transactionProcessedDatas?.groupedByDate?.map((transactionData, index) => (
-                <StyledBox key={index}>
-                  <Typography fontWeight={'bold'}>{moment(transactionData?.transactionTime).format('dddd, LL')}</Typography>
-                  {transactionData?.transactions?.map((transaction) => (
-                    <Box
-                      key={transaction._id}
-                      // onClick={() => handleOpenModal(transaction)}
-                    >
-                      <FinanceItem1
-                        // key={transaction._id}
-                        title={transaction?.name}
-                        description={transaction?.description}
-                        amount={transaction?.amount}
-                        amountColor={getColorForTransaction(transaction?.type, transaction?.name)}
-                        sx={{
-                          cursor: 'pointer',
-                          '&:hover': {
-                            backgroundColor: 'action.hover'
-                          },
-                          transition: 'background-color 0.2s',
-                          borderTop: 1,
-                          borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
-                        }}
-                      />
-                    </Box>
-                  ))}
                 </StyledBox>
-              ))}
 
-              <StyledBox display={'flex'} justifyContent={'space-between'} paddingY={2} marginTop={1}>
-                <Typography>Số dư ban đầu</Typography>
-                <NumericFormat
-                  displayType='text'
-                  thousandSeparator="."
-                  decimalSeparator=","
-                  allowNegative={true}
-                  decimalScale={0}
-                  allowLeadingZeros={false}
-                  suffix="&nbsp;₫"
-                  value={account?.initBalance}
-                />
-              </StyledBox>
-            </ Box>
-          )
+                <StyledBox display={'flex'} justifyContent={'space-evenly'}>
+                  <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
+                    <Typography sx={{ fontWeight: 'bold' }}>Tổng thu</Typography>
+                    <NumericFormat
+                      displayType='text'
+                      thousandSeparator="."
+                      decimalSeparator=","
+                      allowNegative={false}
+                      decimalScale={0}
+                      allowLeadingZeros={false}
+                      suffix="&nbsp;₫"
+                      value={transactionProcessedDatas.income}
+                      style={{ color: '#27ae60', fontWeight: 'bold' }} // #27ae60
+                    />
+                  </Box>
+                  <Divider orientation="vertical" variant="fullWidth" flexItem />
+                  <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
+                    <Typography sx={{ fontWeight: 'bold' }}>Tổng chi</Typography>
+                    <NumericFormat
+                      displayType='text'
+                      thousandSeparator="."
+                      decimalSeparator=","
+                      allowNegative={false}
+                      decimalScale={0}
+                      allowLeadingZeros={false}
+                      suffix="&nbsp;₫"
+                      value={transactionProcessedDatas.expense}
+                      style={{ color: '#e74c3c', fontWeight: 'bold' }} // #e74c3c
+                    />
+                  </Box>
+                </StyledBox>
+
+                {transactionProcessedDatas?.groupedByDate?.map((transactionData, index) => (
+                  <StyledBox key={index}>
+                    <Typography fontWeight={'bold'}>{moment(transactionData?.transactionTime).format('dddd, LL')}</Typography>
+                    {transactionData?.transactions?.map((transaction) => (
+                      <Box
+                        key={transaction._id}
+                        // onClick={() => handleOpenModal(transaction)}
+                      >
+                        <FinanceItem1
+                          // key={transaction._id}
+                          title={transaction?.name}
+                          description={transaction?.description}
+                          amount={transaction?.amount}
+                          amountColor={getColorForTransaction(transaction?.type, transaction?.name)}
+                          sx={{
+                            cursor: 'pointer',
+                            '&:hover': {
+                              backgroundColor: 'action.hover'
+                            },
+                            transition: 'background-color 0.2s',
+                            borderTop: 1,
+                            borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
+                          }}
+                        />
+                      </Box>
+                    ))}
+                  </StyledBox>
+                ))}
+
+                <StyledBox display={'flex'} justifyContent={'space-between'} paddingY={2} marginTop={1}>
+                  <Typography>Số dư ban đầu</Typography>
+                  <NumericFormat
+                    displayType='text'
+                    thousandSeparator="."
+                    decimalSeparator=","
+                    allowNegative={true}
+                    decimalScale={0}
+                    allowLeadingZeros={false}
+                    suffix="&nbsp;₫"
+                    value={account?.initBalance}
+                  />
+                </StyledBox>
+              </ Box>
+            )
+          }
+        </>
         }
       </Box>
       <Box display={'flex'} justifyContent={'center'} marginTop={2} gap={2}>

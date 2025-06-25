@@ -70,7 +70,7 @@ authorizedAxiosInstance.interceptors.response.use( (response) => {
   const maxRetries = 3
   if (shouldRetry && (!config._retryCount || config._retryCount < maxRetries)) {
     config._retryCount = (config._retryCount || 0) + 1
-    console.log('Thực hiện gọi lại API tự động khi lỗi mạng lần thứ ', config._retryCount)
+    // console.log('Thực hiện gọi lại API tự động khi lỗi mạng lần thứ ', config._retryCount)
     const retryDelay = 1000 * config._retryCount
     return new Promise((resolve) => {
       setTimeout(() => {
