@@ -54,7 +54,7 @@ const accumulateFinishedgOptions = [
 
 const ITEM_HEIGHT = 48
 
-export default function AccumulateMenu({ isFinished, accumulation, accountData, afterCreateNew }) { // isFinished = true or false
+export default function AccumulateMenu({ isFinished, accumulation, accountData, refreshData }) { // isFinished = true or false
   // console.log('🚀 ~ AccumulateMenu ~ accumulation:', accumulation)
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
@@ -143,22 +143,22 @@ export default function AccumulateMenu({ isFinished, accumulation, accountData, 
         accountData={accountData}
         isOpen={isDepositPopupOpen}
         onClick={(event) => event.stopPropagation()}
-        onClose={(event) => {
+        onClose={() => {
           // event.stopPropagation()
           setDepositPopupOpen(false)
         }}
-        afterCreateNew={afterCreateNew}
+        refreshData={refreshData}
       />
 
       <UseAccumulationPopup
         accumulation={accumulation}
         isOpen={isUsePopupOpen}
         onClick={(event) => event.stopPropagation()}
-        onClose={(event) => {
+        onClose={() => {
           // event.stopPropagation()
           setUsePopupOpen(false)
         }}
-        afterCreateNew={afterCreateNew}
+        refreshData={refreshData}
       />
 
       <FinishAccumulationPopup
@@ -166,11 +166,11 @@ export default function AccumulateMenu({ isFinished, accumulation, accountData, 
         accountData={accountData}
         isOpen={isFinishPopupOpen}
         onClick={(event) => event.stopPropagation()}
-        onClose={(event) => {
+        onClose={() => {
           // event.stopPropagation()
           setFinishPopupOpen(false)
         }}
-        afterCreateNew={afterCreateNew}
+        refreshData={refreshData}
       />
     </div>
   )

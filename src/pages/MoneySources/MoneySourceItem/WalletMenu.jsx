@@ -48,7 +48,7 @@ const walletInActiveOptions = [
 
 const ITEM_HEIGHT = 48
 
-export default function WalletMenu({ isActive, account, afterCreateNew }) { // isActive= true or false
+export default function WalletMenu({ isActive, account, refreshData }) { // isActive= true or false
   const navigate = useNavigate()
   const location = useLocation()
   const [anchorEl, setAnchorEl] = React.useState(null)
@@ -74,7 +74,6 @@ export default function WalletMenu({ isActive, account, afterCreateNew }) { // i
       confirmationText: 'Xác nhận',
       cancellationText: 'Hủy'
     }).then(() => {
-
       // Gọi API...
       toast.promise(
         blockIndividualAccountAPI(account?._id),
@@ -82,7 +81,7 @@ export default function WalletMenu({ isActive, account, afterCreateNew }) { // i
       ).then(res => {
         if (!res.error) {
           toast.success(`Ngưng sử dụng ${account?.accountName} thành công!`)
-          afterCreateNew()
+          refreshData()
         }
       })
     }).catch(() => {})
@@ -104,7 +103,7 @@ export default function WalletMenu({ isActive, account, afterCreateNew }) { // i
       ).then(res => {
         if (!res.error) {
           toast.success(`Tái sử dụng ${account?.accountName} thành công!`)
-          afterCreateNew()
+          refreshData()
         }
       })
     }).catch(() => {})

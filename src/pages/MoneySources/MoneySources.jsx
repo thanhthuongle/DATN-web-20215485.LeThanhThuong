@@ -14,7 +14,7 @@ function MoneySources() {
   const [MoneySourceData, setMoneySourceData] = useState(null)
   // console.log('🚀 ~ MoneySources ~ MoneySourceData:', MoneySourceData)
 
-  const afterCreateNew = () => {
+  const refreshData = () => {
     getIndividualMoneySourceAPI().then( (res) => {
       setMoneySourceData(res)
     })
@@ -39,19 +39,19 @@ function MoneySources() {
     >
       <Grid container width='90%' justifyContent='space-between' spacing={2}>
         {/* <Button variant='contained'>Thêm ví viền</Button> */}
-        <CreateAccount afterCreateNewAccount={afterCreateNew} />
-        <CreateSaving afterCreateSaving={afterCreateNew} accountData={MoneySourceData?.accounts} />
-        <CreateAccumulation afterCreateAccumulation={afterCreateNew} />
+        <CreateAccount afterCreateNewAccount={refreshData} />
+        <CreateSaving afterCreateSaving={refreshData} accountData={MoneySourceData?.accounts} />
+        <CreateAccumulation afterCreateAccumulation={refreshData} />
       </Grid>
 
       {/* Ví tiền */}
-      <WalletCard data={MoneySourceData.accounts} afterCreateNew={afterCreateNew}/>
+      <WalletCard walletData={MoneySourceData.accounts} refreshData={refreshData}/>
 
       {/* Sổ tiết kiệm */}
-      <SavingCard data={MoneySourceData.savings_accounts} accountData={MoneySourceData?.accounts} afterCreateNew={afterCreateNew}/>
+      <SavingCard data={MoneySourceData.savings_accounts} accountData={MoneySourceData?.accounts} refreshData={refreshData}/>
 
       {/* Tích lũy */}
-      <AccumulateCard data={MoneySourceData.accumulations} accountData={MoneySourceData?.accounts} afterCreateNew={afterCreateNew}/>
+      <AccumulateCard data={MoneySourceData.accumulations} accountData={MoneySourceData?.accounts} refreshData={refreshData}/>
     </Box>
   )
 }

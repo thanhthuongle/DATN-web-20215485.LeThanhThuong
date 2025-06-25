@@ -21,7 +21,7 @@ const style = {
   p: 4
 }
 
-function FinishAccumulationPopup({ isOpen, onClose, accumulation, accountData, afterCreateNew }) {
+function FinishAccumulationPopup({ isOpen, onClose, accumulation, accountData, refreshData }) {
   const [wallets] = useState(accountData)
 
   const methods = useForm()
@@ -50,7 +50,7 @@ function FinishAccumulationPopup({ isOpen, onClose, accumulation, accountData, a
         toast.success('Kết thúc khoản tích lũy thành công!')
         onClose()
         resetForm()
-        afterCreateNew()
+        refreshData()
       }
     })
   }

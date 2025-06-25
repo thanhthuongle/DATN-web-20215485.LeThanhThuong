@@ -24,7 +24,7 @@ const style = {
   p: 4
 }
 
-function UseAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNew }) {
+function UseAccumulationPopup({ isOpen, onClose, accumulation, refreshData }) {
   const methods = useForm()
   const { control, reset, formState: { errors } } = methods
   const resetForm = () => {
@@ -66,7 +66,7 @@ function UseAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNew })
           toast.success('Sử dụng tích lũy thành công!')
           onClose()
           resetForm()
-          afterCreateNew()
+          refreshData()
         }
       })
     } else {
@@ -90,7 +90,7 @@ function UseAccumulationPopup({ isOpen, onClose, accumulation, afterCreateNew })
           toast.success('Sử dụng tích lũy thành công!')
           onClose()
           resetForm()
-          afterCreateNew()
+          refreshData()
         }
       })
     }

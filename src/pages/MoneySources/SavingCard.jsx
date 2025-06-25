@@ -29,7 +29,7 @@ const style = {
   p: 2
 }
 
-function SavingCard({ data = [], accountData = [], afterCreateNew }) {
+function SavingCard({ data = [], accountData = [], refreshData }) {
   const [openModal, setOpenModal] = useState(false)
   const [selectedSaving, setSelectedSaving] = useState(null)
   // console.log('🚀 ~ SavingCard ~ selectedSaving:', selectedSaving)
@@ -177,7 +177,7 @@ function SavingCard({ data = [], accountData = [], afterCreateNew }) {
                           borderTop: 1,
                           borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
                         }}
-                        menuComponent={<SavingMenu isClosed={false} saving={saving} accountData={accountData} afterCreateNew={afterCreateNew} sx={{ marginLeft: 2 }}/>}
+                        menuComponent={<SavingMenu isClosed={false} saving={saving} accountData={accountData} refreshData={refreshData} sx={{ marginLeft: 2 }}/>}
                       />
                     </Box>
                   )}
