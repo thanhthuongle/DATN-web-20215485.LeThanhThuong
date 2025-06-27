@@ -48,7 +48,7 @@ export default function MemberMenu({ isManager }) { // isManager= true or false
   }
 
   const handleSelected = (optionSelected) => {
-    console.log('🚀 ~ handleSelected ~ optionSelected:', optionSelected.value)
+    // console.log('🚀 ~ handleSelected ~ optionSelected:', optionSelected.value)
     //TODO: Xử lý với các lựa chọn tương ứng
     handleClose()
   }

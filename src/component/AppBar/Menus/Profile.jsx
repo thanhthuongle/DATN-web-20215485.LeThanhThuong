@@ -27,6 +27,7 @@ function Profile() {
 
   const dispath = useDispatch()
   const currentUser = useSelector(selectCurrentUser)
+  // console.log('🚀 ~ Profile ~ currentUser:', currentUser)
 
   const confirmLogout = useConfirm()
   const handleLogout = () => {
@@ -71,7 +72,7 @@ function Profile() {
             onClick={handleClose}
             sx={{ '&:hover': { color: 'success.light' } }}
           >
-            <Avatar sx={{ width: 32, height: 32, ml: -0.5, mr: 1 }} /> Profile
+            <Avatar sx={{ width: 32, height: 32, ml: -0.5, mr: 1 }} /> {currentUser?.displayName}
           </MenuItem>
         </Link>
         <Divider />

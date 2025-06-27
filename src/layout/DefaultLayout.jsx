@@ -3,10 +3,11 @@ import { Box, Container, Grid } from '@mui/material'
 import AppBar from '~/component/AppBar/AppBar'
 import SideBar from '~/component/SideBar/SideBar'
 import { Outlet } from 'react-router-dom'
+import Footer from '~/component/Footer/Footer'
 
 function DefaultLayout(props) {
   return (
-    <Container disableGutters maxWidth={false}>
+    <Container disableGutters maxWidth={false} sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Box sx={{ position: 'sticky', top: 0, zIndex: 1000 }}>
         <AppBar workspace={props.workspace} />
       </Box>
@@ -22,6 +23,14 @@ function DefaultLayout(props) {
             <Outlet />
           </Grid>
         </Grid>
+      </Box>
+      <Box
+        component={'footer'}
+        sx={{
+          marginTop: 'auto'
+        }}
+      >
+        <Footer/>
       </Box>
     </Container>
   )

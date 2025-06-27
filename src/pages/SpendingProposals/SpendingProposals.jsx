@@ -48,13 +48,13 @@ function SpendingProposals() {
 
   const handleSubmitSearch = () => {
     if (!startDate && !endDate && checkedTimeSearch) toast.error('Cần chọn ít nhất một mốc thời gian')
-    console.log('Start Date:', startDate)
-    console.log('End Date:', endDate)
+    // console.log('Start Date:', startDate)
+    // console.log('End Date:', endDate)
     // Gọi data tương ứng
   }
 
   const handleSelectStatusType = (statusSelected) => {
-    console.log('🚀 ~ handleSelectStatusType ~ statusSelected:', statusSelected)
+    // console.log('🚀 ~ handleSelectStatusType ~ statusSelected:', statusSelected)
     setActiveStatusButton(statusSelected)
     // TODO: Lọc data tương ứng
   }

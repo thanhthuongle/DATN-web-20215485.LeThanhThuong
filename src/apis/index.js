@@ -5,13 +5,13 @@ import { apiRoot } from '~/utils/constants'
 /** Users */
 export const registerUserAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${apiRoot}/users/register`, data)
-  toast.success ('Tài khoản đã được tạo thành công! Vui lòng xxacs thực tài khoản trước khi đăng nhập!', { theme: 'colored' })
+  toast.success ('Tài khoản đã được tạo thành công! Vui lòng xác thực tài khoản trước khi đăng nhập!', { theme: 'colored' })
   return response.data
 }
 
 export const verifyUserAPI = async (data) => {
   const response = await authorizedAxiosInstance.put(`${apiRoot}/users/verify`, data)
-  toast.success ('Tài khoản đã xác thực thành công! Bây giờ bạn có thể đăng nhập và sủ dụng dịch vụ của website!', { theme: 'colored' })
+  toast.success ('Tài khoản đã xác thực thành công! Bây giờ bạn có thể đăng nhập và sử dụng dịch vụ của website!', { theme: 'colored' })
   return response.data
 }
 

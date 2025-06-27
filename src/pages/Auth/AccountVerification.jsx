@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Navigate, useSearchParams } from 'react-router-dom'
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { verifyUserAPI } from '~/apis'
 import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
 
@@ -13,12 +13,17 @@ function AccountVerification() {
   // tạo 1 state để biết verify tài khoản thành công chưa
   const [verified, setVerified] = useState(false)
 
+  const navigate = useNavigate()
   // Gọi Api để verify tài khoản
   useEffect(() => {
     if (email && token) {
-      verifyUserAPI({ email, token }).then(() => {setVerified(true)})
+      verifyUserAPI({ email, token })
+        .then(() => {setVerified(true)})
+        .catch((error) => {
+          if (error?.response?.status) {navigate('/login')}
+        })
     }
-  }, [email, token])
+  }, [email, navigate, token])
 
   // Nếu url có vấn đề, không tồn tại 1 trong 2 giá trị email hoặc token thì đá ra trang 404
   if (!email || !token) {
