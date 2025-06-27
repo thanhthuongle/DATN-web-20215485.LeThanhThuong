@@ -86,7 +86,7 @@ function GroupInfo() {
   const handleFileChange = (event) => {
     const file = event.target.files[0]
     if (file) {
-      console.log('🚀 ~ handleFileChange ~ file:', file)
+      // console.log('🚀 ~ handleFileChange ~ file:', file)
       // Tạo preview
       const reader = new FileReader()
       reader.onloadend = () => {

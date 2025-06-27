@@ -37,19 +37,19 @@ function SettingTab() {
 
   // call api cập nhật dữ liệu
   const updateStartDayOfWeek = (newDay) => {
-    console.log('🚀 ~ updateStartDayOfWeek ~ newDay:', newDay)
+    // console.log('🚀 ~ updateStartDayOfWeek ~ newDay:', newDay)
   }
   const updateLanguage = (newLanguage) => {
-    console.log('🚀 ~ updateLanguage ~ newLanguage:', newLanguage)
+    // console.log('🚀 ~ updateLanguage ~ newLanguage:', newLanguage)
   }
   const updateCurrency = (newCurrency) => {
-    console.log('🚀 ~ updateCurrency ~ newCurrency:', newCurrency)
+    // console.log('🚀 ~ updateCurrency ~ newCurrency:', newCurrency)
   }
   const updateStartDayOfMonth = (newDay) => {
-    console.log('🚀 ~ updateStartDayOfMonth ~ newDay:', newDay)
+    // console.log('🚀 ~ updateStartDayOfMonth ~ newDay:', newDay)
   }
   const onRemiderTimeChange = (value) => {
-    console.log('giờ nhắc nhở:', `${value.hour().toString().padStart(2, '0')}:${value.minute().toString().padStart(2, '0')}`)
+    // console.log('giờ nhắc nhở:', `${value.hour().toString().padStart(2, '0')}:${value.minute().toString().padStart(2, '0')}`)
   }
   // const updateMinAmountToSync = () => {
   //   console.log('🚀 ~ updateMinAmountToSync ~ newMinAmount:')

@@ -55,7 +55,7 @@ const SettingCardRaw = React.memo(function SettingCardRaw(props) {
 
   const handleOk = () => {
     // eslint-disable-next-line no-console
-    console.log('🚀 ~ handleOk ~ value:', value)
+    // console.log('🚀 ~ handleOk ~ value:', value)
     onClose(value)
   }
 

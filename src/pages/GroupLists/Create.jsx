@@ -24,8 +24,8 @@ function CreateFamily() {
   }
   const submitCreateNewFamily = (data) => {
     const { familyName, description } = data
-    console.log('🚀 ~ submitCreateNewFamily ~ familyName:', familyName)
-    console.log('🚀 ~ submitCreateNewFamily ~ description:', description)
+    // console.log('🚀 ~ submitCreateNewFamily ~ familyName:', familyName)
+    // console.log('🚀 ~ submitCreateNewFamily ~ description:', description)
     // call API submit
     // Cập nhật dữ liệu cho UI
   }

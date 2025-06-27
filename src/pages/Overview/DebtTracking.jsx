@@ -38,7 +38,7 @@ const groupTransaction = (data, key) => {
 function DebtTracking() {
   const location = useLocation()
   const [data, setData] = useState(null)
-  console.log('🚀 ~ DebtTracking ~ data:', data)
+  // console.log('🚀 ~ DebtTracking ~ data:', data)
 
   const updateStateData = async (res) => {
     let totalLoan = 0
