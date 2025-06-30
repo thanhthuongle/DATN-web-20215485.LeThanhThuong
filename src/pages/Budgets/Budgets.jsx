@@ -112,6 +112,7 @@ function Budgets() {
   }
 
   const updateStateData = (res) => {
+    // console.log('🚀 ~ updateStateData ~ res:', res)
     if (res.length > 0) {
       const transformedBudgets = _.map(res, (budget) => ({
         ...budget,

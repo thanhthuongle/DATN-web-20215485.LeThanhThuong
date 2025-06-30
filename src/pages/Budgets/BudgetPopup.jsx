@@ -70,7 +70,7 @@ const BorderLinearProgress = styled(LinearProgress, {
 }))
 
 function BudgetPopup({ commonData, budget, handleCancel }) {
-  console.log('🚀 ~ BudgetPopup ~ budget:', budget)
+  // console.log('🚀 ~ BudgetPopup ~ budget:', budget)
   const [transactionProcessedDatas, setTransactionProcessedDatas] = useState(null)
 
   const updateStateData = (res) => {
@@ -194,6 +194,7 @@ function BudgetPopup({ commonData, budget, handleCancel }) {
                         >
                           <FinanceItem1
                             // key={transaction._id}
+                            logo={transaction?.category?.icon}
                             title={transaction?.name}
                             description={transaction?.description}
                             amount={transaction?.amount}

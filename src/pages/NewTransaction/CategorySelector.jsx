@@ -7,6 +7,7 @@ import { ExpandLess, ExpandMore } from '@mui/icons-material'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import { getIndividualCategoryAPI } from '~/apis'
 import { createSearchParams } from 'react-router-dom'
+import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
 
 const buildTree = (categories) => {
   const map = {}
@@ -28,31 +29,39 @@ const CategorySelector = ({ transactionType, onChange, value, error, viewOnly = 
   const [categories, setCategories] = useState([])
   const treeData = buildTree(categories)
 
-
   const [open, setOpen] = useState(false)
   const [expanded, setExpanded] = useState({})
-  const [selected, setSelected] = useState(null)
-  const [selectedName, setSelectedName] = useState(null)
+  const [selectedCategory, setSelectedCategory] = useState(null)
+  const [selectedTempCategory, setSelectedTempCategory] = useState(null)
+  // const [selected, setSelected] = useState(null)
+  // const [selectedName, setSelectedName] = useState(null)
 
   const toggleExpand = (id) => {
     setExpanded(prev => ({ ...prev, [id]: !prev[id] }))
   }
 
-  const handleSelect = (id) => {
-    setSelected(id)
+  const handleSelect = (category) => {
+    setSelectedTempCategory(category)
   }
 
   const renderCategory = (cat) => {
     const hasChildren = cat.children?.length > 0
     return (
       <React.Fragment key={cat._id}>
-        <ListItemButton onClick={() => handleSelect(cat._id)}>
+        <ListItemButton onClick={() => handleSelect(cat)}>
           <Radio
-            checked={selected === cat._id}
+            checked={selectedTempCategory?._id === cat._id}
             value={cat._id}
-            onChange={() => handleSelect(cat._id)}
+            onChange={() => handleSelect(cat)}
           />
-          <ListItemText primary={cat.name} />
+          <ListItemText >
+            <FinanceItem1
+              key={cat?._id}
+              logo={cat?.icon}
+              title={cat?.name}
+              sx={{ padding: 0 }}
+            />
+          </ListItemText>
           {hasChildren ? (
             <Button
               size="small"
@@ -78,9 +87,8 @@ const CategorySelector = ({ transactionType, onChange, value, error, viewOnly = 
   }
 
   const handleConfirm = () => {
-    const selectedCat = categories?.find(c => c._id === selected)
-    setSelectedName(selectedCat?.name)
-    onChange(selectedCat)
+    setSelectedCategory(selectedTempCategory)
+    onChange(selectedTempCategory) // Thay đổi giá trị trong react hook form
     // console.log('Bạn đã chọn:', selectedCat)
     setOpen(false)
   }
@@ -95,11 +103,11 @@ const CategorySelector = ({ transactionType, onChange, value, error, viewOnly = 
       getIndividualCategoryAPI(searchPath).then(updateStateData)
     }
     if (!value) {
-      setSelected(null)
-      setSelectedName(null)
+      setSelectedTempCategory(null)
+      setSelectedCategory(null)
     } else {
-      setSelected(value._id)
-      setSelectedName(value.name)
+      setSelectedTempCategory(value)
+      setSelectedCategory(value)
     }
   }, [transactionType, value, viewOnly])
 
@@ -107,17 +115,33 @@ const CategorySelector = ({ transactionType, onChange, value, error, viewOnly = 
     <>
       <Button
         variant="outlined"
-        endIcon={<KeyboardArrowRightIcon />}
-        sx={{ textTransform: 'none', minWidth: { xs: 'auto', sm: '300px' }, paddingY: 1, borderColor: error ? 'error.main' : undefined, ...sx }}
+        endIcon={viewOnly ? '' : <KeyboardArrowRightIcon />}
+        sx={{
+          textTransform: 'none',
+          minWidth: { xs: 'auto', sm: '300px' },
+          paddingY: 1,
+          borderColor: error ? 'error.main' : undefined,
+          ...sx
+        }}
         onClick={() => {
           if (!viewOnly) setOpen(true)
         }}
-      >{selectedName ?? 'Chọn hạng mục...'}</Button>
+      >
+        {/* {selectedCategory?.name ?? 'Chọn hạng mục...'} */}
+        {selectedCategory
+          ? <FinanceItem1
+            key={selectedCategory?._id}
+            logo={selectedCategory?.icon}
+            title={selectedCategory?.name}
+            sx={{ padding: 0 }}
+          />
+          : 'Chọn hạng mục...'}
+      </Button>
       <Dialog
         open={open}
         fullWidth
         maxWidth="sm"
-        onClose={() => setOpen(false)}
+        // onClose={() => setOpen(false)}
       >
         <DialogTitle>Chọn hạng mục</DialogTitle>
         <DialogContent dividers>
@@ -126,8 +150,13 @@ const CategorySelector = ({ transactionType, onChange, value, error, viewOnly = 
           </List>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)}>Hủy</Button>
-          <Button onClick={handleConfirm} disabled={!selected} variant="contained">OK</Button>
+          <Button
+            onClick={() => {
+              setSelectedTempCategory(selectedCategory)
+              setOpen(false)
+            }}
+          >Hủy</Button>
+          <Button onClick={handleConfirm} disabled={!selectedTempCategory} variant="contained">OK</Button>
         </DialogActions>
       </Dialog>
     </>
