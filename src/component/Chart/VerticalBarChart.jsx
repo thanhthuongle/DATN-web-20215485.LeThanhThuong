@@ -24,6 +24,7 @@ ChartJS.register(
 
 const options = {
   responsive: true,
+  maintainAspectRatio: false,
   plugins: {
     legend: {
       display: false
@@ -100,7 +101,7 @@ function VerticalBarChart({ startTime, endTime, transactions }) {
   }
 
   return (
-    <Box width='100%'>
+    <Box width='100%' height={'450px'}>
       <Bar options={options} data={data} />
     </Box>
   )

@@ -324,6 +324,7 @@ function Budgets() {
                     onClick={() => handleOpenModal(category)}
                   >
                     <BudgetItem
+                      logo={category?.icon}
                       title={category.categoryName}
                       totalBudget={category.amount}
                       totalExpense={category.spent}

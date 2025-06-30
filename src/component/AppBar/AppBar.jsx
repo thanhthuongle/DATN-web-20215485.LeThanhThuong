@@ -32,7 +32,7 @@ function AppBar(props) {
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <MonetizationOnIcon sx={{ color: 'white' }}/>
-              <Typography variant='span' sx={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'white' }} > QLTC </Typography>
+              <Typography variant='span' sx={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'white' }} > HEY MONEY </Typography>
             </Box>
           </Box>
         </Link>

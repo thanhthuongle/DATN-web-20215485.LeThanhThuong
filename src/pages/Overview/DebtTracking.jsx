@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { StyledBox } from './Overview'
 import { Typography, Box, Button, Grid } from '@mui/material'
 import { NumericFormat } from 'react-number-format'
-import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
 import Divider from '@mui/material/Divider'
 import { replaceLastSegment } from '~/utils/pathUtils'
 import { createSearchParams, Link, useLocation } from 'react-router-dom'
 import { getIndividualDetailTransactions, getIndividualTransactionAPI } from '~/apis'
 import { TRANSACTION_TYPES } from '~/utils/constants'
+import ContactItem from '../LoansAndDebts/ContactItem'
 
 const groupTransaction = (data, key) => {
   let totalAmount = {}
@@ -157,12 +157,26 @@ function DebtTracking() {
             >
               {data.loanGroupedTransactions && Array.isArray(data.loanGroupedTransactions) && data.loanGroupedTransactions?.length > 0 ? (
                 data.loanGroupedTransactions.map((item) => (
-                  <FinanceItem1
+                  // <FinanceItem1
+                  //   key={item.borrowerId}
+                  //   title={item?.transactions[0].detailInfo.borrower.name}
+                  //   amount={item.totalAmount}
+                  //   amountColor={'#27ae60'} // #27ae60
+                  //   sx={{
+                  //     borderTop: 1,
+                  //     borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
+                  //   }}
+                  // />
+                  <ContactItem
                     key={item.borrowerId}
-                    title={item?.transactions[0].detailInfo.borrower.name}
+                    contactName={item?.transactions[0].detailInfo.borrower.name}
                     amount={item.totalAmount}
-                    amountColor={'#27ae60'} // #27ae60
+                    amountColor='#27ae60' // #27ae60
                     sx={{
+                      cursor: 'pointer',
+                      '&:hover': {
+                        backgroundColor: 'action.hover'
+                      },
                       borderTop: 1,
                       borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
                     }}
@@ -223,12 +237,16 @@ function DebtTracking() {
             >
               {data.borrowingGroupedTransactions && Array.isArray(data.borrowingGroupedTransactions) && data.borrowingGroupedTransactions?.length > 0 ? (
                 data.borrowingGroupedTransactions.map((item) => (
-                  <FinanceItem1
+                  <ContactItem
                     key={item.lenderId}
-                    title={item?.transactions[0].detailInfo.lender.name}
+                    contactName={item?.transactions[0].detailInfo.lender.name}
                     amount={item.totalAmount}
-                    amountColor={'#e74c3c'} // #e74c3c
+                    amountColor='#e74c3c' // #e74c3c
                     sx={{
+                      cursor: 'pointer',
+                      '&:hover': {
+                        backgroundColor: 'action.hover'
+                      },
                       borderTop: 1,
                       borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
                     }}

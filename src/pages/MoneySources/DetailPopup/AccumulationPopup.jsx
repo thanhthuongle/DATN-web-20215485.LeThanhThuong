@@ -191,6 +191,7 @@ function AccumulationPopup({ accumulation, handleCancel }) {
                         >
                           <FinanceItem1
                             // key={transaction._id}
+                            logo={transaction?.category?.icon}
                             title={transaction?.name}
                             description={transaction?.description}
                             amount={transaction?.amount}

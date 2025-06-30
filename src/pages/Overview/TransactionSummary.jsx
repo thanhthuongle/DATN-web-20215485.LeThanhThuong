@@ -37,6 +37,10 @@ const getSearchPathTimeRange = (timeOption) => {
       fromDate: moment().startOf('isoWeek'),
       toDate: moment().endOf('isoWeek')
     },
+    THIS_MONTH: {
+      fromDate: moment().startOf('month'),
+      toDate: moment().endOf('month')
+    },
     THIS_QUATER: {
       fromDate: moment().startOf('quarter'),
       toDate: moment().endOf('quarter')
@@ -54,6 +58,9 @@ const getSearchPathTimeRange = (timeOption) => {
   } else if (timeOption == timeOptions.THIS_WEEK) {
     params['q[fromDate]'] = timeRange.THIS_WEEK.fromDate.toISOString()
     params['q[toDate]'] = timeRange.THIS_WEEK.toDate.toISOString()
+  } else if (timeOption == timeOptions.THIS_MONTH) {
+    params['q[fromDate]'] = timeRange.THIS_MONTH.fromDate.toISOString()
+    params['q[toDate]'] = timeRange.THIS_MONTH.toDate.toISOString()
   } else if (timeOption == timeOptions.THIS_QUATER) {
     params['q[fromDate]'] = timeRange.THIS_QUATER.fromDate.toISOString()
     params['q[toDate]'] = timeRange.THIS_QUATER.toDate.toISOString()
@@ -103,7 +110,7 @@ const processData = (data) => {
 
 function TransactionSummary() {
   const [data, setData] = useState(null)
-  console.log('🚀 ~ TransactionSummary ~ data:', data)
+  // console.log('🚀 ~ TransactionSummary ~ data:', data)
   const [time, setTime] = useState(timeOptions.THIS_MONTH)
 
   useEffect(() => {

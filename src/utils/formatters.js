@@ -70,3 +70,16 @@ export const slugify = (val) => {
     .replace(/\s+/g, '-') // replace spaces with hyphens
     .replace(/-+/g, '-') // remove consecutive hyphens
 }
+
+export const formatPercentage = (minFixed, maxFixed, numerator, denominator) => {
+  if (denominator === 0) return '0'
+  let fixed = minFixed
+  let rawPercent = (numerator / denominator) * 100
+  let percent = rawPercent.toFixed(fixed)
+  while (!(Number(percent) > 0) && fixed <= maxFixed) {
+    fixed += 1
+    percent = rawPercent.toFixed(fixed)
+  }
+
+  return Number(percent)
+}

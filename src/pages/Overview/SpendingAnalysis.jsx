@@ -12,6 +12,7 @@ import { TRANSACTION_TYPES } from '~/utils/constants'
 import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
 import { cloneDeep } from 'lodash'
 import { toast } from 'react-toastify'
+import { formatPercentage } from '~/utils/formatters'
 
 const redTypes = [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.CONTRIBUTION, TRANSACTION_TYPES.REPAYMENT]
 
@@ -22,21 +23,27 @@ const processTransactionByCategory = (transactions) => {
   }
   const filterByCatergory = data.reduce((acc, item) => {
     const categoryId = item.categoryId
-    if (!acc[categoryId]) acc[categoryId] = {
-      amount: 0,
-      categoryName: item.name
-    }
-    acc[categoryId].amount += Number(item.amount) || 0
+    if (redTypes.includes(item?.category?.type)) {
+      if (!acc[categoryId]) {
+        acc[categoryId] = {
+          amount: 0,
+          category: item?.category
+        }
+      }
+      acc[categoryId].amount += Number(item.amount) || 0
 
-    result.expense += Number(item.amount) || 0
+      result.expense += Number(item.amount) || 0
+    }
 
     return acc
   }, {})
 
-  const groupedByCategory = Object.entries(filterByCatergory).map(([categoryId, info]) => ({
-    categoryId,
-    ...info
-  }))
+  const groupedByCategory = Object.entries(filterByCatergory)
+    .map(([categoryId, info]) => ({
+      categoryId,
+      ...info
+    }))
+    .sort((a, b) => b.amount - a.amount)
 
   return {
     groupedByCategory,
@@ -122,11 +129,11 @@ function SpendingAnalysis() {
           width={{ xs: '100%', sm: '70%' }}
           paddingRight={{ xs: 0, sm: 1 }}
         >
-          <VerticalBarChart startTime={moment(startDate)} endTime={moment(endDate)} transactions={data.transactions}/>
+          <VerticalBarChart startTime={moment(startDate)} endTime={moment(endDate)} transactions={data.transactions.filter(transaction => redTypes.includes(transaction?.category?.type))}/>
         </Box>
         <Stack
           width={{ xs: '100%', sm: '30%' }}
-          maxHeight='400px'
+          maxHeight='450px'
           overflow='auto'
         >
           {data.processedTransactionData.groupedByCategory.length == 0 && (
@@ -136,9 +143,10 @@ function SpendingAnalysis() {
           )}
           {data.processedTransactionData.groupedByCategory.map((item) => (
             <FinanceItem1
-              key={item.categoryId}
-              title={item.categoryName}
-              description={`${((item.amount/data.processedTransactionData.expense)* 100).toFixed(1)}%`}
+              logo={item?.category?.icon}
+              key={item?.categoryId}
+              title={item?.category?.name}
+              description={`${formatPercentage(2, 8, item.amount, data.processedTransactionData.expense)}%`}
               logoSize={40}
               amount={item.amount}
               amountColor={'#e74c3c'} // #e74c3c

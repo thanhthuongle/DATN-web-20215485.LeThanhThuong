@@ -153,7 +153,7 @@ function LoanTab({ totalLoan, collected, transactiosGrouped, handleOnCollectOrRe
                       // key={item.borrowerId}
                       contactName={item.transactions[0].detailInfo.borrower.name}
                       amount={item.totalAmountWithReturn}
-                      amountColor='#e74c3c'
+                      amountColor='#e74c3c' // #e74c3c
                       sx={{
                         cursor: 'pointer',
                         '&:hover': {

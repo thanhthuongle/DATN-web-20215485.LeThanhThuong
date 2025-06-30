@@ -4,7 +4,7 @@ import { Doughnut } from 'react-chartjs-2'
 import { Box, Grid, Typography } from '@mui/material'
 import SquareIcon from '@mui/icons-material/Square'
 import randomColor from 'randomcolor'
-import { slugify } from '~/utils/formatters'
+import { formatPercentage, slugify } from '~/utils/formatters'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -49,14 +49,7 @@ const processData = (data, topExpense = 7) => {
   const categoryLists = finalData.map(item => {
     if (item.amount <= 0) return `${item.categoryName} (0%)`
 
-    let fixed = 2
-    const maxFixed = 8
-    let rawPercent = ((item.amount / totalAmount) * 100)
-    let percent = rawPercent.toFixed(fixed)
-    while (!(percent > 0) && fixed <= maxFixed) {
-      fixed += 1
-      percent = rawPercent.toFixed(fixed)
-    }
+    const percent = formatPercentage(2, 8, item?.amount, totalAmount)
 
     return `${item.categoryName} (${percent}%)`
   })

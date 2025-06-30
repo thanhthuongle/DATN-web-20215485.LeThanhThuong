@@ -1,7 +1,6 @@
 import React from 'react'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
-import RestaurantIcon from '@mui/icons-material/Restaurant'
 import Typography from '@mui/material/Typography'
 import { NumericFormat } from 'react-number-format'
 import { styled } from '@mui/material/styles'
@@ -35,7 +34,7 @@ function BudgetItem({ logo, logoSize='40px', title, totalBudget, totalExpense, s
           alt="Logo"
           src={logo}
           sx={{
-            bgcolor: 'yellow',
+            bgcolor: '#f5f5f5',
             width: logoSize,
             height: logoSize,
             flexShrink: 0
