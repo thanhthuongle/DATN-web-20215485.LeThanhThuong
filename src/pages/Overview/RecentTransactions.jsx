@@ -53,6 +53,7 @@ function RecentTransactions() {
           <Grid size={{ xs: 12, sm: 5.8 }}>
             {recentTransactions.slice(0, Math.ceil(recentTransactions.length / 2)).map((item) => (
               <FinanceItem1
+                logo={item?.category?.icon}
                 key={item._id}
                 title={item.name}
                 description={item?.description}
@@ -78,6 +79,7 @@ function RecentTransactions() {
           <Grid size={{ xs: 12, sm: 5.8 }}>
             {recentTransactions.slice(Math.ceil(recentTransactions.length / 2)).map((item) => (
               <FinanceItem1
+                logo={item?.category?.icon}
                 key={item._id}
                 title={item.name}
                 description={item?.description}

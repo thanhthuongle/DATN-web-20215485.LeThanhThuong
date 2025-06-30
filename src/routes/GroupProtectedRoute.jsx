@@ -2,7 +2,7 @@ import { Navigate, Outlet, useParams } from 'react-router-dom'
 
 const GroupProtectedRoute = () => {
   const { groupId } = useParams()
-  console.log('🚀 ~ GroupProtectedRoute ~ groupId:', groupId)
+  // console.log('🚀 ~ GroupProtectedRoute ~ groupId:', groupId)
   // const currentUser = useSelector(selectCurrentUser)
   // const currentUser = {
   //   userId: '123',

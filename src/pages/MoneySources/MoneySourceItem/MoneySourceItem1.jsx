@@ -26,11 +26,10 @@ function MoneySourceItem1({ title, description, logo, logoSize='40px', amount, a
           alt="Logo"
           src={logo}
           sx={{
-            bgcolor: logo ? '' : 'yellow',
+            bgcolor: '#f5f5f5',
             width: logoSize,
             height: logoSize,
-            flexShrink: 0,
-            border: (theme) => theme.palette.mode == 'light' ? 'solid 0.5px yellow' : ''
+            flexShrink: 0
           }}
         >
           {' '}

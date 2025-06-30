@@ -150,7 +150,7 @@ function DebtTab({ totalBorrwed, paid, transactiosGrouped, handleOnCollectOrRepa
                       // key={item.lenderId}
                       contactName={item.transactions[0].detailInfo.lender.name}
                       amount={item.totalAmountWithReturn}
-                      amountColor='#e74c3c'
+                      amountColor='#27ae60' // #27ae60
                       sx={{
                         cursor: 'pointer',
                         '&:hover': {

@@ -172,13 +172,16 @@ const groupTransaction = (data, key) => {
     return acc
   }, {})
 
-  const groupedArray = Object.entries(grouped).map(([keyValue, transactions]) => ({
-    [key]: keyValue,
-    totalAmount: totalAmount[keyValue],
-    totalAmountWithReturn: totalAmountWithReturn[keyValue],
-    totalReturn: totalReturn[keyValue],
-    transactions
-  }))
+  const groupedArray = Object.entries(grouped).map(([keyValue, transactions]) => {
+    const sortedTransactions = transactions.sort((a, b) => new Date(b.transactionTime) - new Date(a.transactionTime))
+    return {
+      [key]: keyValue,
+      totalAmount: totalAmount[keyValue],
+      totalAmountWithReturn: totalAmountWithReturn[keyValue],
+      totalReturn: totalReturn[keyValue],
+      transactions: sortedTransactions
+    }
+  })
 
   return groupedArray
 }
