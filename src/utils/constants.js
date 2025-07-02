@@ -7,8 +7,6 @@ export const startDayOfWeekOptions = [
   'Thứ 7',
   'Chủ nhật'
 ]
-export const languageOptions = ['Tiếng Việt']
-export const currencyOptions = ['VND']
 export const startDayOfMonthOptions = Array.from({ length: 28 }, (_, i) => (i + 1).toString())
 
 export const apiRoot = import.meta.env.VITE_API_URL
@@ -46,4 +44,12 @@ export const TERM_ENDED = {
   ROLL_OVER_PRINCIPAL_AND_INTEREST: 'roll_over_principal_and_interest',
   ROLL_OVER_PRINCIPAL: 'roll_over_principal',
   CLOSE_ACCOUNT: 'close_account'
+}
+
+export const LANGUAGES = {
+  VIE: 'Tiếng Việt'
+}
+
+export const CURRENCIES = {
+  VND: 'VND'
 }
