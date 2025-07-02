@@ -1,4 +1,4 @@
-import { Box, Button, Divider, FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material'
+import { Box, Button, ButtonBase, Divider, FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
@@ -6,6 +6,7 @@ import { NumericFormat } from 'react-number-format'
 import { createSearchParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { getIndividualTransactionAPI } from '~/apis'
+import DetailTransactionModal from '~/component/DetailTransactionModal/DetailTransactionModal'
 import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
 import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
 import { StyledBox } from '~/pages/Overview/Overview'
@@ -125,6 +126,7 @@ function AccountPopup({ account, handleCancel }) {
   const [endDate, setEndDate] = useState(null)
   const [transactionProcessedDatas, setTransactionProcessedDatas] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [selectedTransaction, setSelectedTransaction] = useState(null)
 
   const handleChangeTime = async (event) => {
     const newTime = event.target.value
@@ -171,8 +173,16 @@ function AccountPopup({ account, handleCancel }) {
       .finally(() => { setIsLoading(false) })
   }
 
+  const handleSelectTransaction = (transaction) => {
+    setSelectedTransaction(transaction)
+  }
+  const handleCloseDetailModal = () => {
+    setSelectedTransaction(null)
+  }
+
   useEffect(() => {
     getTransactionData({})
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   if (!transactionProcessedDatas) {
@@ -298,25 +308,29 @@ function AccountPopup({ account, handleCancel }) {
                     {transactionData?.transactions?.map((transaction) => (
                       <Box
                         key={transaction._id}
-                        // onClick={() => handleOpenModal(transaction)}
                       >
-                        <FinanceItem1
-                          // key={transaction._id}
-                          logo={transaction?.category?.icon}
-                          title={transaction?.name}
-                          description={transaction?.description}
-                          amount={transaction?.amount}
-                          amountColor={getColorForTransaction(transaction?.type, transaction?.name)}
-                          sx={{
-                            cursor: 'pointer',
-                            '&:hover': {
-                              backgroundColor: 'action.hover'
-                            },
-                            transition: 'background-color 0.2s',
-                            borderTop: 1,
-                            borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
-                          }}
-                        />
+                        <ButtonBase
+                          onClick={() => handleSelectTransaction(transaction)}
+                          sx={{ width: '100%', textAlign: 'left' }}
+                        >
+                          <FinanceItem1
+                            // key={transaction._id}
+                            logo={transaction?.category?.icon}
+                            title={transaction?.name}
+                            description={transaction?.description}
+                            amount={transaction?.amount}
+                            amountColor={getColorForTransaction(transaction?.type, transaction?.name)}
+                            sx={{
+                              cursor: 'pointer',
+                              '&:hover': {
+                                backgroundColor: 'action.hover'
+                              },
+                              transition: 'background-color 0.2s',
+                              borderTop: 1,
+                              borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
+                            }}
+                          />
+                        </ButtonBase>
                       </Box>
                     ))}
                   </StyledBox>
@@ -344,6 +358,12 @@ function AccountPopup({ account, handleCancel }) {
       <Box display={'flex'} justifyContent={'center'} marginTop={2} gap={2}>
         <Button variant='outlined' onClick={handleCancel}>Đóng</Button>
       </Box>
+
+      <DetailTransactionModal
+        transaction={selectedTransaction}
+        open={!!selectedTransaction}
+        onClose={handleCloseDetailModal}
+      />
     </Box>
   )
 }

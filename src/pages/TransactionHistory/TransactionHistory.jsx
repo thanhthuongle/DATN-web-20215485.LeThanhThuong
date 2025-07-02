@@ -17,14 +17,8 @@ import { TRANSACTION_TYPES } from '~/utils/constants'
 import { getIndividualTransactionAPI } from '~/apis'
 import { createSearchParams } from 'react-router-dom'
 import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
-import { CircularProgress, Modal } from '@mui/material'
-import ExpenseModal from './DetailModal/ExpenseModal'
-import IncomeModal from './DetailModal/IncomeModal'
-import LoanModal from './DetailModal/LoanModal'
-import BorrowingModal from './DetailModal/BorrowingModal'
-import TransferModal from './DetailModal/TransferModal'
-import CollectionModal from './DetailModal/CollectionModal'
-import RepaymentModal from './DetailModal/RepaymentModal'
+import { ButtonBase, CircularProgress } from '@mui/material'
+import DetailTransactionModal from '~/component/DetailTransactionModal/DetailTransactionModal'
 
 const transactionHistoryType = {
   ALL: 'Toàn bộ',
@@ -92,22 +86,7 @@ function processDataRaw(transactions, categoryTypeFilter = redTypes) {
   }
 }
 
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: { xs: '100%', sm: 700 },
-  maxHeight: '80vh',
-  overflowY: 'auto',
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4
-}
-
 function TransactionHistory() {
-  const [openModal, setOpenModal] = React.useState(false)
   const [selectedTransaction, setSelectedTransaction] = useState(null)
 
   const [transactionProcessedDatas, setTransactionProcessedDatas] = useState(null)
@@ -119,9 +98,10 @@ function TransactionHistory() {
 
   const handleOpenModal = async (transaction) => {
     setSelectedTransaction(transaction)
-    setOpenModal(true)
   }
-  const handleCloseModal = () => setOpenModal(false)
+  const handleCloseModal = () => {
+    setSelectedTransaction(null)
+  }
 
   const handleOkClick = () => {
     if (!startDate && !endDate) {
@@ -333,25 +313,30 @@ function TransactionHistory() {
               {transactionData?.transactions?.map((transaction) => (
                 <Box
                   key={transaction._id}
-                  onClick={() => handleOpenModal(transaction)}
+                  // onClick={() => handleOpenModal(transaction)}
                 >
-                  <FinanceItem1
-                    // key={transaction._id}
-                    logo={transaction?.category?.icon}
-                    title={transaction?.name}
-                    description={transaction?.description}
-                    amount={transaction?.amount}
-                    amountColor={getColorForTransaction(transaction?.type, transaction?.name)}
-                    sx={{
-                      cursor: 'pointer',
-                      '&:hover': {
-                        backgroundColor: 'action.hover'
-                      },
-                      transition: 'background-color 0.2s',
-                      borderTop: 1,
-                      borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
-                    }}
-                  />
+                  <ButtonBase
+                    onClick={() => handleOpenModal(transaction)}
+                    sx={{ width: '100%', textAlign: 'left' }}
+                  >
+                    <FinanceItem1
+                      // key={transaction._id}
+                      logo={transaction?.category?.icon}
+                      title={transaction?.name}
+                      description={transaction?.description}
+                      amount={transaction?.amount}
+                      amountColor={getColorForTransaction(transaction?.type, transaction?.name)}
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundColor: 'action.hover'
+                        },
+                        transition: 'background-color 0.2s',
+                        borderTop: 1,
+                        borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
+                      }}
+                    />
+                  </ButtonBase>
                 </Box>
               ))}
             </StyledBox>
@@ -363,22 +348,11 @@ function TransactionHistory() {
         }
       </Box>
 
-      <Modal
-        open={openModal}
+      <DetailTransactionModal
+        transaction={selectedTransaction}
+        open={!!selectedTransaction}
         onClose={handleCloseModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          {selectedTransaction?.type == TRANSACTION_TYPES.EXPENSE && <ExpenseModal transactionId={selectedTransaction?._id} handleCancelModal={handleCloseModal}/>}
-          {selectedTransaction?.type == TRANSACTION_TYPES.INCOME && <IncomeModal transactionId={selectedTransaction?._id} handleCancelModal={handleCloseModal}/>}
-          {selectedTransaction?.type == TRANSACTION_TYPES.LOAN && <LoanModal transactionId={selectedTransaction?._id} handleCancelModal={handleCloseModal}/>}
-          {selectedTransaction?.type == TRANSACTION_TYPES.COLLECT && <CollectionModal transactionId={selectedTransaction?._id} handleCancelModal={handleCloseModal}/>}
-          {selectedTransaction?.type == TRANSACTION_TYPES.BORROWING && <BorrowingModal transactionId={selectedTransaction?._id} handleCancelModal={handleCloseModal}/>}
-          {selectedTransaction?.type == TRANSACTION_TYPES.REPAYMENT && <RepaymentModal transactionId={selectedTransaction?._id} handleCancelModal={handleCloseModal}/>}
-          {selectedTransaction?.type == TRANSACTION_TYPES.TRANSFER && <TransferModal transactionId={selectedTransaction?._id} handleCancelModal={handleCloseModal}/>}
-        </Box>
-      </Modal>
+      />
     </Box>
   )
 }

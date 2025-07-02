@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Modal, Typography } from '@mui/material'
+import { Box, Button, ButtonBase, Divider, Modal, Typography } from '@mui/material'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { NumericFormat } from 'react-number-format'
@@ -6,6 +6,7 @@ import { StyledBox } from '~/pages/Overview/Overview'
 import PaymentPopup from './PaymentPopup'
 import MoneySourceItem1 from '~/pages/MoneySources/MoneySourceItem/MoneySourceItem1'
 import { TRANSACTION_TYPES } from '~/utils/constants'
+import DetailTransactionModal from '~/component/DetailTransactionModal/DetailTransactionModal'
 
 const style = {
   position: 'absolute',
@@ -44,16 +45,30 @@ function processDataRaw(transactions) {
   }
 }
 
+const modalView = {
+  REPAYMENT: 'repayment',
+  DETAIL_TRANSACTION: 'detail_transaction'
+}
+
 function ContactDebtList({ contactDebtData, handleCancel, handleOnCollectOrRepay }) {
   // console.log('🚀 ~ ContactDebtList ~ contactDebtData:', contactDebtData)
   const [transactionProcessedDatas, setTransactionProcessedDatas] = useState(null)
   // console.log('🚀 ~ ContactDebtList ~ transactionProcessedDatas:', transactionProcessedDatas)
-  const [openModal, setOpenModal] = useState(false)
+  const [openModal, setOpenModal] = useState(null)
   const [selectedTransaction, setSelectedTransaction] = useState(null)
 
-  const handleOpenModal = (transaction) => {
+  const handleOpenRepaymentModal = (transaction) => {
     setSelectedTransaction(transaction)
-    setOpenModal(true)
+    setOpenModal(modalView.REPAYMENT)
+  }
+
+  const handleOpenDetailModal = (transaction) => {
+    setSelectedTransaction(transaction)
+    setOpenModal(modalView.DETAIL_TRANSACTION)
+  }
+  const handleCloseModal = () => {
+    setSelectedTransaction(null)
+    setOpenModal(null)
   }
 
   useEffect(() => {
@@ -110,40 +125,57 @@ function ContactDebtList({ contactDebtData, handleCancel, handleOnCollectOrRepay
                   return (
                     <Box
                       key={transaction._id}
-                      // onClick={() => handleOpenModal(transaction)}
                     >
-                      <MoneySourceItem1
-                        // key={transaction._id}
-                        logo={transaction?.category?.icon}
-                        title={transaction?.name}
-                        description={transaction.description}
-                        amount={transaction?.amount}
-                        interestRate={(transaction?.detailInfo?.rate != null && transaction?.detailInfo?.rate != undefined) ? `${transaction?.detailInfo?.rate}%` : ''}
-                        amountColor={(transaction?.type == TRANSACTION_TYPES.BORROWING) ? '#27ae60' : '#e74c3c'} // #27ae60, #e74c3c
-                        amountDesc={`${amountDescription1}${amountDescription2}`}
-                        menuComponent={transaction.type == TRANSACTION_TYPES.BORROWING && (
-                          transaction.isFinish == true
-                            ? (
-                              <Box textAlign={'center'} sx={{ marginLeft: 2, border: 'solid 1px', borderRadius: 1, borderColor: '#359ff4', paddingY: 0.5, paddingX: 2 }}>
-                                <Typography>Đã trả</Typography>
-                                <NumericFormat
-                                  displayType='text'
-                                  thousandSeparator="."
-                                  decimalSeparator=","
-                                  allowNegative={false}
-                                  suffix="&nbsp;₫"
-                                  value={transaction?.borrowingTransaction?.amount}
-                                  style={{ color: '#e74c3c', fontWeight: 'bold' }} // #e74c3c
-                                />
-                              </Box>
-                            )
-                            : <Button variant='contained' sx={{ marginLeft: 2 }} onClick={() => handleOpenModal(transaction)}>Trả nợ</Button>
-                        )}
-                        sx={{
-                          borderTop: 1,
-                          borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
-                        }}
-                      />
+                      <ButtonBase
+                        component='div'
+                        onClick={() => handleOpenDetailModal(transaction)}
+                        sx={{ width: '100%', textAlign: 'left' }}
+                      >
+                        <MoneySourceItem1
+                          // key={transaction._id}
+                          logo={transaction?.category?.icon}
+                          title={transaction?.name}
+                          description={transaction.description}
+                          amount={transaction?.amount}
+                          interestRate={(transaction?.detailInfo?.rate != null && transaction?.detailInfo?.rate != undefined) ? `${transaction?.detailInfo?.rate}%` : ''}
+                          amountColor={(transaction?.type == TRANSACTION_TYPES.BORROWING) ? '#27ae60' : '#e74c3c'} // #27ae60, #e74c3c
+                          amountDesc={`${amountDescription1}${amountDescription2}`}
+                          menuComponent={transaction.type == TRANSACTION_TYPES.BORROWING && (
+                            transaction.isFinish == true
+                              ? (
+                                <Box textAlign={'center'} sx={{ marginLeft: 2, border: 'solid 1px', borderRadius: 1, borderColor: '#359ff4', paddingY: 0.5, paddingX: 2 }}>
+                                  <Typography>Đã trả</Typography>
+                                  <NumericFormat
+                                    displayType='text'
+                                    thousandSeparator="."
+                                    decimalSeparator=","
+                                    allowNegative={false}
+                                    suffix="&nbsp;₫"
+                                    value={transaction?.borrowingTransaction?.amount}
+                                    style={{ color: '#e74c3c', fontWeight: 'bold' }} // #e74c3c
+                                  />
+                                </Box>
+                              )
+                              : <Button
+                                variant='contained'
+                                sx={{ marginLeft: 2 }}
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleOpenRepaymentModal(transaction)
+                                }}
+                              >Trả nợ</Button>
+                          )}
+                          sx={{
+                            cursor: 'pointer',
+                            '&:hover': {
+                              backgroundColor: 'action.hover'
+                            },
+                            transition: 'background-color 0.2s',
+                            borderTop: 1,
+                            borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
+                          }}
+                        />
+                      </ButtonBase>
                     </Box>
                   )})}
               </StyledBox>
@@ -157,7 +189,7 @@ function ContactDebtList({ contactDebtData, handleCancel, handleOnCollectOrRepay
       </Box>
 
       <Modal
-        open={openModal}
+        open={openModal == modalView.REPAYMENT ? true : false}
         // onClose={() => setOpenModal(false)}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
@@ -165,11 +197,17 @@ function ContactDebtList({ contactDebtData, handleCancel, handleOnCollectOrRepay
         <Box sx={style}>
           <PaymentPopup
             DebtTransaction={selectedTransaction}
-            handleCancel={() => setOpenModal(false)}
+            handleCancel={handleCloseModal}
             handleOnCollectOrRepay={handleOnCollectOrRepay}
           />
         </Box>
       </Modal>
+
+      <DetailTransactionModal
+        transaction={selectedTransaction}
+        open={openModal == modalView.DETAIL_TRANSACTION ? true : false}
+        onClose={handleCloseModal}
+      />
     </Box>
   )
 }

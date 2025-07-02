@@ -8,7 +8,7 @@ import InputLabel from '@mui/material/InputLabel'
 import { StyledBox } from '../Overview/Overview'
 import Grid from '@mui/material/Grid'
 import Divider from '@mui/material/Divider'
-import { Modal, Typography } from '@mui/material'
+import { ButtonBase, Modal, Typography } from '@mui/material'
 import { NumericFormat } from 'react-number-format'
 import BudgetItem from './BudgetItem'
 import { getIndividualBudgetAPI } from '~/apis'
@@ -76,7 +76,7 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: { xs: '100%', sm: 700 },
+  width: { xs: '100%', sm: 900 },
   maxHeight: '80vh',
   overflowY: 'auto',
   bgcolor: 'background.paper',
@@ -322,43 +322,55 @@ function Budgets() {
               {selectedBudgetApplying.categories?.map((category) => (
                 <Box key={category.categoryId} display={'flex'} flexDirection={'column'} gap={2}>
                   <Box
-                    onClick={() => handleOpenModal(category)}
+                    // onClick={() => handleOpenModal(category)}
                   >
-                    <BudgetItem
-                      logo={category?.icon}
-                      title={category.categoryName}
-                      totalBudget={category.amount}
-                      totalExpense={category.spent}
-                      sx={{
-                        cursor: 'pointer',
-                        '&:hover': {
-                          backgroundColor: 'action.hover'
-                        },
-                        borderTop: 1,
-                        borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
-                      }}
-                    />
-                  </ Box>
-                  {category?.subCategories?.map((subCategory) => (
-                    <Box
-                      key={subCategory.categoryId}
+                    <ButtonBase
+                      component='div'
                       onClick={() => handleOpenModal(category)}
+                      sx={{ width: '100%', textAlign: 'left' }}
                     >
                       <BudgetItem
-                        // key={subCategory.categoryId}
-                        title={subCategory.categoryName}
-                        totalBudget={subCategory.amount}
-                        totalExpense={subCategory.spent}
-                        logoSize='32px'
+                        logo={category?.icon}
+                        title={category.categoryName}
+                        totalBudget={category.amount}
+                        totalExpense={category.spent}
                         sx={{
                           cursor: 'pointer',
                           '&:hover': {
                             backgroundColor: 'action.hover'
                           },
-                          borderColor: (theme) => theme.palette.mode === 'light' ? '#eee' : '#555',
-                          borderTopStyle: 'dotted'
+                          borderTop: 1,
+                          borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
                         }}
                       />
+                    </ButtonBase>
+                  </ Box>
+                  {category?.subCategories?.map((subCategory) => (
+                    <Box
+                      key={subCategory.categoryId}
+                      // onClick={() => handleOpenModal(category)}
+                    >
+                      <ButtonBase
+                        component='div'
+                        onClick={() => handleOpenModal(category)}
+                        sx={{ width: '100%', textAlign: 'left' }}
+                      >
+                        <BudgetItem
+                          // key={subCategory.categoryId}
+                          title={subCategory.categoryName}
+                          totalBudget={subCategory.amount}
+                          totalExpense={subCategory.spent}
+                          logoSize='32px'
+                          sx={{
+                            cursor: 'pointer',
+                            '&:hover': {
+                              backgroundColor: 'action.hover'
+                            },
+                            borderColor: (theme) => theme.palette.mode === 'light' ? '#eee' : '#555',
+                            borderTopStyle: 'dotted'
+                          }}
+                        />
+                      </ButtonBase>
                     </ Box>
                   )
                   )}

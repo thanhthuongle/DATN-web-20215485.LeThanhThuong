@@ -10,7 +10,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import { NumericFormat } from 'react-number-format'
 import MoneySourceItem1 from './MoneySourceItem/MoneySourceItem1'
 import WalletMenu from './MoneySourceItem/WalletMenu'
-import { Modal } from '@mui/material'
+import { ButtonBase, Modal } from '@mui/material'
 import AccountPopup from './DetailPopup/AccountPopup'
 
 const style = {
@@ -132,24 +132,30 @@ function WalletCard({ walletData, refreshData }) {
               {activeWallets.map((activeWallet) =>
                 <Box
                   key={activeWallet._id}
-                  onClick={() => handleOpenModal(activeWallet)}
+                  // onClick={() => handleOpenModal(activeWallet)}
                 >
-                  <MoneySourceItem1
-                    title={activeWallet.accountName}
-                    amount={activeWallet.balance}
-                    amountColor= {activeWallet.balance < 0 ? 'red' : 'inherit'} // Xét nếu amount < 0 thì truyền #e74c3c
-                    logo={activeWallet.bankInfo ? activeWallet.bankInfo.logo : activeWallet?.icon}
-                    sx={{
-                      cursor: 'pointer',
-                      '&:hover': {
-                        backgroundColor: 'action.hover'
-                      },
-                      transition: 'background-color 0.2s',
-                      borderTop: 1,
-                      borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
-                    }}
-                    menuComponent={<WalletMenu isActive={true} account={activeWallet} refreshData={refreshData} sx={{ marginLeft: 2 }} />}
-                  />
+                  <ButtonBase
+                    component='div'
+                    onClick={() => handleOpenModal(activeWallet)}
+                    sx={{ width: '100%', textAlign: 'left' }}
+                  >
+                    <MoneySourceItem1
+                      title={activeWallet.accountName}
+                      amount={activeWallet.balance}
+                      amountColor= {activeWallet.balance < 0 ? 'red' : 'inherit'} // Xét nếu amount < 0 thì truyền #e74c3c
+                      logo={activeWallet.bankInfo ? activeWallet.bankInfo.logo : activeWallet?.icon}
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundColor: 'action.hover'
+                        },
+                        transition: 'background-color 0.2s',
+                        borderTop: 1,
+                        borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
+                      }}
+                      menuComponent={<WalletMenu isActive={true} account={activeWallet} refreshData={refreshData} sx={{ marginLeft: 2 }} />}
+                    />
+                  </ButtonBase>
                 </Box>)}
             </AccordionDetails>
           </Accordion>
@@ -183,25 +189,31 @@ function WalletCard({ walletData, refreshData }) {
               {blockedWallets.map((blockedWallet) =>
                 <Box
                   key={blockedWallet._id}
-                  onClick={() => handleOpenModal(blockedWallet)}
+                  // onClick={() => handleOpenModal(blockedWallet)}
                 >
-                  <MoneySourceItem1
-                    isActive={false}
-                    title={blockedWallet.accountName}
-                    amount= {blockedWallet.balance}
-                    amountColor= {blockedWallet.balance < 0 ? 'red' : 'inherit'} // Xét nếu amount < 0 thì truyền #e74c3c
-                    logo={blockedWallet.bankInfo ? blockedWallet.bankInfo.logo : blockedWallet?.icon}
-                    sx={{
-                      cursor: 'pointer',
-                      '&:hover': {
-                        backgroundColor: 'action.hover'
-                      },
-                      transition: 'background-color 0.2s',
-                      borderTop: 1,
-                      borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
-                    }}
-                    menuComponent={<WalletMenu isActive={false} account={blockedWallet} refreshData={refreshData} sx={{ marginLeft: 2 }} />}
-                  />
+                  <ButtonBase
+                    component='div'
+                    onClick={() => handleOpenModal(blockedWallet)}
+                    sx={{ width: '100%', textAlign: 'left' }}
+                  >
+                    <MoneySourceItem1
+                      isActive={false}
+                      title={blockedWallet.accountName}
+                      amount= {blockedWallet.balance}
+                      amountColor= {blockedWallet.balance < 0 ? 'red' : 'inherit'} // Xét nếu amount < 0 thì truyền #e74c3c
+                      logo={blockedWallet.bankInfo ? blockedWallet.bankInfo.logo : blockedWallet?.icon}
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundColor: 'action.hover'
+                        },
+                        transition: 'background-color 0.2s',
+                        borderTop: 1,
+                        borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
+                      }}
+                      menuComponent={<WalletMenu isActive={false} account={blockedWallet} refreshData={refreshData} sx={{ marginLeft: 2 }} />}
+                    />
+                  </ButtonBase>
                 </Box>
               )}
             </AccordionDetails>
