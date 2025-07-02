@@ -66,15 +66,17 @@ function MoneySourceItem1({ title, description, logo, logoSize='40px', amount, a
         maxWidth='30%'
       >
         {amount !== null && amount !== undefined &&
-        <NumericFormat
-          displayType='text'
-          thousandSeparator="."
-          decimalSeparator=","
-          allowNegative={true}
-          suffix="&nbsp;₫"
-          value={amount}
-          style={{ fontWeight: '', color: amountColor, maxWidth: '100%' }}
-        />
+        <Typography variant='body1'>
+          <NumericFormat
+            displayType='text'
+            thousandSeparator="."
+            decimalSeparator=","
+            allowNegative={true}
+            suffix="&nbsp;₫"
+            value={amount}
+            style={{ fontWeight: '500', color: amountColor, maxWidth: '100%' }}
+          />
+        </Typography>
         }
         {amountDesc &&
           <Typography

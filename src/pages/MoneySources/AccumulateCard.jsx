@@ -10,7 +10,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import { NumericFormat } from 'react-number-format'
 import MoneySourceItem2 from './MoneySourceItem/MoneySourceItem2'
 import AccumulateMenu from './MoneySourceItem/Accumulatemenu'
-import { Modal } from '@mui/material'
+import { ButtonBase, Modal } from '@mui/material'
 import AccumulationPopup from './DetailPopup/AccumulationPopup'
 
 const style = {
@@ -129,25 +129,31 @@ function AccumulateCard({ data, accountData, refreshData }) {
               {activeAccumulateData.map((accumulation) =>
                 <Box
                   key={accumulation._id}
-                  onClick={() => handleOpenModal(accumulation)}
+                  // onClick={() => handleOpenModal(accumulation)}
                 >
-                  <MoneySourceItem2
-                    logo={'https://i.pinimg.com/736x/d2/27/54/d227545d8a52d0344ca75cf7b80eb523.jpg'}
-                    key={accumulation._id}
-                    title={accumulation.accumulationName}
-                    targetAmount={accumulation.targetBalance}
-                    accumulatedAmount={accumulation.balance}
-                    menuComponent={<AccumulateMenu isFinished={false} accumulation={accumulation} accountData={accountData} refreshData={refreshData} />}
-                    sx={{
-                      cursor: 'pointer',
-                      '&:hover': {
-                        backgroundColor: 'action.hover'
-                      },
-                      transition: 'background-color 0.2s',
-                      borderTop: 1,
-                      borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
-                    }}
-                  />
+                  <ButtonBase
+                    component='div'
+                    onClick={() => handleOpenModal(accumulation)}
+                    sx={{ width: '100%', textAlign: 'left' }}
+                  >
+                    <MoneySourceItem2
+                      logo={'https://i.pinimg.com/736x/d2/27/54/d227545d8a52d0344ca75cf7b80eb523.jpg'}
+                      key={accumulation._id}
+                      title={accumulation.accumulationName}
+                      targetAmount={accumulation.targetBalance}
+                      accumulatedAmount={accumulation.balance}
+                      menuComponent={<AccumulateMenu isFinished={false} accumulation={accumulation} accountData={accountData} refreshData={refreshData} />}
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundColor: 'action.hover'
+                        },
+                        transition: 'background-color 0.2s',
+                        borderTop: 1,
+                        borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
+                      }}
+                    />
+                  </ButtonBase>
                 </Box>
               )}
             </AccordionDetails>
@@ -182,26 +188,32 @@ function AccumulateCard({ data, accountData, refreshData }) {
               {finishedAccumulateData.map((accumulation) =>
                 <Box
                   key={accumulation._id}
-                  onClick={() => handleOpenModal(accumulation)}
+                  // onClick={() => handleOpenModal(accumulation)}
                 >
-                  <MoneySourceItem2
-                    logo={'https://i.pinimg.com/736x/d2/27/54/d227545d8a52d0344ca75cf7b80eb523.jpg'}
-                    key={accumulation._id}
-                    title={accumulation.accumulationName}
-                    targetAmount={accumulation.targetBalance}
-                    accumulatedAmount={accumulation.balance}
-                    // menuComponent={<AccumulateMenu isFinished={true} accumulation={accumulation} refreshData={refreshData}/>}
-                    sx={{
-                      cursor: 'pointer',
-                      '&:hover': {
-                        backgroundColor: 'action.hover'
-                      },
-                      transition: 'background-color 0.2s',
-                      borderTop: 1,
-                      borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666',
-                      opacity: '50%'
-                    }}
-                  />
+                  <ButtonBase
+                    component='div'
+                    onClick={() => handleOpenModal(accumulation)}
+                    sx={{ width: '100%', textAlign: 'left' }}
+                  >
+                    <MoneySourceItem2
+                      logo={'https://i.pinimg.com/736x/d2/27/54/d227545d8a52d0344ca75cf7b80eb523.jpg'}
+                      key={accumulation._id}
+                      title={accumulation.accumulationName}
+                      targetAmount={accumulation.targetBalance}
+                      accumulatedAmount={accumulation.balance}
+                      // menuComponent={<AccumulateMenu isFinished={true} accumulation={accumulation} refreshData={refreshData}/>}
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundColor: 'action.hover'
+                        },
+                        transition: 'background-color 0.2s',
+                        borderTop: 1,
+                        borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666',
+                        opacity: '50%'
+                      }}
+                    />
+                  </ButtonBase>
                 </Box>
               )}
             </AccordionDetails>

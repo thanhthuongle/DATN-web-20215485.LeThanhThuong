@@ -77,7 +77,11 @@ function LoanModal({ transactionId, handleCancelModal }) {
             allowLeadingZeros={false}
             suffix="&nbsp;%/năm"
             InputProps={{ readOnly: true }}
-            value={transaction?.detailInfo?.rate ? transaction?.detailInfo?.rate : ''}
+            value={
+              transaction?.detailInfo?.rate !== null && transaction?.detailInfo?.rate !== undefined
+                ? transaction.detailInfo.rate
+                : ''
+            }
           />
         </Box>
 

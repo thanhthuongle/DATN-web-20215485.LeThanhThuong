@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Typography } from '@mui/material'
+import { Box, Button, ButtonBase, Divider, Typography } from '@mui/material'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { NumericFormat } from 'react-number-format'
@@ -16,6 +16,7 @@ import { getIndividualTransactionAPI } from '~/apis'
 import FinanceItem1 from '~/component/FinanceItemDisplay/FinanceItem1'
 import theme from '~/theme'
 import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
+import DetailTransactionModal from '~/component/DetailTransactionModal/DetailTransactionModal'
 
 const redTypes = [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.CONTRIBUTION, TRANSACTION_TYPES.REPAYMENT]
 const greenTypes = [TRANSACTION_TYPES.INCOME, TRANSACTION_TYPES.BORROWING, TRANSACTION_TYPES.COLLECT]
@@ -53,10 +54,8 @@ function processDataRaw(transactions) {
 }
 
 function SavingPopup({ saving, handleCancel }) {
-  // console.log('🚀 ~ SavingPopup ~ saving:', saving)
   const [transactionProcessedDatas, setTransactionProcessedDatas] = useState(null)
-  // console.log('🚀 ~ SavingPopup ~ transactionProcessedDatas:', transactionProcessedDatas)
-  // console.log('kết thúc tại', moment('2025-05-31T17:00:00.000Z').add(saving.term, 'months').toISOString())
+  const [selectedTransaction, setSelectedTransaction] = useState(null)
 
   const updateStateData = (res) => {
     const processedData = processDataRaw(res)
@@ -75,6 +74,13 @@ function SavingPopup({ saving, handleCancel }) {
     params['q[transactionIds]'] = saving?.transactionIds || []
     const searchPath = `?${createSearchParams(params)}`
     getIndividualTransactionAPI(searchPath).then(updateStateData)
+  }
+
+  const handleSelectTransaction = (transaction) => {
+    setSelectedTransaction(transaction)
+  }
+  const handleCloseDetailModal = () => {
+    setSelectedTransaction(null)
   }
 
   useEffect(() => {
@@ -165,25 +171,29 @@ function SavingPopup({ saving, handleCancel }) {
                       {transactionData?.transactions?.map((transaction) => (
                         <Box
                           key={transaction._id}
-                          // onClick={() => handleOpenModal(transaction)}
                         >
-                          <FinanceItem1
-                            // key={transaction._id}
-                            logo={transaction?.category?.icon}
-                            title={transaction?.name}
-                            description={transaction?.description}
-                            amount={transaction?.amount}
-                            amountColor={getColorForTransaction(transaction?.type, transaction?.name)}
-                            sx={{
-                              cursor: 'pointer',
-                              '&:hover': {
-                                backgroundColor: 'action.hover'
-                              },
-                              transition: 'background-color 0.2s',
-                              borderTop: 1,
-                              borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
-                            }}
-                          />
+                          <ButtonBase
+                            onClick={() => handleSelectTransaction(transaction)}
+                            sx={{ width: '100%', textAlign: 'left' }}
+                          >
+                            <FinanceItem1
+                              // key={transaction._id}
+                              logo={transaction?.category?.icon}
+                              title={transaction?.name}
+                              description={transaction?.description}
+                              amount={transaction?.amount}
+                              amountColor={getColorForTransaction(transaction?.type, transaction?.name)}
+                              sx={{
+                                cursor: 'pointer',
+                                '&:hover': {
+                                  backgroundColor: 'action.hover'
+                                },
+                                transition: 'background-color 0.2s',
+                                borderTop: 1,
+                                borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
+                              }}
+                            />
+                          </ButtonBase>
                         </Box>
                       ))}
                     </StyledBox>
@@ -213,6 +223,12 @@ function SavingPopup({ saving, handleCancel }) {
           <Button variant='outlined' onClick={handleCancel}>Đóng</Button>
         </Box>
       </Box>
+
+      <DetailTransactionModal
+        transaction={selectedTransaction}
+        open={!!selectedTransaction}
+        onClose={handleCloseDetailModal}
+      />
     </Box>
   )
 }
