@@ -12,7 +12,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 
 import { Stack, Typography } from '@mui/material'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
-import { languageOptions, currencyOptions, startDayOfWeekOptions, startDayOfMonthOptions } from '~/utils/constants'
+import { startDayOfWeekOptions, startDayOfMonthOptions, LANGUAGES, CURRENCIES } from '~/utils/constants'
 
 const SettingCardType = {
   LANGUAGE: 'LANGUAGE',
@@ -23,8 +23,8 @@ const SettingCardType = {
 
 const getOptions = (settingCardType) => {
   switch (settingCardType) {
-  case SettingCardType.LANGUAGE: return languageOptions
-  case SettingCardType.CURRENCY: return currencyOptions
+  case SettingCardType.LANGUAGE: return Object.values(LANGUAGES)
+  case SettingCardType.CURRENCY: return Object.values(CURRENCIES)
   case SettingCardType.STARTWEEK: return startDayOfWeekOptions
   case SettingCardType.STARTMONTH: return startDayOfMonthOptions
   default: return []
@@ -54,7 +54,6 @@ const SettingCardRaw = React.memo(function SettingCardRaw(props) {
   }
 
   const handleOk = () => {
-    // eslint-disable-next-line no-console
     // console.log('🚀 ~ handleOk ~ value:', value)
     onClose(value)
   }
