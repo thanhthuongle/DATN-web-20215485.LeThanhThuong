@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Avatar from '@mui/material/Avatar'
 import Typography from '@mui/material/Typography'
 import { NumericFormat } from 'react-number-format'
+import { TRUST_LEVEL_CONTACT } from '~/utils/constants'
 
 const getInitials = (name = '') => {
   const words = name.trim().split(' ')
@@ -10,7 +11,16 @@ const getInitials = (name = '') => {
   return (words[0][0] + words[words.length - 1][0]).toUpperCase()
 }
 
-function ContactItem({ contactName, amount, amountColor='text.primary', sx, menuComponent }) {
+const getAvatarColor = (trustLevel = '', mode) => {
+  if (mode != 'loan') return ''
+
+  if (trustLevel == TRUST_LEVEL_CONTACT.BAD) return 'red'
+  else if (trustLevel == TRUST_LEVEL_CONTACT.WARNING) return '#f7f700'
+  else if (trustLevel == TRUST_LEVEL_CONTACT.GOOD) return 'green'
+  return ''
+}
+
+function ContactItem({ contact, amount, amountColor='text.primary', sx, menuComponent, viewMode = 'loan' }) {
   return (
     <Box
       display='flex'
@@ -32,18 +42,19 @@ function ContactItem({ contactName, amount, amountColor='text.primary', sx, menu
           sx={{
             width: '40px',
             height: '40px',
-            flexShrink: 0
+            flexShrink: 0,
+            bgcolor: getAvatarColor(contact?.trustLevel, viewMode)
           }}
         >
-          {getInitials(contactName)}
+          {getInitials(contact?.name)}
         </ Avatar>
 
         <Box sx={{ minWidth: 0, flex: 1, marginRight: 2 }}>
-          {contactName &&
+          {contact?.name &&
           <Typography
             component={'div'}
           >
-            {contactName}
+            {contact?.name}
           </Typography>
           }
         </Box>

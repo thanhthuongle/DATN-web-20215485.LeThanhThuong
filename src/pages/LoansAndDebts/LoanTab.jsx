@@ -12,6 +12,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import ContactLoanList from './LoanPopup/ContactLoanList'
 import ContactItem from './ContactItem'
+import LoanMenu from './MenuOptions/LoanMenu'
 
 const style = {
   position: 'absolute',
@@ -151,9 +152,10 @@ function LoanTab({ totalLoan, collected, transactiosGrouped, handleOnCollectOrRe
                   >
                     <ContactItem
                       // key={item.borrowerId}
-                      contactName={item.transactions[0].detailInfo.borrower.name}
+                      contact={item.transactions[0].detailInfo.borrower}
                       amount={item.totalAmountWithReturn}
                       amountColor='#e74c3c' // #e74c3c
+                      viewMode={'loan'}
                       sx={{
                         cursor: 'pointer',
                         '&:hover': {
@@ -162,7 +164,8 @@ function LoanTab({ totalLoan, collected, transactiosGrouped, handleOnCollectOrRe
                         borderTop: 1,
                         borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
                       }}
-                      menuComponent={<Button variant='contained' sx={{ marginLeft: 2 }}>Thu nợ</Button>}
+                      // menuComponent={<Button variant='contained' sx={{ marginLeft: 2 }}>Thu nợ</Button>}
+                      menuComponent={<LoanMenu isFinish={false} contact={item.transactions[0].detailInfo.borrower} refreshData={handleOnCollectOrRepay}/>}
                     />
                   </Box>
                 )
@@ -197,7 +200,8 @@ function LoanTab({ totalLoan, collected, transactiosGrouped, handleOnCollectOrRe
                   >
                     <ContactItem
                       // key={item.borrowerId}
-                      contactName={item.transactions[0].detailInfo.borrower.name}
+                      contact={item.transactions[0].detailInfo.borrower}
+                      viewMode={'loan'}
                       sx={{
                         cursor: 'pointer',
                         '&:hover': {
@@ -206,7 +210,8 @@ function LoanTab({ totalLoan, collected, transactiosGrouped, handleOnCollectOrRe
                         borderTop: 1,
                         borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
                       }}
-                      menuComponent={<KeyboardArrowRightIcon />}
+                      // menuComponent={<KeyboardArrowRightIcon />}
+                      menuComponent={<LoanMenu isFinish={true} contact={item.transactions[0].detailInfo.borrower} refreshData={handleOnCollectOrRepay}/>}
                     />
                   </Box>
                 )

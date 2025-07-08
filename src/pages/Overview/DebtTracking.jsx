@@ -159,7 +159,8 @@ function DebtTracking() {
                 data.borrowingGroupedTransactions.map((item) => (
                   <ContactItem
                     key={item.lenderId}
-                    contactName={item?.transactions[0].detailInfo.lender.name}
+                    contact={item?.transactions[0].detailInfo.lender}
+                    viewMode='debt'
                     amount={item.totalAmount}
                     amountColor='#e74c3c' // #e74c3c
                     sx={{
@@ -229,9 +230,10 @@ function DebtTracking() {
                 data.loanGroupedTransactions.map((item) => (
                   <ContactItem
                     key={item.borrowerId}
-                    contactName={item?.transactions[0].detailInfo.borrower.name}
+                    contact={item?.transactions[0].detailInfo.borrower}
                     amount={item.totalAmount}
                     amountColor='#27ae60' // #27ae60
+                    viewMode='loan'
                     sx={{
                       cursor: 'pointer',
                       '&:hover': {
