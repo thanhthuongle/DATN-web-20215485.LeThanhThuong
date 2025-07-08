@@ -19,6 +19,7 @@ import { createSearchParams } from 'react-router-dom'
 import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
 import { ButtonBase, CircularProgress } from '@mui/material'
 import DetailTransactionModal from '~/component/DetailTransactionModal/DetailTransactionModal'
+import { cloneDeep } from 'lodash'
 
 const transactionHistoryType = {
   ALL: 'Toàn bộ',
@@ -31,7 +32,7 @@ const greenTypes = [TRANSACTION_TYPES.INCOME, TRANSACTION_TYPES.BORROWING, TRANS
 const getColorForTransaction = (transactionTypeProp, transactionName) => {
   if (redTypes.includes(transactionTypeProp)) {
     return '#e74c3c'
-  } else if (greenTypes.includes(transactionTypeProp) || transactionName?.toLowerCase()?.startsWith('thu lãi')) {
+  } else if (greenTypes.includes(transactionTypeProp) || (transactionName?.toLowerCase()?.startsWith('thu lãi') ?? false)) {
     return '#27ae60'
   } else {
     return 'text.primary'
@@ -47,6 +48,11 @@ function processDataRaw(transactions, categoryTypeFilter = redTypes) {
   }
 
   transactions.forEach((transaction) => {
+    if (categoryTypeFilter == greenTypes) {
+      if (transaction?.type == TRANSACTION_TYPES.TRANSFER && !transaction?.name?.toLowerCase()?.startsWith('thu lãi')) {
+        return
+      }
+    }
     const dateKey = moment(transaction.transactionTime).format('YYYY-MM-DD')
     const categoryKey = transaction.categoryId
 
@@ -61,6 +67,18 @@ function processDataRaw(transactions, categoryTypeFilter = redTypes) {
         }
 
       result.byCategory[categoryKey].amount += Number(transaction.amount) || 0
+    }
+    // Giao dịch thu lãi
+    if (categoryTypeFilter == greenTypes) {
+      if (transaction?.type == TRANSACTION_TYPES.TRANSFER && transaction?.name?.toLowerCase()?.startsWith('thu lãi')) {
+        if (!result.byCategory[categoryKey])
+          result.byCategory[categoryKey] = {
+            amount: 0,
+            categoryName: 'Thu lãi sổ tiết kiệm'
+          }
+
+        result.byCategory[categoryKey].amount += Number(transaction.amount) || 0
+      }
     }
 
     // Cộng income / expense
@@ -131,7 +149,10 @@ function TransactionHistory() {
     setIsLoading(true)
     let transactionTypeFilter = ''
     if (activeButton == transactionHistoryType.EXPENSE) transactionTypeFilter = redTypes
-    else if (activeButton == transactionHistoryType.INCOME) transactionTypeFilter = greenTypes
+    else if (activeButton == transactionHistoryType.INCOME) {
+      transactionTypeFilter = cloneDeep(greenTypes)
+      transactionTypeFilter.push(TRANSACTION_TYPES.TRANSFER)
+    }
     const params = {}
     if (transactionTypeFilter) params['q[type]'] = transactionTypeFilter
     if (startDate) params['q[fromDate]'] = startDate.toISOString()

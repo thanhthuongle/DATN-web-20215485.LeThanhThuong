@@ -99,7 +99,7 @@ function SavingCard({ data = [], accountData = [], refreshData }) {
           alignItems='center'
           bgcolor='#2e8b57'
           textAlign="center"
-        >SỔ<br/>TIẾT KIỆM ONLINE</Typography>
+        >SỔ<br/>TIẾT KIỆM</Typography>
       </Box>
 
       {/* Nội dung tổng quan sổ tiết kiệm */}

@@ -13,6 +13,7 @@ import PageLoadingSpinner from '~/component/Loading/PageLoadingSpinner'
 import { cloneDeep } from 'lodash'
 import { toast } from 'react-toastify'
 import { formatPercentage } from '~/utils/formatters'
+import VerticalBarChartMultiCategry from '~/component/Chart/VerticalBarChartMultiCategory'
 
 const redTypes = [TRANSACTION_TYPES.EXPENSE, TRANSACTION_TYPES.LOAN, TRANSACTION_TYPES.CONTRIBUTION, TRANSACTION_TYPES.REPAYMENT]
 
@@ -129,7 +130,7 @@ function SpendingAnalysis() {
           width={{ xs: '100%', sm: '70%' }}
           paddingRight={{ xs: 0, sm: 1 }}
         >
-          <VerticalBarChart startTime={moment(startDate)} endTime={moment(endDate)} transactions={data.transactions.filter(transaction => redTypes.includes(transaction?.category?.type))}/>
+          <VerticalBarChartMultiCategry startTime={moment(startDate)} endTime={moment(endDate)} transactions={data.transactions.filter(transaction => redTypes.includes(transaction?.category?.type))}/>
         </Box>
         <Stack
           width={{ xs: '100%', sm: '30%' }}
@@ -159,6 +160,10 @@ function SpendingAnalysis() {
           ))}
         </Stack>
       </Grid>
+      <Box
+      >
+        {/* <VerticalBarChartMultiCategry startTime={moment(startDate)} endTime={moment(endDate)} transactions={data.transactions.filter(transaction => redTypes.includes(transaction?.category?.type))}/> */}
+      </Box>
     </StyledBox>
   )
 }

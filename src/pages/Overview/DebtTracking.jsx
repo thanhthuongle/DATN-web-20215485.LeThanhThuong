@@ -146,7 +146,7 @@ function DebtTracking() {
                 decimalSeparator=","
                 allowNegative={false}
                 suffix="&nbsp;₫"
-                value={data.totalLoan}
+                value={data?.totalBorrowing}
                 style={{ width: '50%', display: 'flex', justifyContent: 'center' }}
               />
             </Box>
@@ -155,23 +155,13 @@ function DebtTracking() {
               maxHeight='800px'
               overflow='auto'
             >
-              {data.loanGroupedTransactions && Array.isArray(data.loanGroupedTransactions) && data.loanGroupedTransactions?.length > 0 ? (
-                data.loanGroupedTransactions.map((item) => (
-                  // <FinanceItem1
-                  //   key={item.borrowerId}
-                  //   title={item?.transactions[0].detailInfo.borrower.name}
-                  //   amount={item.totalAmount}
-                  //   amountColor={'#27ae60'} // #27ae60
-                  //   sx={{
-                  //     borderTop: 1,
-                  //     borderColor: (theme) => theme.palette.mode === 'light' ? '#ccc' : '#666'
-                  //   }}
-                  // />
+              {data.borrowingGroupedTransactions && Array.isArray(data.borrowingGroupedTransactions) && data.borrowingGroupedTransactions?.length > 0 ? (
+                data.borrowingGroupedTransactions.map((item) => (
                   <ContactItem
-                    key={item.borrowerId}
-                    contactName={item?.transactions[0].detailInfo.borrower.name}
+                    key={item.lenderId}
+                    contactName={item?.transactions[0].detailInfo.lender.name}
                     amount={item.totalAmount}
-                    amountColor='#27ae60' // #27ae60
+                    amountColor='#e74c3c' // #e74c3c
                     sx={{
                       cursor: 'pointer',
                       '&:hover': {
@@ -184,7 +174,7 @@ function DebtTracking() {
                 ))
               ) : (
                 <Typography align="center" sx={{ opacity: 0.6, mt: 2 }}>
-                  Không có dữ liệu khoản vay nào.
+                  Không có dữ liệu khoản đi vay nào.
                 </Typography>
               )}
             </Box>
@@ -225,7 +215,7 @@ function DebtTracking() {
                 decimalSeparator=","
                 allowNegative={false}
                 suffix="&nbsp;₫"
-                value={data.totalBorrowing}
+                value={data?.totalLoan}
                 style={{ width: '50%', display: 'flex', justifyContent: 'center' }}
               />
             </Box>
@@ -235,13 +225,13 @@ function DebtTracking() {
               maxHeight='800px'
               overflow='auto'
             >
-              {data.borrowingGroupedTransactions && Array.isArray(data.borrowingGroupedTransactions) && data.borrowingGroupedTransactions?.length > 0 ? (
-                data.borrowingGroupedTransactions.map((item) => (
+              {data.loanGroupedTransactions && Array.isArray(data.loanGroupedTransactions) && data.loanGroupedTransactions?.length > 0 ? (
+                data.loanGroupedTransactions.map((item) => (
                   <ContactItem
-                    key={item.lenderId}
-                    contactName={item?.transactions[0].detailInfo.lender.name}
+                    key={item.borrowerId}
+                    contactName={item?.transactions[0].detailInfo.borrower.name}
                     amount={item.totalAmount}
-                    amountColor='#e74c3c' // #e74c3c
+                    amountColor='#27ae60' // #27ae60
                     sx={{
                       cursor: 'pointer',
                       '&:hover': {
@@ -254,7 +244,7 @@ function DebtTracking() {
                 ))
               ) : (
                 <Typography align="center" sx={{ opacity: 0.6, mt: 2 }}>
-                  Không có dữ liệu cho vay nào.
+                  Không có dữ liệu khoản cho vay nào.
                 </Typography>
               )}
             </Box>

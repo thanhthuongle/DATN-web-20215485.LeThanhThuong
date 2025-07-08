@@ -90,8 +90,9 @@ const processData = (data) => {
       acc[categoryId].amount += Number(item.amount) || 0
 
       result.expense += Number(item.amount) || 0
+    } else if (greenTypes.includes(item.type) || item?.name?.toLowerCase()?.startsWith('thu lãi')) {
+      result.income += Number(item.amount) || 0
     }
-    else if (greenTypes.includes(item.type)) { result.income += Number(item.amount) || 0 }
 
     return acc
   }, {})

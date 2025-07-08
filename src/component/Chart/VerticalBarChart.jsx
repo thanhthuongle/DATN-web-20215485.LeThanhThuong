@@ -31,6 +31,9 @@ const options = {
     },
     title: {
       display: false
+    },
+    datalabels: {
+      display: false
     }
   },
   scales: {

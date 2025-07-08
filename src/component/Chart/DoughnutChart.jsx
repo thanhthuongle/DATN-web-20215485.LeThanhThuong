@@ -22,6 +22,9 @@ const options = {
       //   boxWidth: 10,
       //   boxHeight: 10
       // }
+    },
+    datalabels: {
+      display: false
     }
   }
 }
