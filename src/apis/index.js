@@ -99,6 +99,10 @@ export const createIndividualContactAPI = async (data) => {
   const response = await authorizedAxiosInstance.post(`${apiRoot}/contacts/individual`, data)
   return response.data
 }
+export const updateTrustLevel = async(data) => {
+  const response = await authorizedAxiosInstance.put(`${apiRoot}/contacts/individual/update`, data)
+  return response.data
+}
 
 /** bank */
 export const getBankInfo = async (bankId) => {

@@ -148,9 +148,10 @@ function DebtTab({ totalBorrwed, paid, transactiosGrouped, handleOnCollectOrRepa
                   >
                     <ContactItem
                       // key={item.lenderId}
-                      contactName={item.transactions[0].detailInfo.lender.name}
+                      contact={item.transactions[0].detailInfo.lender}
                       amount={item.totalAmountWithReturn}
                       amountColor='#27ae60' // #27ae60
+                      viewMode='debt'
                       sx={{
                         cursor: 'pointer',
                         '&:hover': {
@@ -194,7 +195,8 @@ function DebtTab({ totalBorrwed, paid, transactiosGrouped, handleOnCollectOrRepa
                   >
                     <ContactItem
                       // key={item.lenderId}
-                      contactName={item.transactions[0].detailInfo.lender.name}
+                      contact={item.transactions[0].detailInfo.lender}
+                      viewMode='debt'
                       sx={{
                         cursor: 'pointer',
                         '&:hover': {

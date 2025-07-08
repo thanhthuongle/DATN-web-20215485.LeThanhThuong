@@ -53,3 +53,10 @@ export const LANGUAGES = {
 export const CURRENCIES = {
   VND: 'VND'
 }
+
+export const TRUST_LEVEL_CONTACT = {
+  NORMAL: 'normal',
+  GOOD: 'good',
+  WARNING: 'warning',
+  BAD: 'bad'
+}
