@@ -458,34 +458,14 @@ function CreateSaving({ afterCreateSaving, accountData = [] }) {
                                   }
                                 }
                               }}
-                              renderValue={(wallet) => {
-                                const selectedWallet = accounts.find(w => w._id === wallet)
-                                return (
-                                  <Box display="flex" alignItems="center" gap={1}>
-                                    <Avatar
-                                      alt="Logo"
-                                      src=""
-                                      sx={{
-                                        bgcolor: 'yellow',
-                                        width: 40,
-                                        height: 40,
-                                        flexShrink: 0
-                                      }}
-                                    >
-                                      {' '}
-                                    </ Avatar>
-                                    <Typography noWrap>
-                                      {selectedWallet?.accountName}&nbsp;({selectedWallet?.balance?.toLocaleString()}&nbsp;₫)
-                                    </Typography>
-                                  </Box>
-                                )
-                              }}
                             >
                               {accounts?.map((w, index) => (
                                 <MenuItem value={w._id} key={index}>
                                   <FinanceItem1
+                                    logo={w?.icon}
                                     title={w.accountName}
                                     amount={w.balance}
+                                    sx={{ padding: 0, paddingY: 0.25 }}
                                   />
                                 </MenuItem>
                               ))}

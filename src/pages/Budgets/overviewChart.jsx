@@ -14,6 +14,9 @@ const options = {
   plugins: {
     legend: {
       display: false
+    },
+    datalabels: {
+      display: false
     }
   }
 }

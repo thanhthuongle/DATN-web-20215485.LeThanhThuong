@@ -125,6 +125,7 @@ function AccountPopup({ account, handleCancel }) {
   const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(null)
   const [transactionProcessedDatas, setTransactionProcessedDatas] = useState(null)
+  // console.log('🚀 ~ AccountPopup ~ transactionProcessedDatas:', transactionProcessedDatas)
   const [isLoading, setIsLoading] = useState(false)
   const [selectedTransaction, setSelectedTransaction] = useState(null)
 
@@ -165,7 +166,7 @@ function AccountPopup({ account, handleCancel }) {
     const params = {}
     if (startTime) params['q[fromDate]'] = startTime.toISOString()
     if (endTime) params['q[toDate]'] = endTime.toISOString()
-    params['q[transactionIds]'] = account?.transactionIds || []
+    if (!startTime && !endTime) params['q[transactionIds]'] = account?.transactionIds || []
     const searchPath = `?${createSearchParams(params)}`
     setIsLoading(true)
     getIndividualTransactionAPI(searchPath)
@@ -270,7 +271,7 @@ function AccountPopup({ account, handleCancel }) {
                   />
                 </StyledBox>
 
-                <StyledBox display={'flex'} justifyContent={'space-evenly'}>
+                {/* <StyledBox display={'flex'} justifyContent={'space-evenly'}>
                   <Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
                     <Typography sx={{ fontWeight: 'bold' }}>Tổng thu</Typography>
                     <NumericFormat
@@ -300,7 +301,7 @@ function AccountPopup({ account, handleCancel }) {
                       style={{ color: '#e74c3c', fontWeight: 'bold' }} // #e74c3c
                     />
                   </Box>
-                </StyledBox>
+                </StyledBox> */}
 
                 {transactionProcessedDatas?.groupedByDate?.map((transactionData, index) => (
                   <StyledBox key={index}>

@@ -3,7 +3,6 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Pie } from 'react-chartjs-2'
 import { Box, Grid, Typography } from '@mui/material'
 import SquareIcon from '@mui/icons-material/Square'
-import randomColor from 'randomcolor'
 
 ChartJS.register(ArcElement, Tooltip, Legend)
 
@@ -14,7 +13,10 @@ const options = {
     padding: 0
   },
   plugins: {
-    legend: { display: false }
+    legend: { display: false },
+    datalabels: {
+      display: false
+    }
   }
 }
 
