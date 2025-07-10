@@ -4,9 +4,10 @@ import React, { useEffect, useState } from 'react'
 import { NumericFormat } from 'react-number-format'
 import MoneySourceItem1 from '~/pages/MoneySources/MoneySourceItem/MoneySourceItem1'
 import { StyledBox } from '~/pages/Overview/Overview'
-import { TRANSACTION_TYPES } from '~/utils/constants'
+import { TRANSACTION_TYPES, TRUST_LEVEL_LOAN } from '~/utils/constants'
 import CollectionPopup from './CollectionPopup'
 import DetailTransactionModal from '~/component/DetailTransactionModal/DetailTransactionModal'
+import ContactLoanListMenu from '../MenuOptions/ContactLoanListMenu'
 
 const style = {
   position: 'absolute',
@@ -155,14 +156,20 @@ function ContactLoanList({ contactLoanData, handleCancel, handleOnCollect }) {
                                   />
                                 </Box>
                               )
-                              : <Button
-                                variant='contained'
-                                sx={{ marginLeft: 2 }}
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  handleOpenCollectModal(transaction)
-                                }}
-                              >Thu nợ</Button>
+                              : <Box display={'flex'}>
+                                <Button
+                                  variant='contained'
+                                  sx={{
+                                    marginLeft: 2,
+                                    bgcolor: transaction?.detailInfo?.trustLevel == TRUST_LEVEL_LOAN.WARNING ? 'darkorange' : (transaction?.detailInfo?.trustLevel == TRUST_LEVEL_LOAN.BAD ? 'red' : '')
+                                  }}
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleOpenCollectModal(transaction)
+                                  }}
+                                >Thu nợ</Button>
+                                <ContactLoanListMenu isFinish={false} loanTransaction={transaction} refreshData={handleOnCollect}/>
+                              </Box>
                           )}
                           sx={{
                             cursor: 'pointer',

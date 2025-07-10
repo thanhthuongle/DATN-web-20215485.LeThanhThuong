@@ -7,6 +7,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium'
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote'
 import UpdateTrustLevel from '../LoanPopup/UpdateTrustLevel'
+import { Button } from '@mui/material'
 
 const FollowingLoanOptions = [
   {
@@ -80,6 +81,9 @@ export default function LoanMenu({ isFinish, contact, refreshData }) { // isActi
 
   return (
     <div>
+      {isFinish &&
+        <Button variant='contained' sx={{ marginLeft: 2 }}>Thu nợ</Button>
+      }
       <IconButton
         aria-label="more"
         id="long-button"

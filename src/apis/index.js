@@ -54,6 +54,12 @@ export const getDetailIndividualTransaction = async (transactionId) => {
   return response.data
 }
 
+/** loan */
+export const updateTrustLevelLoan = async(data) => {
+  const response = await authorizedAxiosInstance.put(`${apiRoot}/loans/individual/update`, data)
+  return response.data
+}
+
 /** category */
 export const getIndividualCategoryAPI = async (searchPath) => {
   const url = searchPath

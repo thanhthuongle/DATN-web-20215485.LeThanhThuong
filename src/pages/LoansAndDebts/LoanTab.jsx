@@ -47,7 +47,7 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
 }))
 
 function LoanTab({ totalLoan, collected, transactiosGrouped, handleOnCollectOrRepay }) {
-  // console.log('🚀 ~ LoanTab ~ transactiosGrouped:', transactiosGrouped)
+  transactiosGrouped = transactiosGrouped.sort((a, b) => b.totalAmount - a.totalAmount)
   const [openModal, setOpenModal] = useState(false)
   const [selectedContact, setSelectedContact] = useState(null)
 

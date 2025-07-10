@@ -59,14 +59,14 @@ const processData = (data, topExpense = 7) => {
 
   const percentageLists = finalData.map(item => Number(item.amount))
 
-  const colorLists = finalData.map(item => randomColor({ luminosity: 'bright', hue: 'random', seed: slugify(item.categoryName) }))
+  const colorLists = finalData.map(item => randomColor({ luminosity: 'bright', hue: 'random', seed: slugify(item.categoryName + item.categoryName) }))
 
   return { categoryLists, percentageLists, colorLists }
 }
 
 function DoughnutChart({ dataProp }) {
   // console.log('🚀 ~ DoughnutChart ~ dataProp:', dataProp)
-  const processedData = processData(dataProp)
+  const processedData = processData(dataProp, 10)
   const data = {
     labels: processedData.categoryLists,
     datasets: [
