@@ -14,7 +14,7 @@ import { FIELD_REQUIRED_MESSAGE } from '~/utils/validators'
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 import { NumericFormat } from 'react-number-format'
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
-import { Avatar, CircularProgress, FormControl, InputLabel, MenuItem, Select, Tooltip } from '@mui/material'
+import { Avatar, CircularProgress, FormControl, FormControlLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, Tooltip } from '@mui/material'
 import { INTEREST_PAID, MONEY_SOURCE_TYPE, TERM_ENDED } from '~/utils/constants'
 import { createIndividualSavingAPI, getBanks } from '~/apis'
 import { toast } from 'react-toastify'
@@ -27,6 +27,7 @@ function CreateSaving({ afterCreateSaving, accountData = [] }) {
   const { register, setValue, control, handleSubmit, reset, watch, formState: { errors, isSubmitting } } = useForm()
   let interestPaid = watch('interestPaid')
   let termEnded = watch('termEnded')
+  let rateType = watch('rateType')
   const [open, setOpen] = React.useState(false)
   const [banks, setBanks] = React.useState([])
   const [accounts] = React.useState(accountData)
@@ -38,7 +39,8 @@ function CreateSaving({ afterCreateSaving, accountData = [] }) {
   }
   const submitCreateSaving= async (data) => {
     data.moneyFromType = MONEY_SOURCE_TYPE.ACCOUNT
-    const { savingsAccountName, bankId, initBalance, startDate, term, rate, nonTermRate, interestPaid, termEnded, moneyFromType, moneyFromId } = data
+    let { savingsAccountName, bankId, initBalance, startDate, term, rate, nonTermRate, interestPaid, termEnded, moneyFromType, moneyFromId } = data
+    if (rateType == 'term' && term) rate = rate * term / 12
     const newSaving = { savingsAccountName, bankId, initBalance, startDate, term, rate, nonTermRate, interestPaid, termEnded, moneyFromType, moneyFromId }
     if (data.interestPaidTargetId) {
       newSaving.interestPaidTargetId = data.interestPaidTargetId,
@@ -299,7 +301,19 @@ function CreateSaving({ afterCreateSaving, accountData = [] }) {
 
                 {/* Lãi suất */}
                 <Box>
-                  <Box display={'flex'} alignItems={'center'}>
+                  <Box display={'flex'} alignItems={'center'} flexDirection={'column'}>
+                    <Controller
+                      name="rateType"
+                      control={control}
+                      defaultValue="yearly"
+                      render={({ field }) => (
+                        <RadioGroup row {...field} sx={{ width: '100%', alignItems: 'center' }}>
+                          <Typography sx={{ marginRight: 2}}>Lãi suất</Typography>
+                          <FormControlLabel value="yearly" control={<Radio />} label="Theo năm" />
+                          <FormControlLabel value="term" control={<Radio />} label="Theo kỳ hạn" />
+                        </RadioGroup>
+                      )}
+                    />
                     <Controller
                       control={control}
                       name="rate"
@@ -314,7 +328,7 @@ function CreateSaving({ afterCreateSaving, accountData = [] }) {
                           decimalSeparator=","
                           allowNegative={false}
                           allowLeadingZeros={false}
-                          suffix="&nbsp;%/năm"
+                          suffix={rateType == 'term' ? ' %/kỳ' : ' %/năm'}
                           onValueChange={(v) => { onChange(v.value) }}
                           value={value}
                           error={!!errors['rate']}

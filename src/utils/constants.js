@@ -60,3 +60,9 @@ export const TRUST_LEVEL_CONTACT = {
   WARNING: 'warning',
   BAD: 'bad'
 }
+
+export const TRUST_LEVEL_LOAN = {
+  NORMAL: 'normal',
+  WARNING: 'warning',
+  BAD: 'bad'
+}

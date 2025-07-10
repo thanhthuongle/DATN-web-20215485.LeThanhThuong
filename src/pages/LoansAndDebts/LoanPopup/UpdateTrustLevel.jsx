@@ -24,7 +24,7 @@ const style = {
 }
 
 function UpdateTrustLevel({ isOpen, onClose, contact, afterUpdate }) {
-  console.log('🚀 ~ UpdateTrustLevel ~ contact:', contact)
+  // console.log('🚀 ~ UpdateTrustLevel ~ contact:', contact)
   const methods = useForm()
   const { control, watch, reset, setValue, formState: { errors, isSubmitting } } = methods
   const trustLevel = watch('trustLevel')
