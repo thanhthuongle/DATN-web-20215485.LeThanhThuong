@@ -4,7 +4,7 @@ import Button from '@mui/material/Button'
 import Avatar from '@mui/material/Avatar'
 import LockIcon from '@mui/icons-material/Lock'
 import Typography from '@mui/material/Typography'
-import { Card as MuiCard } from '@mui/material'
+import { IconButton, Card as MuiCard, Tooltip } from '@mui/material'
 import CardActions from '@mui/material/CardActions'
 import TextField from '@mui/material/TextField'
 import Zoom from '@mui/material/Zoom'
@@ -22,6 +22,10 @@ import { useSearchParams, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useDispatch } from 'react-redux'
 import { loginUserAPI } from '~/redux/user/userSlice'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import { useState } from 'react'
+import DoneAllIcon from '@mui/icons-material/DoneAll'
+import LoginIcon from '@mui/icons-material/Login'
 
 function LoginForm() {
   const dispath = useDispatch()
@@ -34,6 +38,9 @@ function LoginForm() {
   let [searchParams] = useSearchParams()
   const registeredEmail = searchParams.get('registeredEmail')
   const verifiedEmail = searchParams.get('verifiedEmail')
+
+  const [copiedEmail, setCopiedEmail] = useState(false)
+  const [copiedPass, setCopiedPass] = useState(false)
 
   const submitLogIn = (data) => {
     const { email, password } = data
@@ -62,10 +69,33 @@ function LoginForm() {
     // }).catch(error => { console.error(error) })
   }
 
+  const quickLogin = () => {
+    const demoAccount = {
+      email: 'demo@gmail.com',
+      password: '12345678a'
+    }
+
+    submitLogIn(demoAccount)
+  }
+  const handleCopy = (text, type) => {
+    if (type === 'email') {
+      navigator.clipboard.writeText(text)
+      setCopiedEmail(true)
+      setTimeout(() => setCopiedEmail(false), 2000)
+    } else {
+      navigator.clipboard.writeText('12345678a')
+      setCopiedPass(true)
+      setTimeout(() => setCopiedPass(false), 2000)
+    }
+  }
+
   return (
     <form onSubmit={handleSubmit(submitLogIn)}>
       <Zoom in={true} style={{ transitionDelay: '200ms' }}>
         <MuiCard sx={{ minWidth: 380, maxWidth: 380, marginTop: '6em' }}>
+          {/* <Box sx={{ marginTop: '1em', display: 'flex', justifyContent: 'center', color: theme => theme.palette.grey[500] }}>
+            Author: LeThanhThuong - 20215485
+          </Box> */}
           <Box sx={{
             margin: '1em',
             display: 'flex',
@@ -75,9 +105,72 @@ function LoginForm() {
             <Avatar sx={{ bgcolor: 'primary.main' }}><LockIcon /></Avatar>
             {/* <Avatar sx={{ bgcolor: 'primary.main' }}> LOGO WEB </Avatar> */}
           </Box>
-          <Box sx={{ marginTop: '1em', display: 'flex', justifyContent: 'center', color: theme => theme.palette.grey[500] }}>
-            Author: LeThanhThuong - 20215485
-          </Box>
+          {!verifiedEmail && !registeredEmail && (
+            <Box sx={{
+              marginTop: '1.5em',
+              marginX: '1em',
+              display: 'flex',
+              flexDirection: 'column',
+              padding: '1em',
+              border: '1px dashed #ccc',
+              borderRadius: '8px',
+              backgroundColor: '#f9f9f9'
+            }}>
+              <Typography variant="subtitle1" color='#000000' fontWeight={'bold'} sx={{ alignSelf: 'center', mb: 1 }}>
+                TÀI KHOẢN DEMO
+              </Typography>
+
+              {/* Hàng Email */}
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                <Typography variant="body2" sx={{ display: 'flex', color: 'grey.600' }}>
+                  Email: &nbsp;<Typography component="span" fontWeight="500" color='#000000'>demo@gmail.com</Typography>
+                </Typography>
+                <Tooltip title={copiedEmail ? 'Đã sao chép!' : 'Sao chép Email'}>
+                  <IconButton size="small" onClick={() => handleCopy('demo@gmail.com', 'email')}>
+                    {copiedEmail ? (
+                      <DoneAllIcon fontSize="small" sx={{ color: 'green' }} />
+                    ) : (
+                      <ContentCopyIcon fontSize="small" />
+                    )}
+                  </IconButton>
+                </Tooltip>
+              </Box>
+
+              {/* Hàng Password */}
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                <Typography variant="body2" sx={{ display: 'flex', color: 'grey.600' }}>
+                  Pass: &nbsp;<Typography component="span" fontWeight="500" color='#000000'>******</Typography>
+                </Typography>
+                <Tooltip title={copiedPass ? 'Đã sao chép!' : 'Sao chép Mật khẩu'}>
+                  <IconButton size="small" onClick={() => handleCopy('12345678a', 'pass')}>
+                    {copiedPass ? (
+                      <DoneAllIcon fontSize="small" sx={{ color: 'green' }} />
+                    ) : (
+                      <ContentCopyIcon fontSize="small" />
+                    )}
+                  </IconButton>
+                </Tooltip>
+              </Box>
+
+              {/* Nút Đăng nhập nhanh */}
+              <Button
+                className='interceptor-loading'
+                variant="contained"
+                size="small"
+                startIcon={<LoginIcon />}
+                onClick={() => quickLogin()}
+                sx={{
+                  textTransform: 'none',
+                  backgroundColor: '#1976d2',
+                  '&:hover': { backgroundColor: '#115293' },
+                  paddingY: 1
+                }}
+              >
+                Đăng nhập nhanh (demo)
+              </Button>
+            </Box>
+          )}
+
           <Box sx={{ marginTop: '1em', display: 'flex', justifyContent: 'center', flexDirection: 'column', padding: '0 1em' }}>
             {verifiedEmail &&
               <Alert severity="success" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
@@ -151,7 +244,7 @@ function LoginForm() {
           </Box>
         </MuiCard>
       </Zoom>
-    </form>
+    </form >
   )
 }
 
