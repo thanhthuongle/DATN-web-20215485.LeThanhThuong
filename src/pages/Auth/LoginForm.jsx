@@ -92,7 +92,7 @@ function LoginForm() {
   return (
     <form onSubmit={handleSubmit(submitLogIn)}>
       <Zoom in={true} style={{ transitionDelay: '200ms' }}>
-        <MuiCard sx={{ minWidth: 380, maxWidth: 380, marginTop: '6em' }}>
+        <MuiCard sx={{ minWidth: 380, maxWidth: 380, marginTop: '3em' }}>
           {/* <Box sx={{ marginTop: '1em', display: 'flex', justifyContent: 'center', color: theme => theme.palette.grey[500] }}>
             Author: LeThanhThuong - 20215485
           </Box> */}
@@ -102,12 +102,16 @@ function LoginForm() {
             justifyContent: 'center',
             gap: 1
           }}>
-            <Avatar sx={{ bgcolor: 'primary.main' }}><LockIcon /></Avatar>
+            {/* <Avatar sx={{ bgcolor: 'primary.main' }}><LockIcon /></Avatar> */}
             {/* <Avatar sx={{ bgcolor: 'primary.main' }}> LOGO WEB </Avatar> */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', fontWeight: 'bold', fontSize: '1.5em', color: '#1976d2' }}>
+              WELCOME BACK
+            </Box>
           </Box>
+
           {!verifiedEmail && !registeredEmail && (
             <Box sx={{
-              marginTop: '1.5em',
+              marginTop: '0.5em',
               marginX: '1em',
               display: 'flex',
               flexDirection: 'column',
@@ -188,7 +192,7 @@ function LoginForm() {
             }
           </Box>
           <Box sx={{ padding: '0 1em 1em 1em' }}>
-            <Box sx={{ marginTop: '1em' }}>
+            <Box sx={{ marginTop: '0.5em' }}>
               <TextField
                 autoFocus
                 fullWidth
@@ -241,6 +245,12 @@ function LoginForm() {
             <Link to="/register" style={{ textDecoration: 'none' }}>
               <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>Create account!</Typography>
             </Link>
+
+            <Box sx={{ marginTop: '1em', display: 'flex', justifyContent: 'center', color: theme => theme.palette.grey[700] }}>
+              <Link to="https://github.com/thanhthuongle" style={{ textDecoration: 'none' }} target="_blank" rel="noopener noreferrer" >
+                <Typography sx={{ color: 'primary.main', '&:hover': { color: '#ffbb39' } }}>Author: Le Thanh Thuong</Typography>
+              </Link>
+            </Box>
           </Box>
         </MuiCard>
       </Zoom>

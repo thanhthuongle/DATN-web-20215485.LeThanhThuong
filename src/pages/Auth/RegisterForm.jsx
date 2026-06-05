@@ -53,7 +53,7 @@ function RegisterForm() {
             {/* <Avatar sx={{ bgcolor: 'primary.main' }}> LOGO WEB </Avatar> */}
           </Box>
           <Box sx={{ marginTop: '1em', display: 'flex', justifyContent: 'center', color: theme => theme.palette.grey[500] }}>
-            Author: LeThanhThuong - 20215485
+            Author: Le Thanh Thuong
           </Box>
           <Box sx={{ padding: '0 1em 1em 1em' }}>
             <Box sx={{ marginTop: '1em' }}>
