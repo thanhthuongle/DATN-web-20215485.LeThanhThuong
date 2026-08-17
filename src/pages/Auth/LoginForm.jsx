@@ -92,7 +92,7 @@ function LoginForm() {
   return (
     <form onSubmit={handleSubmit(submitLogIn)}>
       <Zoom in={true} style={{ transitionDelay: '200ms' }}>
-        <MuiCard sx={{ minWidth: 380, maxWidth: 380, marginTop: '3em' }}>
+        <MuiCard sx={{ minWidth: { xs: 300, md: 400 }, marginTop: '3em' }}>
           {/* <Box sx={{ marginTop: '1em', display: 'flex', justifyContent: 'center', color: theme => theme.palette.grey[500] }}>
             Author: LeThanhThuong - 20215485
           </Box> */}

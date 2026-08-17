@@ -2,7 +2,7 @@ import { Navigate, useLocation } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import LoginForm from './LoginForm'
 import RegisterForm from './RegisterForm'
-import AuthBackground from '~/assets/auth/login-register-bg.jpg'
+import AuthBackground from '~/assets/auth/auth-bg.png'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '~/redux/user/userSlice'
 
